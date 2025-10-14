@@ -12,14 +12,6 @@ class CompanyController extends Controller
     const VALID_PER_PAGE = [20, 50, 100, 500];
 
     /**
-     * Apply middleware to ensure user is authenticated.
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
      * Display the companies index page.
      */
     public function index(Request $request)
