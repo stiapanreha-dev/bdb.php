@@ -1,5 +1,6 @@
 *.log
 .DS_Store
+.devilbox
 .env
 .env.backup
 .env.production
