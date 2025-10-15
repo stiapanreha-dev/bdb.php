@@ -56,9 +56,9 @@
                             Есть идея <span class="badge bg-light text-dark">{{ $ideas_count ?? 0 }}</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('invite') }}">Пригласи друга</a>
-                    </li>
+{{--                    <li class="nav-item">--}}
+{{--                        <a class="nav-link" href="{{ route('invite') }}">Пригласи друга</a>--}}
+{{--                    </li>--}}
                 </ul>
                 <div class="d-flex align-items-center">
                     @auth
