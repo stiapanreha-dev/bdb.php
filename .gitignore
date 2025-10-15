@@ -31,3 +31,8 @@ response_sample.html
 composer.phar
 Windows_*.zip
 query
+
+# Documentation (local only)
+CLAUDE.md
+MIGRATION_STATUS.md
+README_MIGRATION.md
