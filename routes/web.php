@@ -68,6 +68,10 @@ Route::get('/contacts', function () {
     return view('static.contacts');
 })->name('contacts');
 
+Route::get('/tariffs', function () {
+    return view('static.tariffs');
+})->name('tariffs');
+
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
