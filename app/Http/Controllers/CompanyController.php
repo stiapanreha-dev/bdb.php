@@ -49,6 +49,9 @@ class CompanyController extends Controller
             $offset
         );
 
+        // DEBUG: Log the result
+        \Log::info('CompanyController: Got ' . count($result['data']) . ' companies, total=' . $result['total'] . ', hasFullAccess=' . ($hasFullAccess ? 'YES' : 'NO'));
+
         // Apply data masking
         if ($showMaskedData) {
             $result['data'] = DataMaskingHelper::applyMasking(
