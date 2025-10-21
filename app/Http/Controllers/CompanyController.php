@@ -16,6 +16,9 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
+        \Log::info('=== CompanyController::index called ===');
+        \Log::info('User: ' . (Auth::check() ? Auth::user()->email : 'NOT AUTHENTICATED'));
+
         // Validate and get per_page parameter
         $perPage = $this->getPerPage($request);
         $page = max(1, (int) $request->get('page', 1));
