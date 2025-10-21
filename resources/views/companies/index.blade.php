@@ -5,6 +5,13 @@
         </h2>
     </x-slot>
 
+    @php
+        \Log::info('companies/index.blade.php: START rendering', [
+            'companies_count' => count($companies ?? []),
+            'rubrics_count' => count($rubrics ?? []),
+        ]);
+    @endphp
+
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
