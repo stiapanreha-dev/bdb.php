@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Новости - Business database')
-
-@section('content')
+<x-app-layout>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Новости</h2>
     @auth
@@ -40,4 +36,4 @@
 @else
     <div class="alert alert-info">Новостей пока нет</div>
 @endif
-@endsection
+</x-app-layout>

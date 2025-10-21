@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Согласие на обработку персональных данных - Business database')
-
-@section('content')
+<x-app-layout>
 <div class="row">
     <div class="col-md-12">
         <h2>Согласие на обработку персональных данных</h2>
@@ -17,4 +13,4 @@
        </p>
     </div>
 </div>
-@endsection
+</x-app-layout>

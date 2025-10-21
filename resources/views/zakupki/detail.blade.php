@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Детали закупки - Business database')
-
-@section('content')
+<x-app-layout>
             <!-- Back button -->
             <div class="mb-3">
                 <a href="{{ route('zakupki.index', ['date_from' => $date_from, 'date_to' => $date_to, 'search_text' => $search_text, 'page' => $page, 'per_page' => $per_page]) }}"
@@ -196,4 +192,4 @@
         }
     }
 </style>
-@endsection
+</x-app-layout>

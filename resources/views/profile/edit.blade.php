@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Профиль - Business database')
-
-@section('content')
+<x-app-layout>
 <div class="row">
     <div class="col-md-8 offset-md-2">
         <h2 class="mb-4">Профиль пользователя</h2>
@@ -167,4 +163,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-@endsection
+</x-app-layout>

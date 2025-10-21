@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Добавить идею - Business database')
-
-@section('content')
+<x-app-layout>
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
@@ -54,4 +50,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-app-layout>

@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Идеи - Business database')
-
-@section('content')
+<x-app-layout>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Идеи пользователей</h2>
     <a href="{{ route('ideas.create') }}" class="btn btn-primary">Добавить идею</a>
@@ -41,4 +37,4 @@
 @else
     <div class="alert alert-info">Идей пока нет</div>
 @endif
-@endsection
+</x-app-layout>

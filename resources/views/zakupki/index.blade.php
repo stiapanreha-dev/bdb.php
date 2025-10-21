@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Закупки - Business database')
-
-@section('content')
+<x-app-layout>
 
 @guest
 <div class="alert alert-warning">
@@ -189,4 +185,4 @@ function changePerPage(newPerPage) {
 </script>
 @endpush
 
-@endsection
+</x-app-layout>
