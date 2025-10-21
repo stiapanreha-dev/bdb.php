@@ -64,7 +64,7 @@ class CompanyController extends Controller
             );
         }
 
-        return view('companies.index', [
+        $viewData = [
             'companies' => $result['data'],
             'total' => $result['total'],
             'rubrics' => $rubrics,
@@ -79,7 +79,15 @@ class CompanyController extends Controller
             'show_masked_phone' => $showMaskedData,
             'page' => $page,
             'per_page' => $perPage,
+        ];
+
+        \Log::info('CompanyController: Returning view with data', [
+            'companies_count' => count($result['data']),
+            'rubrics_count' => count($rubrics),
+            'cities_count' => count($cities),
         ]);
+
+        return view('companies.index', $viewData);
     }
 
     /**
