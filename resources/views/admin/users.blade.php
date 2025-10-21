@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Управление пользователями - Business database')
-
-@section('content')
+<x-app-layout>
 <div class="row mb-3">
     <div class="col-md-12">
         <h2>Управление пользователями</h2>
@@ -85,4 +81,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-app-layout>
