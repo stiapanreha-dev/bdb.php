@@ -146,10 +146,6 @@
             </div>
         @endif
 
-        @php
-            \Log::info('app-layout: Rendering $slot, length=' . strlen($slot));
-        @endphp
-
         {{ $slot }}
     </div>
 

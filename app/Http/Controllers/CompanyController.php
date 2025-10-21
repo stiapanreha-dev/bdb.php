@@ -16,9 +16,6 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
-        \Log::info('=== CompanyController::index called ===');
-        \Log::info('User: ' . (Auth::check() ? Auth::user()->email : 'NOT AUTHENTICATED'));
-
         // Validate and get per_page parameter
         $perPage = $this->getPerPage($request);
         $page = max(1, (int) $request->get('page', 1));
@@ -52,9 +49,6 @@ class CompanyController extends Controller
             $offset
         );
 
-        // DEBUG: Log the result
-        \Log::info('CompanyController: Got ' . count($result['data']) . ' companies, total=' . $result['total'] . ', hasFullAccess=' . ($hasFullAccess ? 'YES' : 'NO'));
-
         // Apply data masking
         if ($showMaskedData) {
             $result['data'] = DataMaskingHelper::applyMasking(
@@ -64,7 +58,7 @@ class CompanyController extends Controller
             );
         }
 
-        $viewData = [
+        return view('companies.index', [
             'companies' => $result['data'],
             'total' => $result['total'],
             'rubrics' => $rubrics,
@@ -79,15 +73,7 @@ class CompanyController extends Controller
             'show_masked_phone' => $showMaskedData,
             'page' => $page,
             'per_page' => $perPage,
-        ];
-
-        \Log::info('CompanyController: Returning view with data', [
-            'companies_count' => count($result['data']),
-            'rubrics_count' => count($rubrics),
-            'cities_count' => count($cities),
         ]);
-
-        return view('companies.index', $viewData);
     }
 
     /**
