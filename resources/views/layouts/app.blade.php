@@ -136,8 +136,7 @@
             </div>
         @endif
 
-        @yield('content')
-        {{ $slot ?? '' }}
+        {{ $slot }}
     </div>
 
     <!-- Footer -->
