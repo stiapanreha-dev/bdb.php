@@ -45,7 +45,7 @@
         </div>
         <div class="mt-2">
             @php
-                $daysLeft = now()->diffInDays($activeSubscription->expires_at, false);
+                $daysLeft = (int) now()->diffInDays($activeSubscription->expires_at, false);
             @endphp
             @if($daysLeft > 0)
                 <span class="badge bg-info">Осталось {{ $daysLeft }} дней</span>
