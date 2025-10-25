@@ -62,6 +62,20 @@
                 </ul>
                 <div class="d-flex align-items-center">
                     @auth
+                        @php
+                            $activeSubscription = auth()->user()->activeSubscription;
+                        @endphp
+                        @if($activeSubscription)
+                            <a href="{{ route('subscriptions.index') }}" class="text-white text-decoration-none me-3">
+                                <span class="badge bg-success">
+                                    {{ $activeSubscription->tariff->name }} до {{ $activeSubscription->expires_at->format('d.m.Y') }}
+                                </span>
+                            </a>
+                        @else
+                            <a href="{{ route('subscriptions.index') }}" class="btn btn-warning btn-sm me-3">
+                                Выбрать тариф
+                            </a>
+                        @endif
                         <span class="text-white me-3">
                             <i class="bi bi-wallet2"></i> {{ number_format(auth()->user()->balance, 2) }} ₽
                         </span>
@@ -83,6 +97,7 @@
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.users') }}">Управление пользователями</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.ideas') }}">Модерация идей</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.tariffs.index') }}">Управление тарифами</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
                                 @endif
                             </ul>

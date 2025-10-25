@@ -83,6 +83,24 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::delete('/ideas/{idea}', [App\Http\Controllers\AdminController::class, 'deleteIdea'])->name('admin.ideas.delete');
 
     Route::get('/sql', [App\Http\Controllers\AdminController::class, 'sql'])->name('admin.sql');
+
+    // Tariff management routes
+    Route::resource('tariffs', App\Http\Controllers\Admin\TariffController::class)->names([
+        'index' => 'admin.tariffs.index',
+        'create' => 'admin.tariffs.create',
+        'store' => 'admin.tariffs.store',
+        'show' => 'admin.tariffs.show',
+        'edit' => 'admin.tariffs.edit',
+        'update' => 'admin.tariffs.update',
+        'destroy' => 'admin.tariffs.destroy',
+    ]);
+});
+
+// Subscription routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/subscriptions', [App\Http\Controllers\SubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::post('/subscriptions/{tariff}/subscribe', [App\Http\Controllers\SubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
+    Route::get('/subscriptions/history', [App\Http\Controllers\SubscriptionController::class, 'history'])->name('subscriptions.history');
 });
 
 // Payment routes (stubs)
