@@ -1,0 +1,45 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Ubuntu Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /home/alex/businessdb
+
+            echo "=== Pulling latest changes ==="
+            git pull origin main
+
+            echo "=== Installing/updating dependencies ==="
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            echo "=== Running migrations ==="
+            php artisan migrate --force
+
+            echo "=== Clearing caches ==="
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan cache:clear
+
+            echo "=== Restarting PHP-FPM ==="
+            sudo systemctl restart php8.3-fpm
+
+            echo "=== Deployment completed successfully ==="
