@@ -32,7 +32,7 @@ class CompanyController extends Controller
         $cities = $this->getCities();
 
         // Determine access level and masking
-        $hasFullAccess = Auth::user()->hasPositiveBalance() || Auth::user()->isAdmin();
+        $hasFullAccess = Auth::user()->hasActiveSubscription() || Auth::user()->isAdmin();
         $showMaskedData = !$hasFullAccess;
 
         // Pagination
@@ -120,7 +120,7 @@ class CompanyController extends Controller
         $company = (array) $company;
 
         // Determine masking
-        $showMaskedData = !(Auth::user()->hasPositiveBalance() || Auth::user()->isAdmin());
+        $showMaskedData = !(Auth::user()->hasActiveSubscription() || Auth::user()->isAdmin());
 
         // Apply masking
         if ($showMaskedData) {

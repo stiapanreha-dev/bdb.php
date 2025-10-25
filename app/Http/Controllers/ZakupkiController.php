@@ -53,8 +53,8 @@ class ZakupkiController extends Controller
             $restrictToIds = $this->getTop50Ids();
             $hasFullAccess = false;
             $showMaskedData = true;
-        } elseif (Auth::user()->hasPositiveBalance() || Auth::user()->isAdmin()) {
-            // Paid users or admin: full access, unmasked data
+        } elseif (Auth::user()->hasActiveSubscription() || Auth::user()->isAdmin()) {
+            // Subscribed users or admin: full access, unmasked data
             $limit = $perPage;
             $offset = ($page - 1) * $perPage;
             $hasFullAccess = true;
@@ -127,7 +127,7 @@ class ZakupkiController extends Controller
         $specifications = $this->getSpecifications($id);
 
         // Determine masking
-        $showMaskedData = !(Auth::check() && (Auth::user()->hasPositiveBalance() || Auth::user()->isAdmin()));
+        $showMaskedData = !(Auth::check() && (Auth::user()->hasActiveSubscription() || Auth::user()->isAdmin()));
 
         // Apply masking
         if ($showMaskedData) {
