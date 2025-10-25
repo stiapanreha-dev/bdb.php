@@ -39,5 +39,7 @@ jobs:
             php artisan view:clear
             php artisan cache:clear
 
+            echo "=== Restarting PHP-FPM ==="
+            sudo systemctl restart php8.3-fpm
+
             echo "=== Deployment completed successfully ==="
-            echo "Note: PHP-FPM restart requires manual intervention or sudoers configuration"
