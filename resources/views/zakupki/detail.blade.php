@@ -40,7 +40,7 @@
                                                 @if($zakupka['start_cost_var'])
                                                     {{ $zakupka['start_cost_var'] }}
                                                 @elseif($zakupka['start_cost'])
-                                                    {{ number_format($zakupka['start_cost'], 2, '.', ',') }}
+                                                    {{ number_format((float)$zakupka['start_cost'], 2, '.', ',') }}
                                                 @else
                                                     Не указана
                                                 @endif
@@ -148,7 +148,7 @@
                                     <td>{{ $spec['quantity'] ?? '-' }}</td>
                                     <td>
                                         @if(isset($spec['price_vat']) && $spec['price_vat'])
-                                            {{ number_format($spec['price_vat'], 2, '.', ',') }}
+                                            {{ number_format((float)$spec['price_vat'], 2, '.', ',') }}
                                         @else
                                             -
                                         @endif
