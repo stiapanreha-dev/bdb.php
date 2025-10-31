@@ -238,12 +238,14 @@ class ZakupkiController extends Controller
 
         // Apply search filter
         if ($searchText) {
-            $searchCallback = function ($q) use ($searchText) {
+            $query->where(function ($q) use ($searchText) {
                 $q->where('z.purchase_object', 'like', "%{$searchText}%")
                   ->orWhere('z.customer', 'like', "%{$searchText}%");
-            };
-            $query->where($searchCallback);
-            $countQuery->where($searchCallback);
+            });
+            $countQuery->where(function ($q) use ($searchText) {
+                $q->where('z.purchase_object', 'like', "%{$searchText}%")
+                  ->orWhere('z.customer', 'like', "%{$searchText}%");
+            });
         }
 
         // Get total count
