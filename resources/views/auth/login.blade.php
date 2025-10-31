@@ -54,6 +54,10 @@
                         @enderror
                     </div>
 
+                    <div class="mb-3 text-end">
+                        <a href="{{ route('password.request') }}" class="text-decoration-none">Забыли пароль?</a>
+                    </div>
+
                     <button type="submit" class="btn btn-primary w-100">Войти</button>
                 </form>
 
