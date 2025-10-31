@@ -208,6 +208,7 @@ class ZakupkiController extends Controller
                 'z.post_address as address',
                 'z.purchase_type',
             ])
+            ->orderBy('z.created', 'desc')
             ->orderBy('z.id', 'desc');
 
         $countQuery = DB::connection('mssql')->table('zakupki as z');
@@ -296,6 +297,7 @@ class ZakupkiController extends Controller
     {
         $results = DB::connection('mssql')->table('zakupki')
             ->select('id')
+            ->orderBy('created', 'desc')
             ->orderBy('id', 'desc')
             ->limit(50)
             ->get();
