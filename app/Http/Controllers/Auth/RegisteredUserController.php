@@ -55,7 +55,7 @@ class RegisteredUserController extends Controller
 
         // Send password email
         $emailService = new EmailService();
-        $emailService->sendPasswordEmail($user->email, $user->name, $password);
+        $passwordEmailSent = $emailService->sendPasswordEmail($user->email, $user->name, $password);
 
         // Create email verification code
         $emailCode = EmailVerification::generateCode();
@@ -68,14 +68,28 @@ class RegisteredUserController extends Controller
         ]);
 
         // Send email verification code
-        $emailService->sendVerificationCode($user->email, $emailCode);
+        $verificationEmailSent = $emailService->sendVerificationCode($user->email, $emailCode);
 
         event(new Registered($user));
 
         // Login user but redirect to email verification
         Auth::login($user);
 
+        // Prepare success message with warnings if emails failed
+        $message = 'Регистрация успешна!';
+        if (!$passwordEmailSent || !$verificationEmailSent) {
+            $message .= ' Внимание: возникли проблемы с отправкой email. ';
+            if (!$passwordEmailSent) {
+                $message .= 'Ваш пароль: ' . $password . '. Сохраните его! ';
+            }
+            if (!$verificationEmailSent) {
+                $message .= 'Код подтверждения: ' . $emailCode . '.';
+            }
+        } else {
+            $message .= ' Проверьте ваш email для подтверждения.';
+        }
+
         return redirect()->route('verification.email')
-            ->with('success', 'Регистрация успешна! Проверьте ваш email для подтверждения.');
+            ->with('success', $message);
     }
 }
