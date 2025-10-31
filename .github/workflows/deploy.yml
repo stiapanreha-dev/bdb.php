@@ -36,11 +36,8 @@ jobs:
             echo "=== Fixing PostgreSQL sequences ==="
             php artisan db:fix-sequences
 
-            echo "=== Clearing caches ==="
-            php artisan config:clear
-            php artisan route:clear
-            php artisan view:clear
-            php artisan cache:clear
+            echo "=== Clearing all caches (including opcache) ==="
+            php artisan optimize:clear
 
             echo "=== Restarting PHP-FPM ==="
             sudo systemctl restart php8.3-fpm
