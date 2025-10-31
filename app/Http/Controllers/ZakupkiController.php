@@ -225,17 +225,17 @@ class ZakupkiController extends Controller
             }
         }
 
-        // Apply date filters (convert Carbon to string for SQL Server)
+        // Apply date filters (use CAST for SQL Server datetime comparison)
         if ($dateFrom) {
             $dateFromStr = $dateFrom->format('Y-m-d H:i:s');
-            $query->where('z.created', '>=', $dateFromStr);
-            $countQuery->where('z.created', '>=', $dateFromStr);
+            $query->whereRaw("z.created >= CAST(? AS DATETIME)", [$dateFromStr]);
+            $countQuery->whereRaw("z.created >= CAST(? AS DATETIME)", [$dateFromStr]);
         }
 
         if ($dateTo) {
             $dateToStr = $dateTo->format('Y-m-d H:i:s');
-            $query->where('z.created', '<=', $dateToStr);
-            $countQuery->where('z.created', '<=', $dateToStr);
+            $query->whereRaw("z.created <= CAST(? AS DATETIME)", [$dateToStr]);
+            $countQuery->whereRaw("z.created <= CAST(? AS DATETIME)", [$dateToStr]);
         }
 
         // Apply search filter
