@@ -110,8 +110,8 @@ class AdminController extends Controller
             'connection' => 'required|string|in:pgsql,mssql,mssql_2020,mssql_2021,mssql_2022,mssql_2023,mssql_2024,mssql_2025,mssql_2026,mssql_cp1251',
         ]);
 
-        $query = trim($request->query);
-        $connection = $request->connection;
+        $query = trim($request->input('query'));
+        $connection = $request->input('connection');
 
         // Security: Block dangerous operations
         $dangerousKeywords = [
