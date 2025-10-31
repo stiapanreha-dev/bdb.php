@@ -83,6 +83,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::delete('/ideas/{idea}', [App\Http\Controllers\AdminController::class, 'deleteIdea'])->name('admin.ideas.delete');
 
     Route::get('/sql', [App\Http\Controllers\AdminController::class, 'sql'])->name('admin.sql');
+    Route::post('/sql/execute', [App\Http\Controllers\AdminController::class, 'executeQuery'])->name('admin.sql.execute');
 
     // Tariff management routes
     Route::resource('tariffs', App\Http\Controllers\Admin\TariffController::class)->names([

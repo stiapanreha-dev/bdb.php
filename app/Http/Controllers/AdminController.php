@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Idea;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -96,5 +97,75 @@ class AdminController extends Controller
     public function sql()
     {
         return view('admin.sql');
+    }
+
+    /**
+     * Execute SQL query.
+     */
+    public function executeQuery(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'query' => 'required|string|max:10000',
+            'connection' => 'required|string|in:pgsql,mssql,mssql_2020,mssql_2021,mssql_2022,mssql_2023,mssql_2024,mssql_2025,mssql_2026,mssql_cp1251',
+        ]);
+
+        $query = trim($request->query);
+        $connection = $request->connection;
+
+        // Security: Block dangerous operations
+        $dangerousKeywords = [
+            'DROP', 'TRUNCATE', 'DELETE', 'UPDATE', 'INSERT', 'ALTER', 'CREATE',
+            'GRANT', 'REVOKE', 'EXEC', 'EXECUTE', 'sp_', 'xp_'
+        ];
+
+        $upperQuery = strtoupper($query);
+        foreach ($dangerousKeywords as $keyword) {
+            if (strpos($upperQuery, $keyword) !== false) {
+                return redirect()->route('admin.sql')
+                    ->with('error', "Запрещенная операция: {$keyword}. Разрешены только SELECT запросы.");
+            }
+        }
+
+        // Execute query with timeout and limit
+        try {
+            $startTime = microtime(true);
+
+            // Set query timeout (10 seconds)
+            if (str_starts_with($connection, 'mssql')) {
+                DB::connection($connection)->statement('SET LOCK_TIMEOUT 10000');
+            }
+
+            // Execute query with limit
+            $results = DB::connection($connection)
+                ->select($query);
+
+            $executionTime = round((microtime(true) - $startTime) * 1000, 2);
+
+            // Limit results to 1000 rows
+            if (count($results) > 1000) {
+                $results = array_slice($results, 0, 1000);
+                $limitWarning = 'Показаны первые 1000 строк из ' . count($results) . ' результатов';
+            } else {
+                $limitWarning = null;
+            }
+
+            // Convert stdClass to array for easier display
+            $results = array_map(fn($row) => (array) $row, $results);
+
+            return view('admin.sql', [
+                'results' => $results,
+                'query' => $query,
+                'connection' => $connection,
+                'executionTime' => $executionTime,
+                'rowCount' => count($results),
+                'limitWarning' => $limitWarning,
+            ]);
+
+        } catch (\Exception $e) {
+            return redirect()->route('admin.sql')
+                ->with('error', 'Ошибка выполнения запроса: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 }
