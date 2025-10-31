@@ -15,7 +15,7 @@ class SubscriptionController extends Controller
     public function index()
     {
         $tariffs = Tariff::active()->orderBy('duration_days')->get();
-        $activeSubscription = auth()->user()->activeSubscription;
+        $activeSubscription = auth()->check() ? auth()->user()->activeSubscription : null;
 
         return view('subscriptions.index', compact('tariffs', 'activeSubscription'));
     }

@@ -10,7 +10,7 @@ Route::get('/', [ZakupkiController::class, 'index'])->name('home');
 
 // Zakupki routes
 Route::get('/zakupki', [ZakupkiController::class, 'index'])->name('zakupki.index');
-Route::get('/zakupki/{id}', [ZakupkiController::class, 'show'])->middleware('auth')->name('zakupki.show');
+Route::get('/zakupki/{id}', [ZakupkiController::class, 'show'])->name('zakupki.show');
 Route::get('/zakupki/export', [ZakupkiController::class, 'export'])->middleware('auth')->name('zakupki.export');
 
 // Companies routes (authentication required)
@@ -98,8 +98,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 });
 
 // Subscription routes
+Route::get('/subscriptions', [App\Http\Controllers\SubscriptionController::class, 'index'])->name('subscriptions.index');
 Route::middleware(['auth'])->group(function () {
-    Route::get('/subscriptions', [App\Http\Controllers\SubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::post('/subscriptions/{tariff}/subscribe', [App\Http\Controllers\SubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
     Route::get('/subscriptions/history', [App\Http\Controllers\SubscriptionController::class, 'history'])->name('subscriptions.history');
 });

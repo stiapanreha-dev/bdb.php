@@ -57,11 +57,19 @@
 </div>
 @endif
 
+@auth
 <div class="card mb-3">
     <div class="card-header">
         <h5>Ваш баланс: <strong>{{ number_format(auth()->user()->balance, 2, '.', ' ') }} руб</strong></h5>
     </div>
 </div>
+@else
+<div class="alert alert-info">
+    <strong>Войдите в систему</strong>, чтобы оформить подписку.
+    <a href="{{ route('login') }}" class="alert-link">Войти</a> или
+    <a href="{{ route('register') }}" class="alert-link">Зарегистрироваться</a>
+</div>
+@endauth
 
 <div class="row">
     @foreach($tariffs as $tariff)
@@ -89,6 +97,7 @@
                     <li>✓ Без ограничений</li>
                 </ul>
 
+                @auth
                 <form method="POST" action="{{ route('subscriptions.subscribe', $tariff) }}" class="mt-3">
                     @csrf
                     <button type="submit" 
@@ -103,6 +112,11 @@
                         @endif
                     </button>
                 </form>
+                @else
+                <a href="{{ route('login') }}" class="btn btn-primary w-100 mt-3">
+                    Войти для оформления
+                </a>
+                @endauth
             </div>
         </div>
     </div>
@@ -115,9 +129,11 @@
 </div>
 @endif
 
+@auth
 <div class="mt-3">
     <a href="{{ route('subscriptions.history') }}" class="btn btn-outline-secondary">
         История подписок
     </a>
 </div>
+@endauth
 </x-app-layout>
