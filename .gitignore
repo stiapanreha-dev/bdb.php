@@ -36,3 +36,8 @@ query
 CLAUDE.md
 MIGRATION_STATUS.md
 README_MIGRATION.md
+
+# Database backups
+prod-database.sqlite
+*.sqlite.backup
+database.sqlite.backup
