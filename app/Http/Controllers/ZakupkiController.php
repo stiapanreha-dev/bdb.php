@@ -225,17 +225,17 @@ class ZakupkiController extends Controller
             }
         }
 
-        // Apply date filters (use CAST for SQL Server datetime comparison)
+        // Apply date filters (simple string comparison for SQL Server)
         if ($dateFrom) {
-            $dateFromStr = $dateFrom->format('Y-m-d H:i:s');
-            $query->whereRaw("z.created >= CAST(? AS DATETIME)", [$dateFromStr]);
-            $countQuery->whereRaw("z.created >= CAST(? AS DATETIME)", [$dateFromStr]);
+            $dateFromStr = $dateFrom->format('Y-m-d');
+            $query->whereRaw("CONVERT(DATE, z.created) >= ?", [$dateFromStr]);
+            $countQuery->whereRaw("CONVERT(DATE, z.created) >= ?", [$dateFromStr]);
         }
 
         if ($dateTo) {
-            $dateToStr = $dateTo->format('Y-m-d H:i:s');
-            $query->whereRaw("z.created <= CAST(? AS DATETIME)", [$dateToStr]);
-            $countQuery->whereRaw("z.created <= CAST(? AS DATETIME)", [$dateToStr]);
+            $dateToStr = $dateTo->format('Y-m-d');
+            $query->whereRaw("CONVERT(DATE, z.created) <= ?", [$dateToStr]);
+            $countQuery->whereRaw("CONVERT(DATE, z.created) <= ?", [$dateToStr]);
         }
 
         // Apply search filter
