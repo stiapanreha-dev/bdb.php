@@ -48,7 +48,7 @@ Route::get('/invite', function () {
 })->name('invite');
 
 Route::get('/support', function () {
-    return '<h1>Поддержка</h1><p>Страница в разработке</p>';
+    return view('static.support');
 })->name('support');
 
 // Static pages
