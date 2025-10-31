@@ -225,15 +225,17 @@ class ZakupkiController extends Controller
             }
         }
 
-        // Apply date filters
+        // Apply date filters (convert Carbon to string for SQL Server)
         if ($dateFrom) {
-            $query->where('z.created', '>=', $dateFrom);
-            $countQuery->where('z.created', '>=', $dateFrom);
+            $dateFromStr = $dateFrom->format('Y-m-d H:i:s');
+            $query->where('z.created', '>=', $dateFromStr);
+            $countQuery->where('z.created', '>=', $dateFromStr);
         }
 
         if ($dateTo) {
-            $query->where('z.created', '<=', $dateTo);
-            $countQuery->where('z.created', '<=', $dateTo);
+            $dateToStr = $dateTo->format('Y-m-d H:i:s');
+            $query->where('z.created', '<=', $dateToStr);
+            $countQuery->where('z.created', '<=', $dateToStr);
         }
 
         // Apply search filter
