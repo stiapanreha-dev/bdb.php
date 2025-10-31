@@ -1,0 +1,14 @@
+{
+    "Reset Password Notification": "Восстановление пароля",
+    "Hello!": "Здравствуйте!",
+    "You are receiving this email because we received a password reset request for your account.": "Вы получили это письмо, потому что мы получили запрос на восстановление пароля для вашей учетной записи.",
+    "Reset Password": "Восстановить пароль",
+    "This password reset link will expire in :count minutes.": "Эта ссылка для восстановления пароля действительна :count минут.",
+    "If you did not request a password reset, no further action is required.": "Если вы не запрашивали восстановление пароля, никаких дальнейших действий не требуется.",
+    "Regards": "С уважением",
+    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Если у вас возникли проблемы с нажатием кнопки \":actionText\", скопируйте и вставьте URL ниже в ваш браузер:",
+    "Whoops!": "Упс!",
+    "All rights reserved.": "Все права защищены.",
+    "We have emailed your password reset link.": "Мы отправили вам ссылку для восстановления пароля на email.",
+    "We have emailed your password reset link!": "Мы отправили вам ссылку для восстановления пароля на email!"
+}
