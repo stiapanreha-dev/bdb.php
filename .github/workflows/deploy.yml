@@ -33,6 +33,9 @@ jobs:
             echo "=== Running migrations ==="
             php artisan migrate --force
 
+            echo "=== Fixing PostgreSQL sequences ==="
+            php artisan db:fix-sequences
+
             echo "=== Clearing caches ==="
             php artisan config:clear
             php artisan route:clear
