@@ -38,18 +38,30 @@
                 <form method="POST" action="{{ route('admin.ideas.update-status', $idea) }}" class="d-inline">
                     @csrf
                     <div class="btn-group" role="group">
-                        <button type="submit" name="status" value="pending" class="btn btn-sm btn-warning">
-                            На рассмотрении
-                        </button>
-                        <button type="submit" name="status" value="approved" class="btn btn-sm btn-success">
-                            Одобрить
-                        </button>
-                        <button type="submit" name="status" value="rejected" class="btn btn-sm btn-secondary">
-                            Отклонить
-                        </button>
+                        @if($idea->status === 'pending')
+                            <button type="submit" name="status" value="approved" class="btn btn-sm btn-success">
+                                Одобрить
+                            </button>
+                            <button type="submit" name="status" value="rejected" class="btn btn-sm btn-secondary">
+                                Отклонить
+                            </button>
+                        @else
+                            <button type="submit" name="status" value="pending" class="btn btn-sm btn-warning">
+                                Отменить (вернуть на рассмотрение)
+                            </button>
+                            @if($idea->status === 'rejected')
+                                <button type="submit" name="status" value="approved" class="btn btn-sm btn-success">
+                                    Одобрить
+                                </button>
+                            @elseif($idea->status === 'approved')
+                                <button type="submit" name="status" value="rejected" class="btn btn-sm btn-secondary">
+                                    Отклонить
+                                </button>
+                            @endif
+                        @endif
                     </div>
                 </form>
-                <form method="POST" action="{{ route('admin.ideas.delete', $idea) }}" class="d-inline" 
+                <form method="POST" action="{{ route('admin.ideas.delete', $idea) }}" class="d-inline"
                       onsubmit="return confirm('Вы уверены что хотите удалить эту идею?');">
                     @csrf
                     @method('DELETE')
