@@ -112,13 +112,13 @@ class SendNewsletters extends Command
         // Collect zakupki
         $allZakupki = [];
         foreach ($keywords as $keywordRow) {
-            $keywordsList = $keywordRow->getKeywordsArray();
-            if (empty($keywordsList)) {
+            $keywordString = trim($keywordRow->keywords);
+            if (empty($keywordString)) {
                 continue;
             }
 
             $zakupki = $this->getZakupkiByKeywords(
-                $keywordsList,
+                $keywordString,
                 $dateFrom,
                 $dateTo
             );
@@ -204,7 +204,7 @@ class SendNewsletters extends Command
      * Get zakupki by keywords.
      */
     private function getZakupkiByKeywords(
-        array $keywords,
+        string $keywords,
         Carbon $dateFrom,
         Carbon $dateTo
     ): array {
@@ -223,12 +223,7 @@ class SendNewsletters extends Command
             ])
             ->whereRaw("z.created >= ?", [$dateFrom->format('Y-m-d H:i:s')])
             ->whereRaw("z.created <= ?", [$dateTo->format('Y-m-d H:i:s')])
-            ->where(function ($q) use ($keywords) {
-                foreach ($keywords as $keyword) {
-                    $q->orWhere('z.purchase_object', 'like', "%{$keyword}%")
-                      ->orWhere('z.customer', 'like', "%{$keyword}%");
-                }
-            })
+            ->where('z.purchase_object', 'like', "%{$keywords}%")
             ->orderBy('z.created', 'desc')
             ->limit(1000)  // Limit to 1000 per keyword set
             ->get()
