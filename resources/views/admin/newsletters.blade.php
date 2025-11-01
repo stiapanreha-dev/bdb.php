@@ -1,100 +1,100 @@
 <x-app-layout>
 <div class="row mb-3">
     <div class="col-md-12">
-        <h2>!B0B8AB8:0 @0AAK;>:</h2>
-        <p class="text-muted">#?@02;5=85 8 <>=8B>@8=3 2A5E @0AAK;>: ?>;L7>20B5;59</p>
+        <h2>Статистика рассылок</h2>
+        <p class="text-muted">Управление и мониторинг всех рассылок пользователей</p>
     </div>
 </div>
 
-<!-- 1I0O AB0B8AB8:0 -->
+<!-- Общая статистика -->
 <div class="row mb-4">
     <div class="col-md-3">
         <div class="card text-bg-primary">
             <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-white-50">A53> @0AAK;>:</h6>
+                <h6 class="card-subtitle mb-2 text-white-50">Всего рассылок</h6>
                 <h3 class="card-title mb-0">{{ $stats['total_newsletters'] }}</h3>
-                <small class="text-white-50">:B82=KE: {{ $stats['active_newsletters'] }}</small>
+                <small class="text-white-50">Активных: {{ $stats['active_newsletters'] }}</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card text-bg-success">
             <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-white-50">B?@02;5=> A53>4=O</h6>
+                <h6 class="card-subtitle mb-2 text-white-50">Отправлено сегодня</h6>
                 <h3 class="card-title mb-0">{{ $stats['total_sent_today'] }}</h3>
-                <small class="text-white-50">@0AAK;>:</small>
+                <small class="text-white-50">рассылок</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card text-bg-info">
             <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-white-50">A53> >B?@02;5=></h6>
+                <h6 class="card-subtitle mb-2 text-white-50">Всего отправлено</h6>
                 <h3 class="card-title mb-0">{{ $stats['total_logs'] }}</h3>
-                <small class="text-white-50">0:C?>:: {{ number_format($stats['total_zakupki_sent']) }}</small>
+                <small class="text-white-50">Закупок: {{ number_format($stats['total_zakupki_sent']) }}</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card text-bg-warning">
             <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-white-50">AB5:H85 ?>4?8A:8</h6>
+                <h6 class="card-subtitle mb-2 text-white-50">Истекшие подписки</h6>
                 <h3 class="card-title mb-0">{{ $stats['expired_subscriptions'] }}</h3>
-                <small class="text-white-50">H81>:: {{ $stats['failed_logs'] }}</small>
+                <small class="text-white-50">Ошибок: {{ $stats['failed_logs'] }}</small>
             </div>
         </div>
     </div>
 </div>
 
-<!-- $8;LB@K -->
+<!-- Фильтры -->
 <div class="card mb-3">
     <div class="card-body">
         <form method="GET" action="{{ route('admin.newsletters') }}">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label for="status" class="form-label">!B0BCA @0AAK;:8</label>
+                    <label for="status" class="form-label">Статус рассылки</label>
                     <select name="status" id="status" class="form-select">
-                        <option value="">A5 @0AAK;:8</option>
-                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>:B82=K5</option>
-                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>50:B82=K5</option>
-                        <option value="valid" {{ request('status') === 'valid' ? 'selected' : '' }}>! 459AB2CNI59 ?>4?8A:>9</option>
-                        <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>! 8AB5:H59 ?>4?8A:>9</option>
+                        <option value="">Все рассылки</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Активные</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Неактивные</option>
+                        <option value="valid" {{ request('status') === 'valid' ? 'selected' : '' }}>С действующей подпиской</option>
+                        <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>С истекшей подпиской</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label for="user_search" class="form-label">>;L7>20B5;L</label>
+                    <label for="user_search" class="form-label">Пользователь</label>
                     <input type="text"
                            name="user_search"
                            id="user_search"
                            class="form-control"
-                           placeholder="<O 8;8 email"
+                           placeholder="Имя или email"
                            value="{{ request('user_search') }}">
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">@8<5=8BL</button>
-                    <a href="{{ route('admin.newsletters') }}" class="btn btn-secondary">!1@>A8BL</a>
+                    <button type="submit" class="btn btn-primary me-2">Применить</button>
+                    <a href="{{ route('admin.newsletters') }}" class="btn btn-secondary">Сбросить</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<!-- "01;8F0 @0AAK;>: -->
+<!-- Таблица рассылок -->
 <div class="card mb-4">
     <div class="card-body">
-        <h5 class="mb-3">!?8A>: @0AAK;>:</h5>
+        <h5 class="mb-3">Список рассылок</h5>
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>>;L7>20B5;L</th>
-                        <th>Email @0AAK;:8</th>
-                        <th>!B0BCA</th>
-                        <th>>4?8A:0 4></th>
-                        <th>;NG52K5 A;>20</th>
-                        <th>>A;54=OO >B?@02:0</th>
-                        <th>!>740=0</th>
+                        <th>Пользователь</th>
+                        <th>Email рассылки</th>
+                        <th>Статус</th>
+                        <th>Подписка до</th>
+                        <th>Ключевые слова</th>
+                        <th>Последняя отправка</th>
+                        <th>Создана</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,14 +109,14 @@
                             @if($newsletter->email)
                                 <code>{{ $newsletter->email }}</code>
                             @else
-                                <span class="text-muted">> C<>;G0=8N</span>
+                                <span class="text-muted">По умолчанию</span>
                             @endif
                         </td>
                         <td>
                             @if($newsletter->is_active)
-                                <span class="badge bg-success">:B82=0</span>
+                                <span class="badge bg-success">Активна</span>
                             @else
-                                <span class="badge bg-secondary">50:B82=0</span>
+                                <span class="badge bg-secondary">Неактивна</span>
                             @endif
                         </td>
                         <td>
@@ -127,7 +127,7 @@
                                     <span class="badge bg-success">{{ $newsletter->subscription_ends_at->format('d.m.Y') }}</span>
                                 @endif
                             @else
-                                <span class="text-muted">5 C:070=0</span>
+                                <span class="text-muted">Не указана</span>
                             @endif
                         </td>
                         <td>
@@ -141,14 +141,14 @@
                                     @endif
                                 </small>
                             @else
-                                <span class="text-muted">5B</span>
+                                <span class="text-muted">Нет</span>
                             @endif
                         </td>
                         <td>
                             @if($newsletter->last_sent_at)
                                 {{ $newsletter->last_sent_at->format('d.m.Y H:i') }}
                             @else
-                                <span class="text-muted">5 >B?@02;O;0AL</span>
+                                <span class="text-muted">Не отправлялась</span>
                             @endif
                         </td>
                         <td>{{ $newsletter->created_at->format('d.m.Y') }}</td>
@@ -156,7 +156,7 @@
                     @empty
                     <tr>
                         <td colspan="8" class="text-center py-4">
-                            <p class="text-muted mb-0"> 0AAK;>: =5 =0945=></p>
+                            <p class="text-muted mb-0">Рассылок не найдено</p>
                         </td>
                     </tr>
                     @endforelse
@@ -170,20 +170,20 @@
     </div>
 </div>
 
-<!-- >A;54=85 >B?@02:8 -->
+<!-- Последние отправки -->
 <div class="card">
     <div class="card-body">
-        <h5 class="mb-3">>A;54=85 >B?@02:8 (30 4=59)</h5>
+        <h5 class="mb-3">Последние отправки (30 дней)</h5>
         <div class="table-responsive">
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
-                        <th>0B0 >B?@02:8</th>
-                        <th>>;L7>20B5;L</th>
+                        <th>Дата отправки</th>
+                        <th>Пользователь</th>
                         <th>Email</th>
-                        <th>0:C?>: 2 ?8AL<5</th>
-                        <th>!B0BCA</th>
-                        <th>H81:0</th>
+                        <th>Закупок в письме</th>
+                        <th>Статус</th>
+                        <th>Ошибка</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -201,9 +201,9 @@
                         </td>
                         <td>
                             @if($log->status === 'sent')
-                                <span class="badge bg-success">B?@02;5=></span>
+                                <span class="badge bg-success">Отправлено</span>
                             @elseif($log->status === 'failed')
-                                <span class="badge bg-danger">H81:0</span>
+                                <span class="badge bg-danger">Ошибка</span>
                             @else
                                 <span class="badge bg-secondary">{{ $log->status }}</span>
                             @endif
@@ -219,7 +219,7 @@
                     @empty
                     <tr>
                         <td colspan="6" class="text-center py-4">
-                            <p class="text-muted mb-0">5B >B?@02>: 70 ?>A;54=85 30 4=59</p>
+                            <p class="text-muted mb-0">Нет отправок за последние 30 дней</p>
                         </td>
                     </tr>
                     @endforelse
