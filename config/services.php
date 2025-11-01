@@ -40,4 +40,9 @@ return [
         'from_name' => env('SMSRU_FROM_NAME', ''),
     ],
 
+    'yookassa' => [
+        'shop_id' => env('YOOKASSA_SHOP_ID'),
+        'secret_key' => env('YOOKASSA_SECRET_KEY'),
+    ],
+
 ];

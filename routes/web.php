@@ -114,11 +114,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/subscriptions/history', [App\Http\Controllers\SubscriptionController::class, 'history'])->name('subscriptions.history');
 });
 
-// Payment routes (stubs)
+// Payment routes
 Route::middleware(['auth'])->group(function () {
-    Route::post('/payment/create', function () {
-        return redirect()->back()->with('info', 'Оплата в разработке');
-    })->name('payment.create');
+    Route::post('/payment/create', [App\Http\Controllers\PaymentController::class, 'create'])->name('payment.create');
+    Route::get('/payment/callback', [App\Http\Controllers\PaymentController::class, 'callback'])->name('payment.callback');
+    Route::get('/payment/history', [App\Http\Controllers\PaymentController::class, 'history'])->name('payment.history');
+    Route::get('/payment/status/{paymentId}', [App\Http\Controllers\PaymentController::class, 'status'])->name('payment.status');
 });
+
+// YooKassa webhook (public, no auth)
+Route::post('/payment/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
 
 require __DIR__.'/auth.php';

@@ -62,6 +62,35 @@
     <div class="card-header">
         <h5>Ваш баланс: <strong>{{ number_format(auth()->user()->balance, 2, '.', ' ') }} руб</strong></h5>
     </div>
+    <div class="card-body">
+        <h6>Пополнить баланс</h6>
+        <form method="POST" action="{{ route('payment.create') }}" class="row g-3">
+            @csrf
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="amount">Сумма (руб)</label>
+                    <input type="number"
+                           class="form-control"
+                           id="amount"
+                           name="amount"
+                           min="1"
+                           step="0.01"
+                           value="100"
+                           required>
+                </div>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-success w-100">
+                    Пополнить через ЮKassa
+                </button>
+            </div>
+        </form>
+        <div class="mt-2">
+            <small class="text-muted">
+                Оплата принимается через систему ЮKassa (банковские карты, электронные кошельки)
+            </small>
+        </div>
+    </div>
 </div>
 @else
 <div class="alert alert-info">
@@ -133,6 +162,9 @@
 <div class="mt-3">
     <a href="{{ route('subscriptions.history') }}" class="btn btn-outline-secondary">
         История подписок
+    </a>
+    <a href="{{ route('payment.history') }}" class="btn btn-outline-secondary ms-2">
+        История платежей
     </a>
 </div>
 @endauth
