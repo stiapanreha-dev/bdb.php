@@ -97,6 +97,18 @@
                     </div>
                 </div>
                 @endif
+
+                <div class="mt-3">
+                    <a href="{{ route('subscriptions.index') }}" class="btn btn-outline-primary btn-sm me-2">
+                        Пополнить баланс
+                    </a>
+                    <a href="{{ route('payment.history') }}" class="btn btn-outline-secondary btn-sm me-2">
+                        История платежей
+                    </a>
+                    <a href="{{ route('subscriptions.history') }}" class="btn btn-outline-secondary btn-sm">
+                        История подписок
+                    </a>
+                </div>
             </div>
         </div>
 
