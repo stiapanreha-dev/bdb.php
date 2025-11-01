@@ -1,5 +1,4 @@
 <x-app-layout>
-<x-slot name="slot">
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Рассылки по ключевым словам</h2>
 </div>
@@ -209,5 +208,4 @@ function removeKeywordRow(button) {
 }
 </script>
 @endpush
-</x-slot>
 </x-app-layout>
