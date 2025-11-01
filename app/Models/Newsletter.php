@@ -13,11 +13,13 @@ class Newsletter extends Model
         'is_active',
         'email',
         'last_sent_at',
+        'subscription_ends_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'last_sent_at' => 'datetime',
+        'subscription_ends_at' => 'datetime',
     ];
 
     /**

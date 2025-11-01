@@ -20,6 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ->everyThreeHours()
             ->withoutOverlapping()
             ->runInBackground();
+
+        // Renew expired newsletter subscriptions daily at 00:00
+        $schedule->command('newsletters:renew')
+            ->daily()
+            ->withoutOverlapping()
+            ->runInBackground();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
