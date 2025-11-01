@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Idea;
 use App\Models\NewsletterSetting;
+use App\Models\Payment;
+use App\Models\Newsletter;
+use App\Models\NewsletterLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -203,5 +206,101 @@ class AdminController extends Controller
             return redirect()->route('admin.newsletter-settings')
                 ->with('error', 'Ошибка обновления настроек: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Display list of payments from YooKassa.
+     */
+    public function payments(Request $request)
+    {
+        $query = Payment::with('user');
+
+        // Фильтр по статусу
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Фильтр по пользователю (поиск по имени или email)
+        if ($request->filled('user_search')) {
+            $search = $request->user_search;
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('name', 'ILIKE', "%{$search}%")
+                  ->orWhere('email', 'ILIKE', "%{$search}%");
+            });
+        }
+
+        // Фильтр по датам
+        if ($request->filled('date_from')) {
+            $query->where('created_at', '>=', $request->date_from . ' 00:00:00');
+        }
+        if ($request->filled('date_to')) {
+            $query->where('created_at', '<=', $request->date_to . ' 23:59:59');
+        }
+
+        $payments = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Статистика
+        $stats = [
+            'total_amount' => Payment::where('status', 'succeeded')->sum('amount'),
+            'total_count' => Payment::where('status', 'succeeded')->count(),
+            'pending_count' => Payment::where('status', 'pending')->count(),
+            'canceled_count' => Payment::where('status', 'canceled')->count(),
+        ];
+
+        return view('admin.payments', compact('payments', 'stats'));
+    }
+
+    /**
+     * Display newsletters statistics.
+     */
+    public function newsletters(Request $request)
+    {
+        $query = Newsletter::with(['user', 'keywords']);
+
+        // Фильтр по статусу
+        if ($request->filled('status')) {
+            if ($request->status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->status === 'inactive') {
+                $query->where('is_active', false);
+            } elseif ($request->status === 'expired') {
+                $query->where('subscription_ends_at', '<', now())
+                      ->orWhereNull('subscription_ends_at');
+            } elseif ($request->status === 'valid') {
+                $query->where('subscription_ends_at', '>=', now());
+            }
+        }
+
+        // Фильтр по пользователю
+        if ($request->filled('user_search')) {
+            $search = $request->user_search;
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where('name', 'ILIKE', "%{$search}%")
+                  ->orWhere('email', 'ILIKE', "%{$search}%");
+            });
+        }
+
+        $newsletters = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Общая статистика
+        $stats = [
+            'total_newsletters' => Newsletter::count(),
+            'active_newsletters' => Newsletter::where('is_active', true)->count(),
+            'inactive_newsletters' => Newsletter::where('is_active', false)->count(),
+            'expired_subscriptions' => Newsletter::where('subscription_ends_at', '<', now())->count(),
+            'total_logs' => NewsletterLog::count(),
+            'total_sent_today' => NewsletterLog::whereDate('sent_at', today())->count(),
+            'total_zakupki_sent' => NewsletterLog::sum('zakupki_count'),
+            'failed_logs' => NewsletterLog::where('status', 'failed')->count(),
+        ];
+
+        // Статистика отправок за последние 30 дней
+        $recentLogs = NewsletterLog::with('newsletter.user')
+            ->where('sent_at', '>=', now()->subDays(30))
+            ->orderBy('sent_at', 'desc')
+            ->limit(50)
+            ->get();
+
+        return view('admin.newsletters', compact('newsletters', 'stats', 'recentLogs'));
     }
 }
