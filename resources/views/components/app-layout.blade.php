@@ -1,17 +1,17 @@
-@props(['header' => null])
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Business database</title>
+    <title>@yield('title', 'Business database')</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
 
     <!-- Bootstrap CSS (local) -->
     <link href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -58,12 +58,33 @@
                             Есть идея <span class="badge bg-light text-dark">{{ $ideas_count ?? 0 }}</span>
                         </a>
                     </li>
+                    @auth
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('invite') }}">Пригласи друга</a>
+                        <a class="nav-link" href="{{ route('newsletters.index') }}">
+                            Рассылки
+                        </a>
                     </li>
+                    @endauth
+{{--                    <li class="nav-item">--}}
+{{--                        <a class="nav-link" href="{{ route('invite') }}">Пригласи друга</a>--}}
+{{--                    </li>--}}
                 </ul>
                 <div class="d-flex align-items-center">
                     @auth
+                        @php
+                            $activeSubscription = auth()->user()->activeSubscription;
+                        @endphp
+                        @if($activeSubscription)
+                            <a href="{{ route('subscriptions.index') }}" class="text-white text-decoration-none me-3">
+                                <span class="badge bg-success">
+                                    {{ $activeSubscription->tariff->name }} до {{ $activeSubscription->expires_at->format('d.m.Y') }}
+                                </span>
+                            </a>
+                        @else
+                            <a href="{{ route('subscriptions.index') }}" class="btn btn-warning btn-sm me-3">
+                                Выбрать тариф
+                            </a>
+                        @endif
                         <span class="text-white me-3">
                             <i class="bi bi-wallet2"></i> {{ number_format(auth()->user()->balance, 2) }} ₽
                         </span>
@@ -85,6 +106,7 @@
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.users') }}">Управление пользователями</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.ideas') }}">Модерация идей</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.tariffs.index') }}">Управление тарифами</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
                                 @endif
                             </ul>
@@ -107,14 +129,6 @@
             </div>
         </div>
     </nav>
-
-    @if(isset($header))
-    <header class="bg-white shadow">
-        <div class="container py-3">
-            {{ $header }}
-        </div>
-    </header>
-    @endif
 
     <div class="container mt-4">
         <!-- Flash Messages -->
@@ -158,7 +172,8 @@
                         <a href="{{ route('privacy-policy') }}" class="text-decoration-none me-3">Согласие на обработку персональных данных</a>
                         <a href="{{ route('terms-of-service') }}" class="text-decoration-none me-3">Пользовательское соглашение</a>
                         <a href="{{ route('offer') }}" class="text-decoration-none me-3">Публичная оферта</a>
-                        <a href="{{ route('contacts') }}" class="text-decoration-none">Контакты</a>
+                        <a href="{{ route('contacts') }}" class="text-decoration-none me-3">Контакты</a>
+                        <a href="{{ route('subscriptions.index') }}" class="text-decoration-none">Тарифы</a>
                     </p>
                     <p class="text-muted mb-0">&copy; 2025 Business database. Все права защищены.</p>
                 </div>
