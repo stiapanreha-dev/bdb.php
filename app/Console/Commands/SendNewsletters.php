@@ -6,11 +6,13 @@ use App\Exports\NewsletterExport;
 use App\Mail\NewsletterMail;
 use App\Models\Newsletter;
 use App\Models\NewsletterLog;
+use App\Models\NewsletterSetting;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SendNewsletters extends Command
@@ -35,6 +37,18 @@ class SendNewsletters extends Command
     public function handle(): int
     {
         $this->info('Starting newsletter sending...');
+
+        // Проверка: включена ли рассылка
+        if (!NewsletterSetting::get('send_enabled', true)) {
+            $this->info('Newsletter sending is disabled in settings.');
+            return Command::SUCCESS;
+        }
+
+        // Проверка: прошло ли достаточно времени с последней рассылки
+        if (!$this->shouldRun()) {
+            $this->info('Not enough time passed since last run.');
+            return Command::SUCCESS;
+        }
 
         // Get active newsletters
         $query = Newsletter::with(['user', 'keywords'])
@@ -230,5 +244,28 @@ class SendNewsletters extends Command
             ->toArray();
 
         return array_map(fn($item) => (array) $item, $query);
+    }
+
+    /**
+     * Проверка: нужно ли запускать рассылку сейчас
+     */
+    private function shouldRun(): bool
+    {
+        $interval = NewsletterSetting::get('send_interval_minutes', 180);
+        $lastRun = Cache::get('newsletter_last_run');
+
+        if (!$lastRun) {
+            Cache::put('newsletter_last_run', now(), 60 * 60 * 24); // 24 часа
+            return true;
+        }
+
+        $minutesSinceLastRun = Carbon::parse($lastRun)->diffInMinutes(now());
+
+        if ($minutesSinceLastRun >= $interval) {
+            Cache::put('newsletter_last_run', now(), 60 * 60 * 24);
+            return true;
+        }
+
+        return false;
     }
 }

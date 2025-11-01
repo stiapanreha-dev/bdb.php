@@ -17,15 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {
-        // Send newsletters every 3 hours
+        // Send newsletters hourly (actual interval controlled by settings)
         $schedule->command('newsletters:send')
-            ->everyThreeHours()
+            ->hourly()
             ->withoutOverlapping()
             ->runInBackground();
 
-        // Renew expired newsletter subscriptions daily at 00:00
+        // Renew expired newsletter subscriptions hourly (actual time controlled by settings)
         $schedule->command('newsletters:renew')
-            ->daily()
+            ->hourly()
             ->withoutOverlapping()
             ->runInBackground();
     })

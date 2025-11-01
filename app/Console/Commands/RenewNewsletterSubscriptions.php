@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\Newsletter;
+use App\Models\NewsletterSetting;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -32,6 +34,18 @@ class RenewNewsletterSubscriptions extends Command
     public function handle(): int
     {
         $this->info('Starting newsletter subscription renewal...');
+
+        // Проверка: включено ли автопродление
+        if (!NewsletterSetting::get('renew_enabled', true)) {
+            $this->info('Newsletter renewal is disabled in settings.');
+            return Command::SUCCESS;
+        }
+
+        // Проверка: настало ли нужное время для продления
+        if (!$this->shouldRun()) {
+            $this->info('Not the right time to run renewal.');
+            return Command::SUCCESS;
+        }
 
         // Find active newsletters that need renewal (subscription_ends_at is today or past)
         $newsletters = Newsletter::with('user')
@@ -120,5 +134,20 @@ class RenewNewsletterSubscriptions extends Command
         $this->info(str_repeat('=', 50));
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Проверка: настало ли время для продления (по настройке renew_time)
+     */
+    private function shouldRun(): bool
+    {
+        $renewTime = NewsletterSetting::get('renew_time', '00:00');
+        $currentTime = now()->format('H:i');
+
+        // Проверяем совпадение часа (с точностью до часа)
+        [$renewHour] = explode(':', $renewTime);
+        [$currentHour] = explode(':', $currentTime);
+
+        return $renewHour === $currentHour;
     }
 }

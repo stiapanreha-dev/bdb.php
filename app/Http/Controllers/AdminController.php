@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Idea;
+use App\Models\NewsletterSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -166,6 +167,41 @@ class AdminController extends Controller
             return redirect()->route('admin.sql')
                 ->with('error', 'Ошибка выполнения запроса: ' . $e->getMessage())
                 ->withInput();
+        }
+    }
+
+    /**
+     * Display newsletter settings page.
+     */
+    public function newsletterSettings()
+    {
+        $settings = NewsletterSetting::all();
+
+        return view('admin.newsletter-settings', compact('settings'));
+    }
+
+    /**
+     * Update newsletter settings.
+     */
+    public function updateNewsletterSettings(Request $request)
+    {
+        $request->validate([
+            'send_interval_minutes' => 'required|integer|min:10|max:1440',
+            'renew_time' => 'required|string|regex:/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/',
+        ]);
+
+        try {
+            // Checkboxes send '1' when checked, nothing when unchecked
+            NewsletterSetting::set('send_enabled', $request->has('send_enabled') ? true : false);
+            NewsletterSetting::set('send_interval_minutes', $request->send_interval_minutes);
+            NewsletterSetting::set('renew_enabled', $request->has('renew_enabled') ? true : false);
+            NewsletterSetting::set('renew_time', $request->renew_time);
+
+            return redirect()->route('admin.newsletter-settings')
+                ->with('success', 'Настройки рассылки обновлены');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.newsletter-settings')
+                ->with('error', 'Ошибка обновления настроек: ' . $e->getMessage());
         }
     }
 }

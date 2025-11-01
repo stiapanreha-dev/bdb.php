@@ -95,6 +95,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/sql', [App\Http\Controllers\AdminController::class, 'sql'])->name('admin.sql');
     Route::post('/sql/execute', [App\Http\Controllers\AdminController::class, 'executeQuery'])->name('admin.sql.execute');
 
+    Route::get('/newsletter-settings', [App\Http\Controllers\AdminController::class, 'newsletterSettings'])->name('admin.newsletter-settings');
+    Route::post('/newsletter-settings', [App\Http\Controllers\AdminController::class, 'updateNewsletterSettings'])->name('admin.newsletter-settings.update');
+
     // Tariff management routes
     Route::resource('tariffs', App\Http\Controllers\Admin\TariffController::class)->names([
         'index' => 'admin.tariffs.index',

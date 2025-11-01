@@ -107,6 +107,7 @@
                                     <li><a class="dropdown-item" href="{{ route('admin.users') }}">Управление пользователями</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.ideas') }}">Модерация идей</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.tariffs.index') }}">Управление тарифами</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
                                 @endif
                             </ul>
