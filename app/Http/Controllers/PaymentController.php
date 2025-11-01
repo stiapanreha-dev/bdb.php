@@ -80,7 +80,7 @@ class PaymentController extends Controller
      */
     public function callback(Request $request)
     {
-        return redirect()->route('subscriptions')->with('info', 'Проверяем статус вашего платежа...');
+        return redirect()->route('subscriptions.index')->with('info', 'Проверяем статус вашего платежа...');
     }
 
     /**
