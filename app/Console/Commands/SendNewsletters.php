@@ -221,8 +221,8 @@ class SendNewsletters extends Command
                 'z.post_address as address',
                 'z.purchase_type',
             ])
-            ->whereRaw("CONVERT(DATE, z.created) >= ?", [$dateFrom->format('Y-m-d')])
-            ->whereRaw("CONVERT(DATE, z.created) <= ?", [$dateTo->format('Y-m-d')])
+            ->whereRaw("z.created >= ?", [$dateFrom->format('Y-m-d H:i:s')])
+            ->whereRaw("z.created <= ?", [$dateTo->format('Y-m-d H:i:s')])
             ->where(function ($q) use ($keywords) {
                 foreach ($keywords as $keyword) {
                     $q->orWhere('z.purchase_object', 'like', "%{$keyword}%")
