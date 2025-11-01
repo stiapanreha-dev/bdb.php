@@ -3,8 +3,8 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -13,12 +13,20 @@ class NewsletterMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $userName;
+    public $zakupkiCount;
+    public $period;
+    public $filePath;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(string $userName, int $zakupkiCount, string $period, string $filePath)
     {
-        //
+        $this->userName = $userName;
+        $this->zakupkiCount = $zakupkiCount;
+        $this->period = $period;
+        $this->filePath = $filePath;
     }
 
     /**
@@ -27,7 +35,7 @@ class NewsletterMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Newsletter Mail',
+            subject: 'Рассылка закупок по ключевым словам',
         );
     }
 
@@ -37,7 +45,7 @@ class NewsletterMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.newsletter',
         );
     }
 
@@ -48,6 +56,10 @@ class NewsletterMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        return [
+            Attachment::fromPath($this->filePath)
+                ->as('zakupki.xlsx')
+                ->withMime('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+        ];
     }
 }
