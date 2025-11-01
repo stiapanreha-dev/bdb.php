@@ -123,6 +123,28 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the newsletter for the user.
+     */
+    public function newsletter()
+    {
+        return $this->hasOne(Newsletter::class);
+    }
+
+    /**
+     * Check if user has newsletter subscription access.
+     */
+    public function hasNewsletterAccess(): bool
+    {
+        // Admins always have access
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // Users with active subscription have access
+        return $this->hasActiveSubscription();
+    }
+
+    /**
      * Send the password reset notification.
      *
      * @param  string  $token

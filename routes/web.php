@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ZakupkiController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\NewsletterController;
 use Illuminate\Support\Facades\Route;
 
 // Main page - Zakupki (public, but limited for unauthenticated)
@@ -30,6 +31,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Newsletter routes (for authenticated users)
+Route::middleware('auth')->group(function () {
+    Route::get('/newsletters', [NewsletterController::class, 'index'])->name('newsletters.index');
+    Route::post('/newsletters', [NewsletterController::class, 'store'])->name('newsletters.store');
+    Route::post('/newsletters/keywords', [NewsletterController::class, 'updateKeywords'])->name('newsletters.keywords');
+    Route::post('/newsletters/toggle', [NewsletterController::class, 'toggle'])->name('newsletters.toggle');
+    Route::delete('/newsletters', [NewsletterController::class, 'destroy'])->name('newsletters.destroy');
 });
 
 // News routes

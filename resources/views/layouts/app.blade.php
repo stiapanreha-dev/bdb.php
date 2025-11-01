@@ -58,6 +58,13 @@
                             Есть идея <span class="badge bg-light text-dark">{{ $ideas_count ?? 0 }}</span>
                         </a>
                     </li>
+                    @auth
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('newsletters.index') }}">
+                            Рассылки
+                        </a>
+                    </li>
+                    @endauth
 {{--                    <li class="nav-item">--}}
 {{--                        <a class="nav-link" href="{{ route('invite') }}">Пригласи друга</a>--}}
 {{--                    </li>--}}
