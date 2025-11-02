@@ -106,11 +106,6 @@
                             </span>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('support') }}" class="nav-link">
-                                <i class="bi bi-headset"></i> Поддержка
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <form method="POST" action="{{ route('logout') }}" class="mt-2">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-light w-100">Выход</button>
@@ -137,9 +132,6 @@
                         <span class="text-white me-3">
                             <i class="bi bi-wallet2"></i> {{ number_format(auth()->user()->balance, 2) }} ₽
                         </span>
-                        <a href="{{ route('support') }}" class="text-white text-decoration-none me-3">
-                            <i class="bi bi-headset"></i> Поддержка
-                        </a>
                         <div class="dropdown d-inline">
                             <a href="#" class="text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ auth()->user()->name }}
