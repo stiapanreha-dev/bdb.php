@@ -10,6 +10,7 @@ use App\Models\Newsletter;
 use App\Models\NewsletterLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class AdminController extends Controller
 {
@@ -302,5 +303,57 @@ class AdminController extends Controller
             ->get();
 
         return view('admin.newsletters', compact('newsletters', 'stats', 'recentLogs'));
+    }
+
+    /**
+     * Display cache management page.
+     */
+    public function cache()
+    {
+        return view('admin.cache');
+    }
+
+    /**
+     * Clear specific cache type.
+     */
+    public function clearCache(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|string|in:all,config,route,view,cache',
+        ]);
+
+        $type = $request->input('type');
+        $message = '';
+
+        try {
+            switch ($type) {
+                case 'all':
+                    Artisan::call('optimize:clear');
+                    $message = 'Весь кеш очищен (config, route, view, cache, opcache)';
+                    break;
+                case 'config':
+                    Artisan::call('config:clear');
+                    $message = 'Кеш конфигурации очищен';
+                    break;
+                case 'route':
+                    Artisan::call('route:clear');
+                    $message = 'Кеш маршрутов очищен';
+                    break;
+                case 'view':
+                    Artisan::call('view:clear');
+                    $message = 'Кеш представлений очищен';
+                    break;
+                case 'cache':
+                    Artisan::call('cache:clear');
+                    $message = 'Кеш приложения очищен';
+                    break;
+            }
+
+            return redirect()->route('admin.cache')
+                ->with('success', $message);
+        } catch (\Exception $e) {
+            return redirect()->route('admin.cache')
+                ->with('error', 'Ошибка очистки кеша: ' . $e->getMessage());
+        }
     }
 }

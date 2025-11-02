@@ -101,6 +101,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/payments', [App\Http\Controllers\AdminController::class, 'payments'])->name('admin.payments');
     Route::get('/newsletters', [App\Http\Controllers\AdminController::class, 'newsletters'])->name('admin.newsletters');
 
+    // Cache management routes
+    Route::get('/cache', [App\Http\Controllers\AdminController::class, 'cache'])->name('admin.cache');
+    Route::post('/cache/clear', [App\Http\Controllers\AdminController::class, 'clearCache'])->name('admin.cache.clear');
+
     // Tariff management routes
     Route::resource('tariffs', App\Http\Controllers\Admin\TariffController::class)->names([
         'index' => 'admin.tariffs.index',

@@ -110,6 +110,7 @@
                                     <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
                                 @endif
                             </ul>
