@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             },
             list: {
-                class: List,
+                class: EditorjsList,
                 inlineToolbar: true
             },
             image: SimpleImage,
