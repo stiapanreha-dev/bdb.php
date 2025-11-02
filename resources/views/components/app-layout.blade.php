@@ -49,6 +49,11 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('announcements.index') }}">
+                            Доска объявлений
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('news.index') }}">
                             Новости <span class="badge bg-light text-dark">{{ $news_count ?? 0 }}</span>
                         </a>

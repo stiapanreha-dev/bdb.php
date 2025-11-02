@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
     Route::post('/profile/avatar/delete', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+    Route::post('/profile/work-contacts', [ProfileController::class, 'updateWorkContacts'])->name('profile.work-contacts.update');
 });
 
 // Newsletter routes (for authenticated users)
@@ -54,6 +55,18 @@ Route::delete('/news/{news}', [App\Http\Controllers\NewsController::class, 'dest
 Route::get('/ideas', [App\Http\Controllers\IdeasController::class, 'index'])->name('ideas.index');
 Route::get('/ideas/create', [App\Http\Controllers\IdeasController::class, 'create'])->name('ideas.create');
 Route::post('/ideas', [App\Http\Controllers\IdeasController::class, 'store'])->name('ideas.store');
+
+// Announcements routes (доска объявлений)
+Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('announcements.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/announcements/create', [App\Http\Controllers\AnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('/announcements', [App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
+    Route::get('/announcements/{id}/edit', [App\Http\Controllers\AnnouncementController::class, 'edit'])->name('announcements.edit');
+    Route::patch('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'update'])->name('announcements.update');
+    Route::delete('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+    Route::post('/announcements/{id}/inquiry', [App\Http\Controllers\AnnouncementController::class, 'sendInquiry'])->name('announcements.inquiry');
+});
+Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 
 Route::get('/invite', function () {
     return '<h1>Пригласи друга</h1><p>Страница в разработке</p>';

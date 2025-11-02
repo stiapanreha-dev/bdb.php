@@ -22,6 +22,8 @@ class User extends Authenticatable
         'username',
         'email',
         'phone',
+        'work_email',
+        'work_phone',
         'password',
         'balance',
         'role',
@@ -136,6 +138,14 @@ class User extends Authenticatable
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get the announcements for the user.
+     */
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class);
     }
 
     /**

@@ -126,6 +126,48 @@
 
         <div class="card mb-4">
             <div class="card-header">
+                <h5 class="mb-0">Рабочие контакты</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('profile.work-contacts.update') }}" method="POST">
+                    @csrf
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="work_email" class="form-label"><strong>Рабочий Email:</strong></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="email" class="form-control @error('work_email') is-invalid @enderror" id="work_email" name="work_email" value="{{ old('work_email', $user->work_email) }}" placeholder="work@example.com">
+                            @error('work_email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Этот email будет отображаться в ваших объявлениях</small>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="work_phone" class="form-label"><strong>Рабочий телефон:</strong></label>
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control @error('work_phone') is-invalid @enderror" id="work_phone" name="work_phone" value="{{ old('work_phone', $user->work_phone) }}" placeholder="+7 (999) 123-45-67">
+                            @error('work_phone')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Этот телефон будет отображаться в ваших объявлениях</small>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Сохранить рабочие контакты
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
                 <h5 class="mb-0">Баланс</h5>
             </div>
             <div class="card-body">

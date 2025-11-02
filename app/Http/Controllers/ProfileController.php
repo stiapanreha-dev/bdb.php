@@ -103,4 +103,22 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('success', 'Фото профиля удалено');
     }
+
+    /**
+     * Update the user's work contacts.
+     */
+    public function updateWorkContacts(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'work_email' => ['nullable', 'email', 'max:255'],
+            'work_phone' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $user = $request->user();
+        $user->work_email = $validated['work_email'];
+        $user->work_phone = $validated['work_phone'];
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('success', 'Рабочие контакты обновлены');
+    }
 }
