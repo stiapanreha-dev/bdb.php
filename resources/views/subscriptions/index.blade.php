@@ -158,6 +158,68 @@
 </div>
 @endif
 
+<!-- Дополнительная услуга: Рассылка -->
+<div class="card border-info mt-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">
+            <i class="bi bi-envelope-at"></i> Дополнительная услуга: Email-рассылка закупок
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h5>Получайте уведомления о новых закупках на почту</h5>
+                <p class="mb-3">
+                    Автоматическая рассылка закупок по вашим ключевым словам прямо на email.
+                    Не пропустите интересные тендеры!
+                </p>
+
+                <h6>Преимущества:</h6>
+                <ul>
+                    <li>✓ Уведомления о закупках в режиме реального времени</li>
+                    <li>✓ Настройка до 20 ключевых слов для фильтрации</li>
+                    <li>✓ Автоматическая отправка на ваш email</li>
+                    <li>✓ Удобный формат с детальной информацией о закупке</li>
+                    <li>✓ Возможность включать/отключать рассылку в любой момент</li>
+                </ul>
+
+                <h6 class="mt-3">Стоимость:</h6>
+                <p class="mb-2">
+                    <strong class="text-info fs-4">50 руб/месяц</strong>
+                    <span class="text-muted">(~1,67 руб/день)</span>
+                </p>
+
+                <div class="alert alert-light mt-3">
+                    <small>
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Как начать:</strong>
+                        После оформления основного тарифа перейдите в раздел
+                        <a href="{{ route('newsletters.index') }}">Рассылки</a>,
+                        создайте рассылку и укажите ключевые слова. Стоимость будет автоматически списываться с баланса.
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-md-4 text-center d-flex flex-column justify-content-center">
+                <div class="p-3 bg-light rounded">
+                    <i class="bi bi-envelope-at-fill text-info" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3 text-info">50 ₽</h4>
+                    <p class="text-muted">за 30 дней</p>
+                    @auth
+                        <a href="{{ route('newsletters.index') }}" class="btn btn-info w-100 mt-2">
+                            Настроить рассылку
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-info w-100 mt-2">
+                            Войти для настройки
+                        </a>
+                    @endauth
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @auth
 <div class="mt-3">
     <a href="{{ route('subscriptions.history') }}" class="btn btn-outline-secondary">
