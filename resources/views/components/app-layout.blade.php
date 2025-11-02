@@ -81,11 +81,23 @@
                             <ul class="dropdown-menu" aria-labelledby="mobileUserDropdown">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
                                 <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-card-list"></i> Тарифы и подписки</a></li>
-                                <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#balanceModal"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ route('privacy-policy') }}"><i class="bi bi-shield-check"></i> Политика конфиденциальности</a></li>
                                 <li><a class="dropdown-item" href="{{ route('terms-of-service') }}"><i class="bi bi-file-text"></i> Пользовательское соглашение</a></li>
                                 <li><a class="dropdown-item" href="{{ route('offer') }}"><i class="bi bi-file-earmark-text"></i> Публичная оферта</a></li>
+                                @if(auth()->user()->isAdmin())
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Администрирование</h6></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.users') }}">Управление пользователями</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.ideas') }}">Модерация идей</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.tariffs.index') }}">Управление тарифами</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
+                                @endif
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -94,9 +106,9 @@
                             </span>
                         </li>
                         <li class="nav-item">
-                            <button class="btn btn-light w-100" data-bs-toggle="modal" data-bs-target="#balanceModal">
-                                Пополнить баланс
-                            </button>
+                            <a href="{{ route('support') }}" class="nav-link">
+                                <i class="bi bi-headset"></i> Поддержка
+                            </a>
                         </li>
                         <li class="nav-item">
                             <form method="POST" action="{{ route('logout') }}" class="mt-2">
@@ -125,34 +137,10 @@
                         <span class="text-white me-3">
                             <i class="bi bi-wallet2"></i> {{ number_format(auth()->user()->balance, 2) }} ₽
                         </span>
-                        <button class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#balanceModal">
-                            Баланс
-                        </button>
-                        <div class="dropdown">
-                            <button class="btn btn-light dropdown-toggle" type="button" id="supportDropdown"
-                                    data-bs-toggle="dropdown">
-                                @if(auth()->user()->isAdmin())
-                                    Админ
-                                @else
-                                    Поддержка
-                                @endif
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('support') }}">Поддержка (cdvks)</a></li>
-                                @if(auth()->user()->isAdmin())
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.users') }}">Управление пользователями</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.ideas') }}">Модерация идей</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.tariffs.index') }}">Управление тарифами</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
-                                @endif
-                            </ul>
-                        </div>
-                        <div class="dropdown d-inline ms-3">
+                        <a href="{{ route('support') }}" class="text-white text-decoration-none me-3">
+                            <i class="bi bi-headset"></i> Поддержка
+                        </a>
+                        <div class="dropdown d-inline">
                             <a href="#" class="text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ auth()->user()->name }}
                                 @if(auth()->user()->isAdmin())
@@ -162,11 +150,23 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
                                 <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-card-list"></i> Тарифы и подписки</a></li>
-                                <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#balanceModal"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ route('privacy-policy') }}"><i class="bi bi-shield-check"></i> Политика конфиденциальности</a></li>
                                 <li><a class="dropdown-item" href="{{ route('terms-of-service') }}"><i class="bi bi-file-text"></i> Пользовательское соглашение</a></li>
                                 <li><a class="dropdown-item" href="{{ route('offer') }}"><i class="bi bi-file-earmark-text"></i> Публичная оферта</a></li>
+                                @if(auth()->user()->isAdmin())
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Администрирование</h6></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.users') }}">Управление пользователями</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.ideas') }}">Модерация идей</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.tariffs.index') }}">Управление тарифами</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
+                                @endif
                             </ul>
                         </div>
                         <form method="POST" action="{{ route('logout') }}" class="d-inline ms-2">
