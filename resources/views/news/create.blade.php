@@ -70,15 +70,15 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2/dist/editorjs.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.7.0/dist/header.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.8.0/dist/list.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/image@2.8.1/dist/image.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@2.5.0/dist/quote.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.8.0/dist/code.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@1.3.0/dist/delimiter.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@2.2.2/dist/table.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@1.5.0/dist/checklist.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@2.5.3/dist/embed.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.7.0/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.8.0/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/image@2.8.1/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@2.5.0/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.8.0/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@1.3.0/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@2.2.2/dist/table.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@1.5.0/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@2.5.3/dist/bundle.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация Editor.js
