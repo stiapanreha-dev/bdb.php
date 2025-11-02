@@ -61,7 +61,7 @@
                            name="amount"
                            min="1"
                            step="0.01"
-                           value="100"
+                           value="1000"
                            required>
                 </div>
             </div>
