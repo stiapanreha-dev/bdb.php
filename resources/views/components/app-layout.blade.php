@@ -200,7 +200,7 @@
                         <div class="mb-3">
                             <label for="amount" class="form-label">Сумма пополнения (₽)</label>
                             <input type="number" class="form-control" id="amount" name="amount"
-                                   min="1" step="0.01" required>
+                                   min="1" step="0.01" value="1000" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Пополнить</button>
                     </form>
