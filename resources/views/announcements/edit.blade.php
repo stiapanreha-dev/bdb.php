@@ -154,8 +154,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 class: Quote,
                 inlineToolbar: true
             },
-            code: Code,
-            delimiter: Delimiter,
+            code: {
+                class: Code
+            },
+            delimiter: {
+                class: Delimiter
+            },
             table: {
                 class: Table,
                 inlineToolbar: true
