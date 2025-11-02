@@ -16,15 +16,31 @@
                                 <img src="{{ asset('storage/avatars/' . $user->avatar) }}"
                                      alt="Фото профиля"
                                      class="rounded-circle img-thumbnail"
-                                     style="width: 150px; height: 150px; object-fit: cover;">
+                                     style="width: 150px; height: 150px; object-fit: cover;"
+                                     id="avatar-preview">
                             @else
                                 <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center"
-                                     style="width: 150px; height: 150px;">
+                                     style="width: 150px; height: 150px;"
+                                     id="avatar-placeholder">
                                     <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
                                 </div>
                             @endif
                         </div>
-                        <small class="text-muted">{{ $user->username }}</small>
+                        <small class="text-muted d-block mb-2">{{ $user->username }}</small>
+
+                        <!-- Форма загрузки фото -->
+                        <form action="{{ route('profile.avatar.update') }}" method="POST" enctype="multipart/form-data" id="avatar-form">
+                            @csrf
+                            <input type="file" name="avatar" id="avatar-input" class="d-none" accept="image/*">
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="document.getElementById('avatar-input').click()">
+                                <i class="bi bi-camera"></i> Загрузить фото
+                            </button>
+                            @if($user->avatar)
+                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="deleteAvatar()">
+                                    <i class="bi bi-trash"></i> Удалить
+                                </button>
+                            @endif
+                        </form>
                     </div>
 
                     <!-- Основная информация -->
@@ -209,7 +225,67 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.show();
         });
     });
+
+    // Обработка выбора файла аватара
+    const avatarInput = document.getElementById('avatar-input');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Проверка размера (макс 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Размер файла не должен превышать 2MB');
+                    return;
+                }
+
+                // Превью изображения
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const placeholder = document.getElementById('avatar-placeholder');
+                    const preview = document.getElementById('avatar-preview');
+
+                    if (placeholder) {
+                        // Создаем img элемент
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        img.alt = 'Фото профиля';
+                        img.className = 'rounded-circle img-thumbnail';
+                        img.style.width = '150px';
+                        img.style.height = '150px';
+                        img.style.objectFit = 'cover';
+                        img.id = 'avatar-preview';
+
+                        placeholder.replaceWith(img);
+                    } else if (preview) {
+                        preview.src = event.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+
+                // Автоматическая отправка формы
+                document.getElementById('avatar-form').submit();
+            }
+        });
+    }
 });
+
+// Функция удаления аватара
+function deleteAvatar() {
+    if (confirm('Вы уверены, что хотите удалить фото профиля?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("profile.avatar.delete") }}';
+
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = '{{ csrf_token() }}';
+
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 </script>
 @endpush
 </x-app-layout>
