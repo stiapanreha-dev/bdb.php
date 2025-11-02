@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
         placeholder: 'Введите текст новости... Вы можете вставить изображение из буфера обмена (Ctrl+V)'
     });
 
-    // Обработка вставки изображений из буфера обмена
+    // Обработка вставки изображений из буфера обмена с сжатием
     quill.root.addEventListener('paste', function(e) {
         var clipboardData = e.clipboardData || window.clipboardData;
         var items = clipboardData.items;
@@ -95,20 +95,58 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
 
                     var blob = items[i].getAsFile();
-                    var reader = new FileReader();
 
-                    reader.onload = function(event) {
-                        var base64 = event.target.result;
+                    // Сжатие изображения перед вставкой
+                    compressImage(blob, function(compressedBase64) {
                         var range = quill.getSelection(true);
-                        quill.insertEmbed(range.index, 'image', base64);
+                        quill.insertEmbed(range.index, 'image', compressedBase64);
                         quill.setSelection(range.index + 1);
-                    };
-
-                    reader.readAsDataURL(blob);
+                    });
                 }
             }
         }
     });
+
+    // Функция сжатия изображения
+    function compressImage(file, callback) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+
+                // Максимальные размеры
+                var maxWidth = 1200;
+                var maxHeight = 1200;
+                var width = img.width;
+                var height = img.height;
+
+                // Рассчитываем новые размеры с сохранением пропорций
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Конвертируем в base64 с качеством 0.7 (JPEG)
+                var compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                callback(compressedBase64);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 
     // Синхронизация содержимого редактора с textarea перед отправкой формы
     var form = document.getElementById('newsForm');
