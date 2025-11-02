@@ -189,7 +189,7 @@
             <div class="col-md-4 text-center d-flex flex-column justify-content-center">
                 <div class="p-3 bg-light rounded">
                     <i class="bi bi-envelope-at-fill text-info" style="font-size: 4rem;"></i>
-                    <h4 class="mt-3 text-info">50 ₽</h4>
+                    <h4 class="mt-3 text-info">500 ₽</h4>
                     <p class="text-muted">за 30 дней</p>
                     @auth
                         <a href="{{ route('newsletters.index') }}" class="btn btn-info w-100 mt-2">
