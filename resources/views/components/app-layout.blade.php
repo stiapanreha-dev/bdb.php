@@ -20,6 +20,12 @@
     <!-- Yandex Verification -->
     <meta name="yandex-verification" content="c326a374924bae98" />
 
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Найдите идеальных покупателей с Business Database!">
+    <meta property="og:url" content="https://businessdb.ru/">
+    <meta property="og:image" content="https://businessdb.ru/opengraph/businessog.jpg">
+    <meta property="og:description" content="Представляем вашему вниманию уникальный инструмент, который поможет вам значительно повысить продажи и расширить клиентскую базу.">
+
     @stack('styles')
 </head>
 <body>
