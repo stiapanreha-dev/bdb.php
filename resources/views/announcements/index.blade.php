@@ -86,9 +86,9 @@
                                 {{ $announcement->title }}
                             </a>
                         </h5>
-                        <p class="card-text">
-                            {{ Str::limit(strip_tags($announcement->description), 200) }}
-                        </p>
+                        <div class="card-text announcement-preview">
+                            @editorJsRender($announcement->description)
+                        </div>
                         <div class="text-muted small">
                             <i class="bi bi-person"></i> {{ $announcement->user->name ?? 'Не указано' }}
                         </div>
@@ -116,4 +116,63 @@
         </div>
     @endif
 </div>
+
+@push('styles')
+<style>
+    .announcement-preview {
+        max-height: 150px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 1rem;
+    }
+    .announcement-preview::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
+    }
+    .announcement-preview h1,
+    .announcement-preview h2,
+    .announcement-preview h3,
+    .announcement-preview h4 {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+    .announcement-preview p {
+        margin: 0.25rem 0;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+    .announcement-preview ul,
+    .announcement-preview ol {
+        margin: 0.25rem 0;
+        padding-left: 1.5rem;
+        font-size: 0.875rem;
+    }
+    .announcement-preview img {
+        max-width: 100%;
+        height: auto;
+        max-height: 100px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+    .announcement-preview blockquote {
+        border-left: 3px solid #ddd;
+        padding-left: 0.5rem;
+        margin: 0.25rem 0;
+        font-size: 0.875rem;
+        color: #666;
+    }
+    .announcement-preview pre {
+        display: none;
+    }
+    .announcement-preview table {
+        font-size: 0.75rem;
+        max-width: 100%;
+    }
+</style>
+@endpush
 </x-app-layout>

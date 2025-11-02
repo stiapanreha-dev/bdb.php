@@ -43,7 +43,7 @@
                     <div class="mb-3">
                         <strong>Описание:</strong>
                         <div class="mt-2 announcement-content">
-                            {!! $announcement->description !!}
+                            @editorJsRender($announcement->description)
                         </div>
                     </div>
 
