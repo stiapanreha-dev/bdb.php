@@ -1,7 +1,7 @@
 <x-app-layout>
 <div class="row">
     <div class="col-md-12">
-        <h2>#?@02;5=85 :5H5<</h2>
+        <h2>Управление кешем</h2>
 
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -19,126 +19,126 @@
 
         <div class="card mb-4">
             <div class="card-header">
-                <i class="bi bi-info-circle"></i> =D>@<0F8O
+                <i class="bi bi-info-circle"></i> Информация
             </div>
             <div class="card-body">
-                <p>0 MB>9 AB@0=8F5 2K <>65B5 >G8AB8BL @07;8G=K5 B8?K :5H0 Laravel.</p>
+                <p>На этой странице вы можете очистить различные типы кеша Laravel.</p>
                 <ul>
-                    <li><strong>5AL :5H</strong> - >G8I05B 2A5 B8?K :5H0 (config, route, view, cache, opcache)</li>
-                    <li><strong>>=D83C@0F8O</strong> - >G8I05B :5H D09;>2 :>=D83C@0F88 (.env, config/*.php)</li>
-                    <li><strong>0@H@CBK</strong> - >G8I05B :5H <0@H@CB>2 (routes/*.php)</li>
-                    <li><strong>@54AB02;5=8O</strong> - >G8I05B A:><?8;8@>20==K5 Blade H01;>=K (resources/views/*.blade.php)</li>
-                    <li><strong>@8;>65=85</strong> - >G8I05B :5H 40==KE ?@8;>65=8O (cache facade)</li>
+                    <li><strong>Весь кеш</strong> - очищает все типы кеша (config, route, view, cache, opcache)</li>
+                    <li><strong>Конфигурация</strong> - очищает кеш файлов конфигурации (.env, config/*.php)</li>
+                    <li><strong>Маршруты</strong> - очищает кеш маршрутов (routes/*.php)</li>
+                    <li><strong>Представления</strong> - очищает скомпилированные Blade шаблоны (resources/views/*.blade.php)</li>
+                    <li><strong>Приложение</strong> - очищает кеш данных приложения (cache facade)</li>
                 </ul>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-12">
-                <h4 class="mb-3">G8AB:0 :5H0</h4>
+                <h4 class="mb-3">Очистка кеша</h4>
             </div>
         </div>
 
         <div class="row g-3">
-            <!-- G8AB8BL 25AL :5H -->
+            <!-- Очистить весь кеш -->
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="bi bi-arrow-clockwise text-danger"></i> 5AL :5H
+                            <i class="bi bi-arrow-clockwise text-danger"></i> Весь кеш
                         </h5>
                         <p class="card-text text-muted">
-                            G8AB8BL 2A5 B8?K :5H0 >4=>2@5<5==> (optimize:clear)
+                            Очистить все типы кеша одновременно (optimize:clear)
                         </p>
-                        <form method="POST" action="{{ route('admin.cache.clear') }}" onsubmit="return confirm('K C25@5=K, GB> E>B8B5 >G8AB8BL 25AL :5H?')">
+                        <form method="POST" action="{{ route('admin.cache.clear') }}" onsubmit="return confirm('Вы уверены, что хотите очистить весь кеш?')">
                             @csrf
                             <input type="hidden" name="type" value="all">
                             <button type="submit" class="btn btn-danger w-100">
-                                <i class="bi bi-trash"></i> G8AB8BL 25AL :5H
+                                <i class="bi bi-trash"></i> Очистить весь кеш
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 5H :>=D83C@0F88 -->
+            <!-- Кеш конфигурации -->
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="bi bi-gear text-primary"></i> >=D83C@0F8O
+                            <i class="bi bi-gear text-primary"></i> Конфигурация
                         </h5>
                         <p class="card-text text-muted">
-                            G8AB8BL :5H D09;>2 :>=D83C@0F88 (config:clear)
+                            Очистить кеш файлов конфигурации (config:clear)
                         </p>
                         <form method="POST" action="{{ route('admin.cache.clear') }}">
                             @csrf
                             <input type="hidden" name="type" value="config">
                             <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-trash"></i> G8AB8BL config
+                                <i class="bi bi-trash"></i> Очистить config
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 5H <0@H@CB>2 -->
+            <!-- Кеш маршрутов -->
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="bi bi-signpost text-success"></i> 0@H@CBK
+                            <i class="bi bi-signpost text-success"></i> Маршруты
                         </h5>
                         <p class="card-text text-muted">
-                            G8AB8BL :5H <0@H@CB>2 (route:clear)
+                            Очистить кеш маршрутов (route:clear)
                         </p>
                         <form method="POST" action="{{ route('admin.cache.clear') }}">
                             @csrf
                             <input type="hidden" name="type" value="route">
                             <button type="submit" class="btn btn-success w-100">
-                                <i class="bi bi-trash"></i> G8AB8BL routes
+                                <i class="bi bi-trash"></i> Очистить routes
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 5H ?@54AB02;5=89 -->
+            <!-- Кеш представлений -->
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="bi bi-file-earmark-code text-warning"></i> @54AB02;5=8O
+                            <i class="bi bi-file-earmark-code text-warning"></i> Представления
                         </h5>
                         <p class="card-text text-muted">
-                            G8AB8BL A:><?8;8@>20==K5 Blade H01;>=K (view:clear)
+                            Очистить скомпилированные Blade шаблоны (view:clear)
                         </p>
                         <form method="POST" action="{{ route('admin.cache.clear') }}">
                             @csrf
                             <input type="hidden" name="type" value="view">
                             <button type="submit" class="btn btn-warning w-100">
-                                <i class="bi bi-trash"></i> G8AB8BL views
+                                <i class="bi bi-trash"></i> Очистить views
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- 5H ?@8;>65=8O -->
+            <!-- Кеш приложения -->
             <div class="col-md-6 col-lg-4">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="bi bi-database text-info"></i> @8;>65=85
+                            <i class="bi bi-database text-info"></i> Приложение
                         </h5>
                         <p class="card-text text-muted">
-                            G8AB8BL :5H 40==KE ?@8;>65=8O (cache:clear)
+                            Очистить кеш данных приложения (cache:clear)
                         </p>
                         <form method="POST" action="{{ route('admin.cache.clear') }}">
                             @csrf
                             <input type="hidden" name="type" value="cache">
                             <button type="submit" class="btn btn-info w-100">
-                                <i class="bi bi-trash"></i> G8AB8BL cache
+                                <i class="bi bi-trash"></i> Очистить cache
                             </button>
                         </form>
                     </div>
@@ -148,15 +148,15 @@
 
         <div class="card mt-4">
             <div class="card-header">
-                <i class="bi bi-terminal"></i> -:2820;5=B=K5 :><0=4K
+                <i class="bi bi-terminal"></i> Эквивалентные команды
             </div>
             <div class="card-body">
-                <p>-B8 459AB28O M:2820;5=B=K 2K?>;=5=8N A;54CNI8E :><0=4 2 B5@<8=0;5:</p>
-                <pre class="bg-dark text-light p-3 rounded"><code>php artisan optimize:clear  # G8AB8BL 25AL :5H
-php artisan config:clear    # G8AB8BL :5H :>=D83C@0F88
-php artisan route:clear     # G8AB8BL :5H <0@H@CB>2
-php artisan view:clear      # G8AB8BL :5H ?@54AB02;5=89
-php artisan cache:clear     # G8AB8BL :5H ?@8;>65=8O</code></pre>
+                <p>Эти действия эквивалентны выполнению следующих команд в терминале:</p>
+                <pre class="bg-dark text-light p-3 rounded"><code>php artisan optimize:clear  # Очистить весь кеш
+php artisan config:clear    # Очистить кеш конфигурации
+php artisan route:clear     # Очистить кеш маршрутов
+php artisan view:clear      # Очистить кеш представлений
+php artisan cache:clear     # Очистить кеш приложения</code></pre>
             </div>
         </div>
     </div>
