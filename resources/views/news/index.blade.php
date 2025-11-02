@@ -15,8 +15,8 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="flex-grow-1">
                         <h5 class="card-title">{{ $item->title }}</h5>
-                        <p class="card-text">{{ $item->content }}</p>
-                        <p class="text-muted small">{{ $item->created_at->format('d.m.Y H:i') }}</p>
+                        <div class="card-text news-content">{!! $item->content !!}</div>
+                        <p class="text-muted small mt-3">{{ $item->created_at->format('d.m.Y H:i') }}</p>
                     </div>
                     @auth
                         @if(auth()->user()->isAdmin())
@@ -36,4 +36,36 @@
 @else
     <div class="alert alert-info">Новостей пока нет</div>
 @endif
+
+@push('styles')
+<style>
+    .news-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+    .news-content h1, .news-content h2, .news-content h3 {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .news-content p {
+        margin-bottom: 0.5rem;
+    }
+    .news-content a {
+        color: #0d6efd;
+        text-decoration: underline;
+    }
+    .news-content blockquote {
+        border-left: 4px solid #ddd;
+        padding-left: 1rem;
+        margin: 1rem 0;
+        color: #666;
+    }
+    .news-content ul, .news-content ol {
+        padding-left: 2rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+@endpush
 </x-app-layout>
