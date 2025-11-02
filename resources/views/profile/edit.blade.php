@@ -58,10 +58,10 @@
                             <div class="col-md-4">
                                 <strong>Email:</strong>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 {{ $user->email }}
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 @if($user->email_verified)
                                     <span class="badge bg-success">
                                         <i class="bi bi-check-circle"></i> Подтвержден
@@ -78,10 +78,10 @@
                             <div class="col-md-4">
                                 <strong>Телефон:</strong>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 {{ $user->phone ?? '-' }}
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 @if($user->phone)
                                     @if($user->phone_verified)
                                         <span class="badge bg-success">
