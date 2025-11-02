@@ -174,7 +174,7 @@
                     <p class="mb-2">
                         <a href="{{ route('privacy-policy') }}" class="text-decoration-none me-3">Согласие на обработку персональных данных</a>
                         <a href="{{ route('terms-of-service') }}" class="text-decoration-none me-3">Пользовательское соглашение</a>
-                        <a href="{{ route('offer') }}" class="text-decoration-none me-3">Публичная оферта</a>
+                    <!--    <a href="{{ route('offer') }}" class="text-decoration-none me-3">Публичная оферта</a> -->
                         <a href="{{ route('contacts') }}" class="text-decoration-none me-3">Контакты</a>
                         <a href="{{ route('subscriptions.index') }}" class="text-decoration-none">Тарифы</a>
                     </p>

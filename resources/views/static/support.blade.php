@@ -150,11 +150,13 @@
                             <i class="bi bi-file-text"></i> Пользовательское соглашение
                         </a>
                     </li>
+<!--
                     <li class="mb-0">
                         <a href="{{ route('offer') }}" class="text-decoration-none">
                             <i class="bi bi-file-earmark-text"></i> Публичная оферта
                         </a>
                     </li>
+-->
                 </ul>
             </div>
         </div>
