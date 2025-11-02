@@ -93,10 +93,11 @@ class PaymentController extends Controller
             $data = json_decode($source, true);
 
             // Проверка типа уведомления
-            if (!isset($data['event']) || $data['event'] !== 'payment.succeeded') {
+            if (!isset($data['event'])) {
                 return response()->json(['status' => 'ignored'], 200);
             }
 
+            $event = $data['event'];
             $paymentData = $data['object'];
             $paymentId = $paymentData['id'];
 
@@ -108,34 +109,52 @@ class PaymentController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Payment not found'], 404);
             }
 
-            // Проверка что платеж еще не обработан
-            if ($payment->status === 'succeeded') {
-                return response()->json(['status' => 'already_processed'], 200);
+            // Обработка успешного платежа
+            if ($event === 'payment.succeeded') {
+                // Проверка что платеж еще не обработан
+                if ($payment->status === 'succeeded') {
+                    return response()->json(['status' => 'already_processed'], 200);
+                }
+
+                // Обновление статуса платежа
+                $payment->update([
+                    'status' => 'succeeded',
+                    'payment_method' => $paymentData['payment_method']['type'] ?? null,
+                    'paid_at' => now(),
+                ]);
+
+                // Начисление баланса пользователю
+                $user = $payment->user;
+                $user->balance += $payment->amount;
+                $user->save();
+
+                // Создание транзакции
+                Transaction::create([
+                    'user_id' => $user->id,
+                    'amount' => $payment->amount,
+                    'payment_id' => $payment->id,
+                    'status' => 'completed',
+                ]);
+
+                Log::info('Payment succeeded: ' . $paymentId . ' for user ' . $user->id);
+
+                return response()->json(['status' => 'success'], 200);
             }
 
-            // Обновление статуса платежа
-            $payment->update([
-                'status' => 'succeeded',
-                'payment_method' => $paymentData['payment_method']['type'] ?? null,
-                'paid_at' => now(),
-            ]);
+            // Обработка отмены платежа
+            if ($event === 'payment.canceled') {
+                // Обновление статуса платежа
+                $payment->update([
+                    'status' => 'canceled',
+                ]);
 
-            // Начисление баланса пользователю
-            $user = $payment->user;
-            $user->balance += $payment->amount;
-            $user->save();
+                Log::info('Payment canceled: ' . $paymentId . ' for user ' . $payment->user_id);
 
-            // Создание транзакции
-            Transaction::create([
-                'user_id' => $user->id,
-                'amount' => $payment->amount,
-                'type' => 'payment',
-                'description' => $payment->description,
-            ]);
+                return response()->json(['status' => 'success'], 200);
+            }
 
-            Log::info('Payment succeeded: ' . $paymentId . ' for user ' . $user->id);
-
-            return response()->json(['status' => 'success'], 200);
+            // Неизвестное событие
+            return response()->json(['status' => 'ignored'], 200);
         } catch (\Exception $e) {
             Log::error('YooKassa webhook error: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
