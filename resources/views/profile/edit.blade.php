@@ -42,24 +42,10 @@
                             <div class="col-md-4">
                                 <strong>Email:</strong>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-5">
                                 {{ $user->email }}
                             </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <strong>Телефон:</strong>
-                            </div>
-                            <div class="col-md-8">
-                                {{ $user->phone ?? '-' }}
-                            </div>
-                        </div>
-
-                        <!-- Статусы верификации -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <strong>Статус Email:</strong><br>
+                            <div class="col-md-3">
                                 @if($user->email_verified)
                                     <span class="badge bg-success">
                                         <i class="bi bi-check-circle"></i> Подтвержден
@@ -70,8 +56,16 @@
                                     </span>
                                 @endif
                             </div>
-                            <div class="col-md-6">
-                                <strong>Статус телефона:</strong><br>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Телефон:</strong>
+                            </div>
+                            <div class="col-md-5">
+                                {{ $user->phone ?? '-' }}
+                            </div>
+                            <div class="col-md-3">
                                 @if($user->phone)
                                     @if($user->phone_verified)
                                         <span class="badge bg-success">
