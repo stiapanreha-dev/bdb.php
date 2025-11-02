@@ -36,8 +36,7 @@
                         <div id="editor" style="min-height: 300px;">{!! old('content') !!}</div>
                         <textarea class="d-none @error('content') is-invalid @enderror"
                                   id="content"
-                                  name="content"
-                                  required>{{ old('content') }}</textarea>
+                                  name="content">{{ old('content') }}</textarea>
                         @error('content')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
