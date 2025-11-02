@@ -115,12 +115,23 @@
                                 @endif
                             </ul>
                         </div>
-                        <a href="{{ route('profile.edit') }}" class="text-white text-decoration-none ms-3">
-                            {{ auth()->user()->name }}
-                            @if(auth()->user()->isAdmin())
-                                <span class="badge bg-danger ms-1">Admin</span>
-                            @endif
-                        </a>
+                        <div class="dropdown d-inline ms-3">
+                            <a href="#" class="text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ auth()->user()->name }}
+                                @if(auth()->user()->isAdmin())
+                                    <span class="badge bg-danger ms-1">Admin</span>
+                                @endif
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
+                                <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-card-list"></i> Тарифы и подписки</a></li>
+                                <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('privacy-policy') }}"><i class="bi bi-shield-check"></i> Политика конфиденциальности</a></li>
+                                <li><a class="dropdown-item" href="{{ route('terms-of-service') }}"><i class="bi bi-file-text"></i> Пользовательское соглашение</a></li>
+                                <li><a class="dropdown-item" href="{{ route('offer') }}"><i class="bi bi-file-earmark-text"></i> Публичная оферта</a></li>
+                            </ul>
+                        </div>
                         <form method="POST" action="{{ route('logout') }}" class="d-inline ms-2">
                             @csrf
                             <button type="submit" class="btn btn-outline-light">Выход</button>
