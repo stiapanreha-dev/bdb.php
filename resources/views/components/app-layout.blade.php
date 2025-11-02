@@ -69,30 +69,67 @@
 {{--                        <a class="nav-link" href="{{ route('invite') }}">Пригласи друга</a>--}}
 {{--                    </li>--}}
                 </ul>
-                <div class="d-lg-flex align-items-center flex-column flex-lg-row mt-3 mt-lg-0">
+                <ul class="navbar-nav d-lg-none">
+                    @auth
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="mobileUserDropdown" data-bs-toggle="dropdown">
+                                {{ auth()->user()->name }}
+                                @if(auth()->user()->isAdmin())
+                                    <span class="badge bg-danger ms-1">Admin</span>
+                                @endif
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="mobileUserDropdown">
+                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
+                                <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-card-list"></i> Тарифы и подписки</a></li>
+                                <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('privacy-policy') }}"><i class="bi bi-shield-check"></i> Политика конфиденциальности</a></li>
+                                <li><a class="dropdown-item" href="{{ route('terms-of-service') }}"><i class="bi bi-file-text"></i> Пользовательское соглашение</a></li>
+                                <li><a class="dropdown-item" href="{{ route('offer') }}"><i class="bi bi-file-earmark-text"></i> Публичная оферта</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link">
+                                <i class="bi bi-wallet2"></i> {{ number_format(auth()->user()->balance, 2) }} ₽
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <button class="btn btn-light w-100" data-bs-toggle="modal" data-bs-target="#balanceModal">
+                                Пополнить баланс
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-light w-100">Выход</button>
+                            </form>
+                        </li>
+                    @endauth
+                </ul>
+                <div class="d-none d-lg-flex align-items-center">
                     @auth
                         @php
                             $activeSubscription = auth()->user()->activeSubscription;
                         @endphp
                         @if($activeSubscription)
-                            <a href="{{ route('subscriptions.index') }}" class="text-white text-decoration-none me-lg-3 mb-2 mb-lg-0 d-block">
+                            <a href="{{ route('subscriptions.index') }}" class="text-white text-decoration-none me-3">
                                 <span class="badge bg-success">
                                     {{ $activeSubscription->tariff->name }} до {{ $activeSubscription->expires_at->format('d.m.Y') }}
                                 </span>
                             </a>
                         @else
-                            <a href="{{ route('subscriptions.index') }}" class="btn btn-warning btn-sm me-lg-3 mb-2 mb-lg-0 d-block">
+                            <a href="{{ route('subscriptions.index') }}" class="btn btn-warning btn-sm me-3">
                                 Выбрать тариф
                             </a>
                         @endif
-                        <span class="text-white me-lg-3 mb-2 mb-lg-0 d-block">
+                        <span class="text-white me-3">
                             <i class="bi bi-wallet2"></i> {{ number_format(auth()->user()->balance, 2) }} ₽
                         </span>
-                        <button class="btn btn-light me-lg-2 mb-2 mb-lg-0 w-100 w-lg-auto" data-bs-toggle="modal" data-bs-target="#balanceModal">
+                        <button class="btn btn-light me-2" data-bs-toggle="modal" data-bs-target="#balanceModal">
                             Баланс
                         </button>
-                        <div class="dropdown mb-2 mb-lg-0 w-100 w-lg-auto">
-                            <button class="btn btn-light dropdown-toggle w-100" type="button" id="supportDropdown"
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" id="supportDropdown"
                                     data-bs-toggle="dropdown">
                                 @if(auth()->user()->isAdmin())
                                     Админ
@@ -100,7 +137,7 @@
                                     Поддержка
                                 @endif
                             </button>
-                            <ul class="dropdown-menu w-100">
+                            <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{{ route('support') }}">Поддержка (cdvks)</a></li>
                                 @if(auth()->user()->isAdmin())
                                     <li><hr class="dropdown-divider"></li>
@@ -115,14 +152,14 @@
                                 @endif
                             </ul>
                         </div>
-                        <div class="dropdown mb-2 mb-lg-0 ms-lg-3 w-100 w-lg-auto">
-                            <a href="#" class="text-white text-decoration-none dropdown-toggle d-block" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="dropdown d-inline ms-3">
+                            <a href="#" class="text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ auth()->user()->name }}
                                 @if(auth()->user()->isAdmin())
                                     <span class="badge bg-danger ms-1">Admin</span>
                                 @endif
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end w-100" aria-labelledby="userDropdown">
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
                                 <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-card-list"></i> Тарифы и подписки</a></li>
                                 <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
@@ -132,9 +169,9 @@
                                 <li><a class="dropdown-item" href="{{ route('offer') }}"><i class="bi bi-file-earmark-text"></i> Публичная оферта</a></li>
                             </ul>
                         </div>
-                        <form method="POST" action="{{ route('logout') }}" class="d-block ms-lg-2 mt-2 mt-lg-0">
+                        <form method="POST" action="{{ route('logout') }}" class="d-inline ms-2">
                             @csrf
-                            <button type="submit" class="btn btn-outline-light w-100">Выход</button>
+                            <button type="submit" class="btn btn-outline-light">Выход</button>
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-light me-2">Вход</a>
