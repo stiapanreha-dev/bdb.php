@@ -112,16 +112,16 @@
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@2.28.2/dist/editorjs.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@2.7.0/dist/bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@1.8.0/dist/bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/image@2.8.1/dist/bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@2.5.0/dist/bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@2.8.0/dist/bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@1.3.0/dist/bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@2.2.2/dist/table.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@1.5.0/dist/bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@2.5.3/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/code@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация Editor.js
@@ -140,26 +140,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 class: List,
                 inlineToolbar: true
             },
-            image: {
-                class: ImageTool,
-                config: {
-                    uploader: {
-                        uploadByFile(file) {
-                            return compressAndConvertImage(file);
-                        }
-                    }
-                }
-            },
+            image: SimpleImage,
             quote: {
                 class: Quote,
                 inlineToolbar: true
             },
-            code: {
-                class: Code
-            },
-            delimiter: {
-                class: Delimiter
-            },
+            code: Code,
+            delimiter: Delimiter,
             table: {
                 class: Table,
                 inlineToolbar: true
@@ -190,56 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return {};
         })()
     });
-
-    // Функция сжатия и конвертации изображения
-    function compressAndConvertImage(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-
-                    let width = img.width;
-                    let height = img.height;
-                    const maxWidth = 1200;
-                    const maxHeight = 1200;
-
-                    if (width > height) {
-                        if (width > maxWidth) {
-                            height *= maxWidth / width;
-                            width = maxWidth;
-                        }
-                    } else {
-                        if (height > maxHeight) {
-                            width *= maxHeight / height;
-                            height = maxHeight;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, width, height);
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-                    resolve({
-                        success: 1,
-                        file: {
-                            url: compressedBase64
-                        }
-                    });
-                };
-                img.onerror = () => reject(new Error('Ошибка загрузки изображения'));
-                img.src = e.target.result;
-            };
-            reader.onerror = () => reject(new Error('Ошибка чтения файла'));
-            reader.readAsDataURL(file);
-        });
-    }
 
     // Сохранение данных перед отправкой формы
     const form = document.querySelector('form');
