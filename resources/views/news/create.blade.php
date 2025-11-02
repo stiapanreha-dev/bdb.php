@@ -116,9 +116,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 var canvas = document.createElement('canvas');
                 var ctx = canvas.getContext('2d');
 
-                // Максимальные размеры
-                var maxWidth = 1200;
-                var maxHeight = 1200;
+                // Максимальные размеры (уменьшаем для снижения размера)
+                var maxWidth = 800;
+                var maxHeight = 800;
                 var width = img.width;
                 var height = img.height;
 
@@ -137,11 +137,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 canvas.width = width;
                 canvas.height = height;
+
+                // Заливаем белый фон (для прозрачных PNG)
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, width, height);
+
+                // Рисуем изображение
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Конвертируем в base64 с качеством 0.7 (JPEG)
-                var compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                // Конвертируем в base64 с качеством 0.6 (JPEG) - более агрессивное сжатие
+                var compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
+                // Проверяем размер результата
+                var sizeInBytes = Math.round((compressedBase64.length - 22) * 3 / 4);
+                var sizeInMB = (sizeInBytes / 1024 / 1024).toFixed(2);
+                console.log('Image compressed: ' + sizeInMB + ' MB');
+
                 callback(compressedBase64);
+            };
+            img.onerror = function() {
+                alert('Ошибка загрузки изображения. Попробуйте другое изображение.');
             };
             img.src = e.target.result;
         };
