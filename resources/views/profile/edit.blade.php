@@ -172,18 +172,28 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <div class="d-flex align-items-center">
-                            @if($user->email_verified)
-                                <svg width="24" height="24" fill="green" class="me-2" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                                </svg>
-                                <span>Email подтвержден</span>
-                            @else
-                                <svg width="24" height="24" fill="orange" class="me-2" viewBox="0 0 16 16">
-                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-                                </svg>
-                                <span>Email не подтвержден</span>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                @if($user->email_verified)
+                                    <svg width="24" height="24" fill="green" class="me-2" viewBox="0 0 16 16">
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                    </svg>
+                                    <span>Email подтвержден</span>
+                                @else
+                                    <svg width="24" height="24" fill="orange" class="me-2" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                                    </svg>
+                                    <span>Email не подтвержден</span>
+                                @endif
+                            </div>
+                            @if(!$user->email_verified)
+                                <form action="{{ route('verification.email.resend') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-envelope-check"></i> Верифицировать
+                                    </button>
+                                </form>
                             @endif
                         </div>
                     </div>

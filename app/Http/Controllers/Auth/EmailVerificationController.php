@@ -96,6 +96,7 @@ class EmailVerificationController extends Controller
         $emailService = new EmailService();
         $emailService->sendVerificationCode($user->email, $code);
 
-        return back()->with('success', 'Новый код отправлен на ваш email.');
+        return redirect()->route('verification.email')
+            ->with('success', 'Новый код отправлен на ваш email. Введите код из письма для подтверждения.');
     }
 }
