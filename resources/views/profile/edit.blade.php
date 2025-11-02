@@ -8,64 +8,107 @@
                 <h5 class="mb-0">Личная информация</h5>
             </div>
             <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <strong>Имя пользователя:</strong>
-                    </div>
-                    <div class="col-md-8">
-                        {{ $user->username }}
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <strong>Email:</strong>
-                    </div>
-                    <div class="col-md-8">
-                        {{ $user->email }}
-                        @if($user->email_verified)
-                            <span class="badge bg-success ms-2">Подтвержден</span>
-                        @else
-                            <span class="badge bg-warning ms-2">Не подтвержден</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <strong>Телефон:</strong>
-                    </div>
-                    <div class="col-md-8">
-                        {{ $user->phone ?? '-' }}
-                        @if($user->phone)
-                            @if($user->phone_verified)
-                                <span class="badge bg-success ms-2">Подтвержден</span>
+                <div class="row">
+                    <!-- Фото профиля -->
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="mb-3">
+                            @if($user->avatar ?? false)
+                                <img src="{{ asset('storage/avatars/' . $user->avatar) }}"
+                                     alt="Фото профиля"
+                                     class="rounded-circle img-thumbnail"
+                                     style="width: 150px; height: 150px; object-fit: cover;">
                             @else
-                                <span class="badge bg-warning ms-2">Не подтвержден</span>
+                                <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center"
+                                     style="width: 150px; height: 150px;">
+                                    <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+                                </div>
                             @endif
-                        @endif
+                        </div>
+                        <small class="text-muted">{{ $user->username }}</small>
                     </div>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <strong>Роль:</strong>
-                    </div>
-                    <div class="col-md-8">
-                        @if($user->isAdmin())
-                            <span class="badge bg-danger">Администратор</span>
-                        @else
-                            <span class="badge bg-primary">Пользователь</span>
-                        @endif
-                    </div>
-                </div>
+                    <!-- Основная информация -->
+                    <div class="col-md-9">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Имя пользователя:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ $user->username }}
+                            </div>
+                        </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <strong>Дата регистрации:</strong>
-                    </div>
-                    <div class="col-md-8">
-                        {{ $user->created_at ? $user->created_at->format('d.m.Y H:i') : '-' }}
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Email:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ $user->email }}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Телефон:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ $user->phone ?? '-' }}
+                            </div>
+                        </div>
+
+                        <!-- Статусы верификации -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Статус Email:</strong><br>
+                                @if($user->email_verified)
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Подтвержден
+                                    </span>
+                                @else
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-exclamation-circle"></i> Не подтвержден
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Статус телефона:</strong><br>
+                                @if($user->phone)
+                                    @if($user->phone_verified)
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Подтвержден
+                                        </span>
+                                    @else
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-exclamation-circle"></i> Не подтвержден
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="badge bg-secondary">Не указан</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Роль:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                @if($user->isAdmin())
+                                    <span class="badge bg-danger">Администратор</span>
+                                @else
+                                    <span class="badge bg-primary">Пользователь</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Дата регистрации:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                {{ $user->created_at ? $user->created_at->format('d.m.Y H:i') : '-' }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
