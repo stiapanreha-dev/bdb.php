@@ -4,8 +4,64 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4cd3cecab5e432ac9e22b456dcdf840c",
+    "content-hash": "5b6a76d274e172cabb163ad1238dcbf1",
     "packages": [
+        {
+            "name": "alaminfirdows/laravel-editorjs",
+            "version": "v2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/alaminfirdows/laravel-editorjs.git",
+                "reference": "b1a33079062fdb651b4381579d38593c7b1d2392"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/alaminfirdows/laravel-editorjs/zipball/b1a33079062fdb651b4381579d38593c7b1d2392",
+                "reference": "b1a33079062fdb651b4381579d38593c7b1d2392",
+                "shasum": ""
+            },
+            "require": {
+                "codex-team/editor.js": "v2.0.7",
+                "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
+                "php": "^7.3|^8.1|^8.2|^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AlAminFirdows\\LaravelEditorJs\\LaravelEditorJsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "AlAminFirdows\\LaravelEditorJs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Al-Amin Firdows",
+                    "email": "alaminfirdows@gmail.com"
+                }
+            ],
+            "description": "A simple editor.js html parser for Laravel",
+            "support": {
+                "issues": "https://github.com/alaminfirdows/laravel-editorjs/issues",
+                "source": "https://github.com/alaminfirdows/laravel-editorjs/tree/v2.3.0"
+            },
+            "time": "2025-06-20T15:34:41+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.14.0",
@@ -134,6 +190,51 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
+        },
+        {
+            "name": "codex-team/editor.js",
+            "version": "v2.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/editor-js/editorjs-php.git",
+                "reference": "b2c6586c948ed30683718184f0156b0b1fd9593f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/editor-js/editorjs-php/zipball/b2c6586c948ed30683718184f0156b0b1fd9593f",
+                "reference": "b2c6586c948ed30683718184f0156b0b1fd9593f",
+                "shasum": ""
+            },
+            "require": {
+                "ezyang/htmlpurifier": "^4.8",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.13",
+                "phpunit/phpunit": "5.4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "EditorJS\\": "EditorJS"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "CodeX Team",
+                    "email": "team@ifmo.su"
+                }
+            ],
+            "description": "PHP backend implementation for the Editor.js",
+            "support": {
+                "issues": "https://github.com/editor-js/editorjs-php/issues",
+                "source": "https://github.com/editor-js/editorjs-php/tree/v2.0.7"
+            },
+            "time": "2020-06-12T09:55:49+00:00"
         },
         {
             "name": "composer/pcre",

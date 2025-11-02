@@ -15,7 +15,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div class="flex-grow-1">
                         <h5 class="card-title">{{ $item->title }}</h5>
-                        <div class="card-text news-content">{!! $item->content !!}</div>
+                        <div class="card-text news-content">@editorJsRender($item->content)</div>
                         <p class="text-muted small mt-3">{{ $item->created_at->format('d.m.Y H:i') }}</p>
                     </div>
                     @auth
@@ -39,32 +39,66 @@
 
 @push('styles')
 <style>
+    /* Editor.js content styles */
+    .news-content {
+        line-height: 1.6;
+    }
     .news-content img {
         max-width: 100%;
         height: auto;
         border-radius: 4px;
-        margin: 10px 0;
+        margin: 15px 0;
     }
-    .news-content h1, .news-content h2, .news-content h3 {
-        margin-top: 1rem;
-        margin-bottom: 0.5rem;
+    .news-content h1, .news-content h2, .news-content h3, .news-content h4 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
     }
     .news-content p {
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
     }
     .news-content a {
         color: #0d6efd;
         text-decoration: underline;
     }
     .news-content blockquote {
-        border-left: 4px solid #ddd;
-        padding-left: 1rem;
-        margin: 1rem 0;
-        color: #666;
+        border-left: 4px solid #dee2e6;
+        padding-left: 1.5rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: #6c757d;
     }
     .news-content ul, .news-content ol {
         padding-left: 2rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    .news-content pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.375rem;
+        overflow-x: auto;
+        margin: 1rem 0;
+    }
+    .news-content code {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+    .news-content table {
+        width: 100%;
+        margin: 1rem 0;
+        border-collapse: collapse;
+    }
+    .news-content table th,
+    .news-content table td {
+        border: 1px solid #dee2e6;
+        padding: 0.5rem;
+    }
+    .news-content table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
     }
 </style>
 @endpush
