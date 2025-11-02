@@ -1,8 +1,5 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-    <h2 class="mb-4">Рассылки по ключевым словам</h2>
+<x-app-layout>
+<h2 class="mb-4">Рассылки по ключевым словам</h2>
 
     <!-- Информация о сервисе -->
     <div class="card mb-3 border-primary">
@@ -173,8 +170,8 @@
         </div>
     </div>
     @endif
-</div>
 
+@push('scripts')
 <script>
 function addKeywordRow() {
     const container = document.getElementById('keywordsContainer');
@@ -208,4 +205,5 @@ function removeKeywordRow(button) {
     }
 }
 </script>
-@endsection
+@endpush
+</x-app-layout>
