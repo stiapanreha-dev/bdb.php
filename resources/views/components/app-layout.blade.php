@@ -72,7 +72,18 @@
                 <ul class="navbar-nav d-lg-none">
                     @auth
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="mobileUserDropdown" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="mobileUserDropdown" data-bs-toggle="dropdown">
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ asset('storage/avatars/' . auth()->user()->avatar) }}"
+                                         alt="Фото"
+                                         class="rounded-circle me-2"
+                                         style="width: 32px; height: 32px; object-fit: cover;">
+                                @else
+                                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center me-2"
+                                         style="width: 32px; height: 32px;">
+                                        <i class="bi bi-person-fill text-white" style="font-size: 1rem;"></i>
+                                    </div>
+                                @endif
                                 {{ auth()->user()->name }}
                                 @if(auth()->user()->isAdmin())
                                     <span class="badge bg-danger ms-1">Admin</span>
@@ -133,11 +144,24 @@
                             <i class="bi bi-wallet2"></i> {{ number_format(auth()->user()->balance, 2) }} ₽
                         </span>
                         <div class="dropdown d-inline">
-                            <a href="#" class="text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ auth()->user()->name }}
-                                @if(auth()->user()->isAdmin())
-                                    <span class="badge bg-danger ms-1">Admin</span>
+                            <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if(auth()->user()->avatar)
+                                    <img src="{{ asset('storage/avatars/' . auth()->user()->avatar) }}"
+                                         alt="Фото"
+                                         class="rounded-circle me-2"
+                                         style="width: 32px; height: 32px; object-fit: cover;">
+                                @else
+                                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center me-2"
+                                         style="width: 32px; height: 32px;">
+                                        <i class="bi bi-person-fill text-white" style="font-size: 1rem;"></i>
+                                    </div>
                                 @endif
+                                <span>
+                                    {{ auth()->user()->name }}
+                                    @if(auth()->user()->isAdmin())
+                                        <span class="badge bg-danger ms-1">Admin</span>
+                                    @endif
+                                </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
