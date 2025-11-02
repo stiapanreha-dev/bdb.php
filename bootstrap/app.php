@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Session\TokenMismatchException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -31,5 +32,10 @@ return Application::configure(basePath: dirname(__DIR__))
             ->runInBackground();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Обработка CSRF ошибок (истекшая сессия)
+        $exceptions->render(function (TokenMismatchException $e, $request) {
+            return redirect()->back()->with('error',
+                'Ваша сессия истекла. Пожалуйста, повторите действие.'
+            );
+        });
     })->create();
