@@ -171,8 +171,8 @@
 
                 <h6 class="mt-3">Стоимость:</h6>
                 <p class="mb-2">
-                    <strong class="text-info fs-4">50 руб/месяц</strong>
-                    <span class="text-muted">(~1,67 руб/день)</span>
+                    <strong class="text-info fs-4">500 руб/месяц</strong>
+                    <span class="text-muted">(~16,67 руб/день)</span>
                 </p>
 
                 <div class="alert alert-light mt-3">
