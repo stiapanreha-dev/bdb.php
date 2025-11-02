@@ -42,8 +42,8 @@
 
                     <div class="mb-3">
                         <strong>Описание:</strong>
-                        <div class="mt-2">
-                            {!! nl2br(e($announcement->description)) !!}
+                        <div class="mt-2 announcement-content">
+                            {!! $announcement->description !!}
                         </div>
                     </div>
 
@@ -167,4 +167,45 @@
         </div>
     </div>
 </div>
+
+@push('styles')
+<style>
+    .announcement-content {
+        line-height: 1.6;
+    }
+    .announcement-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 10px 0;
+        border-radius: 4px;
+    }
+    .announcement-content h1,
+    .announcement-content h2,
+    .announcement-content h3 {
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    .announcement-content ul,
+    .announcement-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+    .announcement-content blockquote {
+        border-left: 4px solid #ddd;
+        padding-left: 1rem;
+        margin: 1rem 0;
+        color: #666;
+    }
+    .announcement-content pre {
+        background-color: #f5f5f5;
+        padding: 1rem;
+        border-radius: 4px;
+        overflow-x: auto;
+    }
+    .announcement-content a {
+        color: #0d6efd;
+        text-decoration: underline;
+    }
+</style>
+@endpush
 </x-app-layout>
