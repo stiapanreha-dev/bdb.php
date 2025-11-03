@@ -286,11 +286,11 @@ class AnnouncementController extends Controller
             ]);
 
             // Вставляем запись в таблицу zakupki
-            // Используем московское время (UTC+3) и формат datetime для SQL Server
-            $moscowTime = now()->timezone('Europe/Moscow')->format('Y-m-d H:i:s.v');
+            // Формат datetime для SQL Server (таймзона берется из config/app.php)
+            $createdAt = now()->format('Y-m-d H:i:s.v');
 
             DB::connection($connection)->table('zakupki')->insert([
-                'created' => $moscowTime,
+                'created' => $createdAt,
                 'purchase_object' => $announcement->title,
                 'customer' => $announcement->user->name ?? 'Не указано',
                 'purchase_type' => 10, // Специальный тип для объявлений с доски
