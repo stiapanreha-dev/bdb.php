@@ -286,8 +286,8 @@ class AnnouncementController extends Controller
             ]);
 
             // Вставляем запись в таблицу zakupki
-            // Формат datetime для SQL Server (таймзона берется из config/app.php)
-            $createdAt = now()->format('Y-m-d H:i:s.v');
+            // ISO 8601 формат для SQL Server (таймзона берется из config/app.php)
+            $createdAt = now()->format('Y-m-d\TH:i:s.v');
 
             DB::connection($connection)->table('zakupki')->insert([
                 'created' => $createdAt,
