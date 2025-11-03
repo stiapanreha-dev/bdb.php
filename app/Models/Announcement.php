@@ -12,6 +12,7 @@ class Announcement extends Model
         'category',
         'title',
         'description',
+        'images',
         'register_as_purchase',
         'company_id',
         'status',
@@ -21,6 +22,7 @@ class Announcement extends Model
     protected $casts = [
         'register_as_purchase' => 'boolean',
         'published_at' => 'datetime',
+        'images' => 'array',
     ];
 
     // Связь с пользователем (автор объявления)

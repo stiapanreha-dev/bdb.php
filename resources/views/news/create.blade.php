@@ -69,15 +69,15 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация Editor.js
@@ -96,7 +96,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 class: EditorjsList,
                 inlineToolbar: true
             },
-            image: SimpleImage,
+            image: {
+                class: ImageTool,
+                config: {
+                    endpoints: {
+                        byFile: '{{ route('image.upload.file') }}',
+                        byUrl: '{{ route('image.upload.url') }}'
+                    },
+                    additionalRequestHeaders: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                }
+            },
             quote: {
                 class: Quote,
                 inlineToolbar: true

@@ -59,15 +59,42 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request)
     {
+        \Log::info('[ANNOUNCEMENT] Store method called', [
+            'all_data' => $request->all(),
+            'description_length' => strlen($request->input('description', '')),
+            'description_preview' => substr($request->input('description', ''), 0, 100)
+        ]);
+
         $validated = $request->validate([
             'type' => ['required', 'in:supplier,buyer,dealer'],
             'category' => ['nullable', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'description' => ['required', 'string', function ($attribute, $value, $fail) {
+                // Проверяем что Editor.js JSON содержит блоки
+                $data = json_decode($value, true);
+                if (!$data || !isset($data['blocks']) || empty($data['blocks'])) {
+                    $fail('Поле описание обязательно для заполнения.');
+                }
+            }],
+            'images' => ['nullable', 'json'],
             'register_as_purchase' => ['boolean'],
         ]);
 
         $user = Auth::user();
+
+        // Обрабатываем images (из JSON строки в массив)
+        $images = null;
+        if ($request->has('images') && !empty($request->input('images'))) {
+            $imagesJson = json_decode($request->input('images'), true);
+            if (is_array($imagesJson) && !empty($imagesJson)) {
+                $images = $imagesJson;
+            }
+        }
+
+        \Log::info('[ANNOUNCEMENT] Images data', [
+            'images_input' => $request->input('images'),
+            'images_parsed' => $images
+        ]);
 
         // Создаем объявление
         $announcement = new Announcement();
@@ -76,6 +103,7 @@ class AnnouncementController extends Controller
         $announcement->category = $validated['category'] ?? null;
         $announcement->title = $validated['title'];
         $announcement->description = $validated['description'];
+        $announcement->images = $images;
         $announcement->register_as_purchase = $request->has('register_as_purchase');
         $announcement->company_id = $user->id; // В нашем случае company_id = user_id
         $announcement->status = 'active';
@@ -120,6 +148,13 @@ class AnnouncementController extends Controller
      */
     public function update(Request $request, $id)
     {
+        \Log::info('[ANNOUNCEMENT] Update method called', [
+            'id' => $id,
+            'all_data' => $request->all(),
+            'description_length' => strlen($request->input('description', '')),
+            'description_preview' => substr($request->input('description', ''), 0, 100)
+        ]);
+
         $announcement = Announcement::findOrFail($id);
 
         // Проверка прав доступа
@@ -131,14 +166,36 @@ class AnnouncementController extends Controller
             'type' => ['required', 'in:supplier,buyer,dealer'],
             'category' => ['nullable', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'description' => ['required', 'string', function ($attribute, $value, $fail) {
+                // Проверяем что Editor.js JSON содержит блоки
+                $data = json_decode($value, true);
+                if (!$data || !isset($data['blocks']) || empty($data['blocks'])) {
+                    $fail('Поле описание обязательно для заполнения.');
+                }
+            }],
+            'images' => ['nullable', 'json'],
             'register_as_purchase' => ['boolean'],
+        ]);
+
+        // Обрабатываем images (из JSON строки в массив)
+        $images = null;
+        if ($request->has('images') && !empty($request->input('images'))) {
+            $imagesJson = json_decode($request->input('images'), true);
+            if (is_array($imagesJson) && !empty($imagesJson)) {
+                $images = $imagesJson;
+            }
+        }
+
+        \Log::info('[ANNOUNCEMENT] Update images data', [
+            'images_input' => $request->input('images'),
+            'images_parsed' => $images
         ]);
 
         $announcement->type = $validated['type'];
         $announcement->category = $validated['category'] ?? null;
         $announcement->title = $validated['title'];
         $announcement->description = $validated['description'];
+        $announcement->images = $images;
         $announcement->register_as_purchase = $request->has('register_as_purchase');
         $announcement->save();
 
@@ -188,12 +245,45 @@ class AnnouncementController extends Controller
     private function registerAsPurchase(Announcement $announcement)
     {
         try {
-            // Очищаем описание от HTML тегов
-            $cleanDescription = strip_tags($announcement->description);
+            \Log::info('[ANNOUNCEMENT] Registering as purchase', [
+                'announcement_id' => $announcement->id,
+                'title' => $announcement->title,
+                'type' => $announcement->type
+            ]);
+
+            // Извлекаем текст из Editor.js JSON
+            $cleanDescription = '';
+            try {
+                $decoded = json_decode($announcement->description);
+                if (json_last_error() === JSON_ERROR_NONE && isset($decoded->blocks)) {
+                    foreach ($decoded->blocks as $block) {
+                        if (isset($block->data)) {
+                            if (isset($block->data->text)) {
+                                $cleanDescription .= strip_tags($block->data->text) . ' ';
+                            } elseif ($block->type === 'list' && isset($block->data->items)) {
+                                foreach ($block->data->items as $item) {
+                                    $cleanDescription .= strip_tags($item) . ' ';
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    $cleanDescription = strip_tags($announcement->description);
+                }
+            } catch (\Exception $e) {
+                $cleanDescription = strip_tags($announcement->description);
+            }
+            $cleanDescription = trim($cleanDescription);
 
             // Получаем текущий год для определения БД
             $currentYear = now()->year;
             $connection = $currentYear === 2025 ? 'mssql' : "mssql_{$currentYear}";
+
+            \Log::info('[ANNOUNCEMENT] Inserting into zakupki', [
+                'connection' => $connection,
+                'year' => $currentYear,
+                'description_length' => strlen($cleanDescription)
+            ]);
 
             // Вставляем запись в таблицу zakupki
             DB::connection($connection)->table('zakupki')->insert([
@@ -201,19 +291,19 @@ class AnnouncementController extends Controller
                 'purchase_object' => $announcement->title,
                 'customer' => $announcement->user->name ?? 'Не указано',
                 'purchase_type' => 10, // Специальный тип для объявлений с доски
-                'start_cost' => null,
-                'law' => null,
-                'region' => null,
-                'delivery_place' => null,
-                'purchase_url' => route('announcements.show', $announcement->id),
-                'customer_inn' => null,
-                'customer_phone' => $announcement->user->work_phone ?? $announcement->user->phone ?? null,
-                'customer_email' => $announcement->user->work_email ?? $announcement->user->email ?? null,
-                'description' => $cleanDescription,
+                'url' => route('announcements.show', $announcement->id),
+                'contact_number' => $announcement->user->work_phone ?? $announcement->user->phone ?? null,
+                'email' => $announcement->user->work_email ?? $announcement->user->email ?? null,
             ]);
+
+            \Log::info('[ANNOUNCEMENT] Successfully registered as purchase in zakupki');
+
         } catch (\Exception $e) {
             // Логируем ошибку, но не прерываем создание объявления
-            \Log::error('Failed to register announcement as purchase: ' . $e->getMessage());
+            \Log::error('[ANNOUNCEMENT] Failed to register announcement as purchase', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
         }
     }
 }

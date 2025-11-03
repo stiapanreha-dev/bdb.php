@@ -4,7 +4,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ZakupkiController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\LogController;
 use Illuminate\Support\Facades\Route;
+
+// Client-side logging
+Route::post('/api/log', [LogController::class, 'clientLog'])->name('api.log');
 
 // Main page - Zakupki (public, but limited for unauthenticated)
 Route::get('/', [ZakupkiController::class, 'index'])->name('home');
@@ -65,6 +69,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'update'])->name('announcements.update');
     Route::delete('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'destroy'])->name('announcements.destroy');
     Route::post('/announcements/{id}/inquiry', [App\Http\Controllers\AnnouncementController::class, 'sendInquiry'])->name('announcements.inquiry');
+
+    // Image upload routes for Editor.js
+    Route::post('/api/upload-image', [App\Http\Controllers\ImageUploadController::class, 'uploadByFile'])->name('image.upload.file');
+    Route::post('/api/upload-image-url', [App\Http\Controllers\ImageUploadController::class, 'uploadByUrl'])->name('image.upload.url');
+
+    // Announcement images upload (up to 5 images)
+    Route::post('/api/upload-announcement-images', [App\Http\Controllers\ImageUploadController::class, 'uploadAnnouncementImages'])->name('announcement.images.upload');
 });
 Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 

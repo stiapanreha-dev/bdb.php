@@ -62,41 +62,65 @@
         @forelse($announcements as $announcement)
             <div class="col-md-6 mb-4">
                 <div class="card h-100">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                @if($announcement->type === 'supplier')
-                                    <span class="badge bg-success">Я поставщик</span>
-                                @elseif($announcement->type === 'buyer')
-                                    <span class="badge bg-primary">Я покупатель</span>
-                                @else
-                                    <span class="badge bg-info">Ищу дилера</span>
-                                @endif
-
-                                @if($announcement->category)
-                                    <span class="badge bg-secondary">{{ $announcement->category }}</span>
-                                @endif
+                    <div class="d-flex h-100">
+                        @if($announcement->images && count($announcement->images) > 0)
+                            <div class="announcement-thumbnail">
+                                <img src="{{ $announcement->images[0] }}" alt="Превью">
                             </div>
-                            <small class="text-muted">{{ $announcement->published_at?->format('d.m.Y') }}</small>
+                        @endif
+                        <div class="flex-grow-1">
+                            <div class="card-body h-100 d-flex flex-column position-relative">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0 flex-grow-1 pe-3">
+                                        <a href="{{ route('announcements.show', $announcement->id) }}" class="text-decoration-none">
+                                            {{ $announcement->title }}
+                                        </a>
+                                    </h5>
+                                    <small class="text-muted text-nowrap">{{ $announcement->published_at?->format('d.m.Y') }}</small>
+                                </div>
+                                <div class="card-text announcement-preview flex-grow-1">
+                                    @php
+                                        $text = '';
+                                        try {
+                                            $decoded = json_decode($announcement->description);
+                                            if (json_last_error() === JSON_ERROR_NONE && isset($decoded->blocks)) {
+                                                // Извлекаем текст из блоков Editor.js
+                                                foreach ($decoded->blocks as $block) {
+                                                    if (isset($block->data)) {
+                                                        if (isset($block->data->text)) {
+                                                            $text .= strip_tags($block->data->text) . ' ';
+                                                        } elseif ($block->type === 'list' && isset($block->data->items)) {
+                                                            foreach ($block->data->items as $item) {
+                                                                $text .= strip_tags($item) . ' ';
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                $text = $announcement->description;
+                                            }
+                                        } catch (\Exception $e) {
+                                            $text = $announcement->description;
+                                        }
+                                        $text = trim($text);
+                                    @endphp
+                                    {{ \Illuminate\Support\Str::limit($text, 200) }}
+                                </div>
+                                <div class="announcement-badges mt-2">
+                                    @if($announcement->type === 'supplier')
+                                        <span class="badge bg-success">Я поставщик</span>
+                                    @elseif($announcement->type === 'buyer')
+                                        <span class="badge bg-primary">Я покупатель</span>
+                                    @else
+                                        <span class="badge bg-info">Ищу дилера</span>
+                                    @endif
+
+                                    @if($announcement->category)
+                                        <span class="badge bg-secondary">{{ $announcement->category }}</span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <a href="{{ route('announcements.show', $announcement->id) }}" class="text-decoration-none">
-                                {{ $announcement->title }}
-                            </a>
-                        </h5>
-                        <div class="card-text announcement-preview">
-                            @editorJsRender($announcement->description)
-                        </div>
-                        <div class="text-muted small">
-                            <i class="bi bi-person"></i> {{ $announcement->user->name ?? 'Не указано' }}
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent">
-                        <a href="{{ route('announcements.show', $announcement->id) }}" class="btn btn-sm btn-outline-primary">
-                            Подробнее <i class="bi bi-arrow-right"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -119,11 +143,50 @@
 
 @push('styles')
 <style>
+    .announcement-thumbnail {
+        flex-shrink: 0;
+        width: 30%;
+        max-width: 200px;
+        overflow: hidden;
+        border-radius: 0.375rem 0 0 0.375rem;
+    }
+    .announcement-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .announcement-badges {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
     .announcement-preview {
         max-height: 150px;
         overflow: hidden;
         position: relative;
-        margin-bottom: 1rem;
+    }
+
+    /* Мобильные устройства */
+    @media (max-width: 768px) {
+        .announcement-thumbnail {
+            width: 35%;
+            max-width: 120px;
+        }
+        .card-body {
+            padding: 0.75rem !important;
+        }
+        .card-title {
+            font-size: 1rem;
+        }
+        .announcement-badges .badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.4rem;
+        }
+        .announcement-badges small {
+            font-size: 0.7rem;
+        }
     }
     .announcement-preview::after {
         content: '';

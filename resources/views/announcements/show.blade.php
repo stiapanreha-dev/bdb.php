@@ -47,6 +47,21 @@
                         </div>
                     </div>
 
+                    @if($announcement->images && count($announcement->images) > 0)
+                        <div class="mb-3">
+                            <strong>Дополнительные изображения:</strong>
+                            <div class="row g-2 mt-2">
+                                @foreach($announcement->images as $imageUrl)
+                                    <div class="col-6 col-md-4">
+                                        <a href="{{ $imageUrl }}" target="_blank">
+                                            <img src="{{ $imageUrl }}" alt="Изображение" class="img-thumbnail" style="width: 100%; height: 150px; object-fit: cover; cursor: pointer;">
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="mb-3">
                         <strong>Дата публикации:</strong>
                         <span class="text-muted">{{ $announcement->published_at?->format('d.m.Y H:i') }}</span>

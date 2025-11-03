@@ -27,5 +27,82 @@ class AppServiceProvider extends ServiceProvider
             $view->with('news_count', $news_count);
             $view->with('ideas_count', $ideas_count);
         });
+
+        // Register custom Blade directive for Editor.js rendering
+        \Blade::directive('editorJsRender', function ($expression) {
+            return "<?php
+                \$content = {$expression};
+                try {
+                    // Пытаемся распарсить как JSON
+                    \$decoded = json_decode(\$content);
+                    if (json_last_error() === JSON_ERROR_NONE && isset(\$decoded->blocks)) {
+                        // Это валидный JSON Editor.js, пытаемся рендерить
+                        try {
+                            echo editorjs()->render(\$content);
+                        } catch (\Exception \$renderEx) {
+                            // Fallback: рендерим вручную простые блоки
+                            foreach (\$decoded->blocks as \$block) {
+                                if (isset(\$block->type) && isset(\$block->data)) {
+                                    switch (\$block->type) {
+                                        case 'paragraph':
+                                            echo '<p>' . e(\$block->data->text ?? '') . '</p>';
+                                            break;
+                                        case 'header':
+                                            \$level = \$block->data->level ?? 2;
+                                            echo '<h' . \$level . '>' . e(\$block->data->text ?? '') . '</h' . \$level . '>';
+                                            break;
+                                        case 'list':
+                                            \$tag = (\$block->data->style ?? 'unordered') === 'ordered' ? 'ol' : 'ul';
+                                            echo '<' . \$tag . '>';
+                                            foreach (\$block->data->items ?? [] as \$item) {
+                                                echo '<li>' . e(\$item) . '</li>';
+                                            }
+                                            echo '</' . \$tag . '>';
+                                            break;
+                                        case 'image':
+                                            \$url = \$block->data->file->url ?? '';
+                                            \$caption = \$block->data->caption ?? '';
+                                            if (\$url) {
+                                                echo '<figure><img src=\"' . e(\$url) . '\" alt=\"' . e(\$caption) . '\"><figcaption>' . e(\$caption) . '</figcaption></figure>';
+                                            }
+                                            break;
+                                        case 'quote':
+                                            echo '<blockquote>' . e(\$block->data->text ?? '') . '</blockquote>';
+                                            break;
+                                        case 'delimiter':
+                                            echo '<hr>';
+                                            break;
+                                        case 'table':
+                                            if (isset(\$block->data->content) && is_array(\$block->data->content)) {
+                                                echo '<table class=\"table table-bordered\">';
+                                                \$isFirstRow = true;
+                                                foreach (\$block->data->content as \$row) {
+                                                    if (is_array(\$row)) {
+                                                        echo '<tr>';
+                                                        \$tag = (\$isFirstRow && (\$block->data->withHeadings ?? false)) ? 'th' : 'td';
+                                                        foreach (\$row as \$cell) {
+                                                            echo '<' . \$tag . '>' . e(\$cell ?? '') . '</' . \$tag . '>';
+                                                        }
+                                                        echo '</tr>';
+                                                        \$isFirstRow = false;
+                                                    }
+                                                }
+                                                echo '</table>';
+                                            }
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // Обычный текст
+                        echo nl2br(e(\$content));
+                    }
+                } catch (\Exception \$e) {
+                    // Полный fallback
+                    echo nl2br(e(\$content));
+                }
+            ?>";
+        });
     }
 }

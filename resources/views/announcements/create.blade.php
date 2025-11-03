@@ -6,7 +6,7 @@
 
             <div class="card">
                 <div class="card-body">
-                    <form method="POST" action="{{ route('announcements.store') }}">
+                    <form id="announcementForm" method="POST" action="{{ route('announcements.store') }}">
                         @csrf
 
                         <!-- Тип объявления -->
@@ -60,10 +60,24 @@
                         <div class="mb-3">
                             <label for="description" class="form-label">Описание <span class="text-danger">*</span></label>
                             <div id="editorjs"></div>
-                            <textarea class="d-none @error('description') is-invalid @enderror" id="description" name="description" required>{{ old('description') }}</textarea>
+                            <textarea class="d-none @error('description') is-invalid @enderror" id="description" name="description">{{ old('description') }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <!-- Дополнительные изображения (до 5 штук) -->
+                        <div class="mb-3">
+                            <label for="announcement_images" class="form-label">Дополнительные изображения</label>
+                            <input type="file" class="form-control @error('images') is-invalid @enderror" id="announcement_images" accept="image/*" multiple>
+                            <input type="hidden" id="images_urls" name="images" value="">
+                            @error('images')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Максимум 5 изображений, до 5 МБ каждое</small>
+
+                            <!-- Превью загруженных изображений -->
+                            <div id="images_preview" class="mt-2 row g-2"></div>
                         </div>
 
                         <!-- Компания (для будущего использования) -->
@@ -100,7 +114,7 @@
                             <a href="{{ route('announcements.index') }}" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Назад
                             </a>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" id="submitBtn" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Создать объявление
                             </button>
                         </div>
@@ -126,23 +140,85 @@
     .codex-editor__redactor {
         padding-bottom: 150px !important;
     }
+    .image-preview-item {
+        position: relative;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 0.5rem;
+    }
+    .image-preview-item img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 0.25rem;
+    }
+    .image-preview-item .remove-btn {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+    }
+    .image-preview-item .remove-btn:hover {
+        background: rgba(220, 53, 69, 1);
+    }
 </style>
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/checklist@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/@editorjs/table@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
 <script>
+// Функция для отправки логов на сервер
+function sendLog(level, message, context = {}) {
+    console.log(`[${level.toUpperCase()}] ${message}`, context);
+    fetch('{{ route('api.log') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ level, message, context })
+    }).catch(err => console.error('Failed to send log:', err));
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация Editor.js
-    const editor = new EditorJS({
+    sendLog('info', 'DOMContentLoaded event fired');
+
+    // Проверяем что Editor.js загрузился
+    if (typeof EditorJS === 'undefined') {
+        sendLog('error', 'Editor.js не загрузился с CDN. Используется fallback.');
+        // Показываем обычное textarea вместо Editor.js
+        document.getElementById('editorjs').style.display = 'none';
+        const textarea = document.getElementById('description');
+        textarea.classList.remove('d-none');
+        textarea.rows = 10;
+        return;
+    }
+
+    sendLog('info', 'EditorJS class available');
+
+    let editor;
+
+    try {
+        sendLog('info', 'Starting EditorJS initialization');
+        // Инициализация Editor.js
+        editor = new EditorJS({
         holder: 'editorjs',
         placeholder: 'Начните писать описание объявления...',
         tools: {
@@ -157,7 +233,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 class: EditorjsList,
                 inlineToolbar: true
             },
-            image: SimpleImage,
+            image: {
+                class: ImageTool,
+                config: {
+                    endpoints: {
+                        byFile: '{{ route('image.upload.file') }}',
+                        byUrl: '{{ route('image.upload.url') }}'
+                    },
+                    additionalRequestHeaders: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                }
+            },
             quote: {
                 class: Quote,
                 inlineToolbar: true
@@ -192,25 +279,221 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             return {};
         })()
-    });
+        });
 
-    // Сохранение данных перед отправкой формы
-    const form = document.querySelector('form');
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
+        sendLog('info', 'Editor.js успешно инициализирован');
+
+    } catch (error) {
+        sendLog('error', 'Ошибка инициализации Editor.js', { error: error.message, stack: error.stack });
+        // Показываем обычное textarea при ошибке инициализации
+        document.getElementById('editorjs').style.display = 'none';
+        const textarea = document.getElementById('description');
+        textarea.classList.remove('d-none');
+        textarea.rows = 10;
+        alert('Редактор не загрузился. Используйте обычное текстовое поле.');
+        return;
+    }
+
+    // Обработка загрузки изображений
+    const imageInput = document.getElementById('announcement_images');
+    const imagesPreview = document.getElementById('images_preview');
+    const imagesUrlsInput = document.getElementById('images_urls');
+    let uploadedImages = [];
+
+    imageInput.addEventListener('change', async function(e) {
+        const files = Array.from(e.target.files);
+
+        sendLog('info', '[IMAGES] Files selected', { count: files.length });
+
+        if (files.length > 5) {
+            alert('Максимум 5 изображений');
+            imageInput.value = '';
+            return;
+        }
+
+        // Проверка размера каждого файла (макс 5МБ)
+        for (let file of files) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert(`Файл ${file.name} слишком большой. Максимум 5 МБ.`);
+                imageInput.value = '';
+                return;
+            }
+        }
+
+        // Загружаем файлы на сервер
+        const formData = new FormData();
+        files.forEach((file, index) => {
+            formData.append(`images[${index}]`, file);
+        });
 
         try {
+            sendLog('info', '[IMAGES] Uploading images to server...');
+
+            const response = await fetch('{{ route('announcement.images.upload') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            sendLog('info', '[IMAGES] Upload response', result);
+
+            if (result.success) {
+                uploadedImages = result.images;
+                imagesUrlsInput.value = JSON.stringify(uploadedImages.map(img => img.url));
+
+                sendLog('info', '[IMAGES] Images uploaded successfully', {
+                    count: uploadedImages.length,
+                    urls: uploadedImages.map(img => img.url)
+                });
+
+                // Отображаем превью
+                renderImagePreviews();
+            } else {
+                sendLog('error', '[IMAGES] Upload failed', { message: result.message });
+                alert('Ошибка загрузки: ' + result.message);
+                imageInput.value = '';
+            }
+        } catch (error) {
+            sendLog('error', '[IMAGES] Upload error', { error: error.message });
+            alert('Ошибка при загрузке изображений');
+            imageInput.value = '';
+        }
+    });
+
+    function renderImagePreviews() {
+        imagesPreview.innerHTML = '';
+
+        uploadedImages.forEach((image, index) => {
+            const col = document.createElement('div');
+            col.className = 'col-6 col-md-4';
+
+            col.innerHTML = `
+                <div class="image-preview-item">
+                    <img src="${image.url}" alt="Preview ${index + 1}">
+                    <button type="button" class="remove-btn" data-index="${index}" title="Удалить">&times;</button>
+                </div>
+            `;
+
+            imagesPreview.appendChild(col);
+        });
+
+        // Добавляем обработчики удаления
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const index = parseInt(this.dataset.index);
+                removeImage(index);
+            });
+        });
+    }
+
+    function removeImage(index) {
+        sendLog('info', '[IMAGES] Removing image', { index });
+        uploadedImages.splice(index, 1);
+        imagesUrlsInput.value = JSON.stringify(uploadedImages.map(img => img.url));
+        renderImagePreviews();
+
+        if (uploadedImages.length === 0) {
+            imageInput.value = '';
+        }
+    }
+
+    // Сохранение данных перед отправкой формы
+    const form = document.getElementById('announcementForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    sendLog('info', 'Form and button elements', {
+        formFound: !!form,
+        buttonFound: !!submitBtn,
+        initialAction: form ? form.action : 'N/A',
+        initialMethod: form ? form.method : 'N/A'
+    });
+
+    if (!form || !submitBtn) {
+        sendLog('error', 'Форма или кнопка не найдены!');
+        return;
+    }
+
+    sendLog('info', 'Adding click event listener to submit button');
+
+    submitBtn.addEventListener('click', async function(e) {
+        sendLog('info', '=== Submit button clicked ===');
+        e.preventDefault();
+
+        // Если editor не определен (fallback режим), проверяем textarea напрямую
+        if (!editor) {
+            sendLog('info', 'Fallback mode - using textarea');
+            const textareaValue = document.getElementById('description').value.trim();
+            sendLog('info', 'Textarea value', { length: textareaValue.length });
+            if (!textareaValue) {
+                sendLog('warning', 'Textarea is empty');
+                alert('Пожалуйста, введите описание объявления');
+                return false;
+            }
+            sendLog('info', 'Submitting form (fallback mode)');
+            form.submit();
+            return;
+        }
+
+        try {
+            sendLog('info', 'Saving editor data...');
             const outputData = await editor.save();
-            document.getElementById('description').value = JSON.stringify(outputData);
+            const jsonData = JSON.stringify(outputData);
+
+            sendLog('info', 'Editor data saved', {
+                blocksCount: outputData.blocks ? outputData.blocks.length : 0,
+                jsonLength: jsonData.length
+            });
+
+            document.getElementById('description').value = jsonData;
 
             if (!outputData.blocks || outputData.blocks.length === 0) {
+                sendLog('warning', 'No blocks in editor data');
                 alert('Пожалуйста, введите описание объявления');
                 return false;
             }
 
+            // Проверяем что данные действительно сохранились
+            const savedValue = document.getElementById('description').value;
+            sendLog('info', 'Textarea value after save', {
+                length: savedValue.length,
+                preview: savedValue.substring(0, 100)
+            });
+
+            if (!savedValue || savedValue === '{}' || savedValue === '{"blocks":[]}') {
+                sendLog('warning', 'Saved value is empty or invalid');
+                alert('Описание пустое. Пожалуйста, добавьте текст.');
+                return false;
+            }
+
+            sendLog('info', 'Submitting form...');
+
+            // Проверяем CSRF токен перед отправкой
+            const csrfToken = document.querySelector('input[name="_token"]');
+            if (csrfToken) {
+                sendLog('info', 'CSRF token present', { tokenLength: csrfToken.value.length });
+            } else {
+                sendLog('error', 'CSRF token missing!');
+            }
+
+            // Логируем параметры формы
+            sendLog('info', 'Form details', {
+                method: form.method,
+                action: form.action,
+                descriptionLength: document.getElementById('description').value.length
+            });
+
+            // Отправляем форму
             form.submit();
+
+            sendLog('info', 'Form.submit() called successfully');
         } catch (error) {
-            console.error('Ошибка сохранения:', error);
+            sendLog('error', 'Ошибка при сохранении данных', {
+                error: error.message,
+                stack: error.stack
+            });
             alert('Произошла ошибка при сохранении. Попробуйте еще раз.');
         }
     });
