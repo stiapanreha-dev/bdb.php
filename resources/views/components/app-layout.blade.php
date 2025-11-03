@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Business database')</title>
+    <title>@yield('title', 'Business Database: ваш надежный помощник в поиске клиентов!')</title>
+
+    <meta name="description" content="Business Database: Гигантская база покупателей - ваш надежный помощник в поиске клиентов. Рассылка покупателей по ключевым словам. Справочник предприятий России. Доска объявлений. Помогаем компаниям малого и среднего бизнеса России и СНГ найти лучших покупателей и новых клиентов, продвигать свою продукцию в интернете."/>
+    <meta name="keywords" content="справочник предприятий, база покупателей, компании россии, крупные компании россии, база предприятий, база данных предприятий, база предприятий россии, приглашаем партнеров, доска объявлений, доска объявлений россия"/>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -24,7 +27,7 @@
     <meta property="og:title" content="Найдите идеальных покупателей с Business Database!">
     <meta property="og:url" content="https://businessdb.ru/">
     <meta property="og:image" content="https://businessdb.ru/opengraph/businessog.jpg">
-    <meta property="og:description" content="Представляем вашему вниманию уникальный инструмент, который поможет вам значительно повысить продажи и расширить клиентскую базу.">
+    <meta property="og:description" content="Business Database: Гигантская база покупателей - ваш надежный помощник в поиске клиентов. Рассылка покупателей по ключевым словам. Справочник предприятий России. Доска объявлений. Помогаем компаниям малого и среднего бизнеса России и СНГ найти лучших покупателей и новых клиентов, продвигать свою продукцию в интернете.">
 
     @stack('styles')
 </head>
