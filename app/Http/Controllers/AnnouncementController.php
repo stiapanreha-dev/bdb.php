@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class AnnouncementController extends Controller
 {
@@ -224,10 +225,98 @@ class AnnouncementController extends Controller
             'message' => ['required', 'string'],
         ]);
 
-        // Здесь можно реализовать отправку email автору объявления
-        // Пока просто возвращаем успешный ответ
+        // Определяем email получателя (рабочий или основной)
+        $recipientEmail = $announcement->user->work_email ?? $announcement->user->email;
 
-        return back()->with('success', 'Ваша заявка успешно отправлена');
+        if (!$recipientEmail) {
+            return back()->with('error', 'У автора объявления не указан email');
+        }
+
+        try {
+            // Отправляем email автору объявления
+            Mail::send([], [], function ($message) use ($validated, $announcement, $recipientEmail) {
+                $message->to($recipientEmail)
+                    ->subject('Новая заявка на объявление: ' . $announcement->title)
+                    ->html($this->buildInquiryEmailHtml($validated, $announcement));
+            });
+
+            \Log::info('[ANNOUNCEMENT] Inquiry sent', [
+                'announcement_id' => $announcement->id,
+                'from' => $validated['email'],
+                'to' => $recipientEmail
+            ]);
+
+            return back()->with('success', 'Ваша заявка успешно отправлена');
+        } catch (\Exception $e) {
+            \Log::error('[ANNOUNCEMENT] Failed to send inquiry email', [
+                'error' => $e->getMessage(),
+                'announcement_id' => $announcement->id
+            ]);
+
+            return back()->with('error', 'Не удалось отправить заявку. Попробуйте позже.');
+        }
+    }
+
+    /**
+     * Build HTML for inquiry email.
+     */
+    private function buildInquiryEmailHtml($data, $announcement)
+    {
+        return "
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; }
+                    .content { background-color: #f9f9f9; padding: 20px; border: 1px solid #ddd; }
+                    .field { margin-bottom: 15px; }
+                    .label { font-weight: bold; color: #555; }
+                    .footer { text-align: center; padding: 20px; font-size: 12px; color: #777; }
+                    .announcement-link { display: inline-block; margin-top: 15px; padding: 10px 20px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 4px; }
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h2>Новая заявка на ваше объявление</h2>
+                    </div>
+                    <div class='content'>
+                        <div class='field'>
+                            <span class='label'>Объявление:</span><br>
+                            <strong>{$announcement->title}</strong>
+                        </div>
+                        <hr>
+                        <div class='field'>
+                            <span class='label'>Имя отправителя:</span><br>
+                            {$data['name']}
+                        </div>
+                        <div class='field'>
+                            <span class='label'>Email:</span><br>
+                            <a href='mailto:{$data['email']}'>{$data['email']}</a>
+                        </div>
+                        <div class='field'>
+                            <span class='label'>Телефон:</span><br>
+                            <a href='tel:{$data['phone']}'>{$data['phone']}</a>
+                        </div>
+                        <div class='field'>
+                            <span class='label'>Сообщение:</span><br>
+                            " . nl2br(htmlspecialchars($data['message'])) . "
+                        </div>
+                        <div style='text-align: center;'>
+                            <a href='" . route('announcements.show', $announcement->id) . "' class='announcement-link'>
+                                Посмотреть объявление
+                            </a>
+                        </div>
+                    </div>
+                    <div class='footer'>
+                        <p>Это письмо отправлено с сайта businessdb.ru</p>
+                        <p>Пожалуйста, не отвечайте на это письмо. Для ответа используйте контакты отправителя выше.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        ";
     }
 
     /**
