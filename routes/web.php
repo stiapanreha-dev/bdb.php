@@ -65,10 +65,11 @@ Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class
 Route::middleware('auth')->group(function () {
     Route::get('/announcements/create', [App\Http\Controllers\AnnouncementController::class, 'create'])->name('announcements.create');
     Route::post('/announcements', [App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
+    // Специфичные маршруты должны идти ПЕРЕД маршрутами с параметрами
+    Route::delete('/announcements/bulk-delete', [App\Http\Controllers\AnnouncementController::class, 'bulkDelete'])->name('announcements.bulkDelete');
     Route::get('/announcements/{id}/edit', [App\Http\Controllers\AnnouncementController::class, 'edit'])->name('announcements.edit');
     Route::patch('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'update'])->name('announcements.update');
     Route::delete('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'destroy'])->name('announcements.destroy');
-    Route::delete('/announcements/bulk-delete', [App\Http\Controllers\AnnouncementController::class, 'bulkDelete'])->name('announcements.bulkDelete');
     Route::post('/announcements/{id}/inquiry', [App\Http\Controllers\AnnouncementController::class, 'sendInquiry'])->name('announcements.inquiry');
 
     // Image upload routes for Editor.js
