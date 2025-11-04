@@ -9,7 +9,6 @@ class Announcement extends Model
     protected $fillable = [
         'user_id',
         'type',
-        'category',
         'title',
         'description',
         'images',

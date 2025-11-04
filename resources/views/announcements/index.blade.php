@@ -31,17 +31,12 @@
                     </select>
                 </div>
 
-                <div class="col-md-3">
-                    <label for="category" class="form-label">Категория</label>
-                    <input type="text" name="category" id="category" class="form-control" value="{{ request('category') }}" placeholder="Категория">
-                </div>
-
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label for="search" class="form-label">Поиск</label>
                     <input type="text" name="search" id="search" class="form-control" value="{{ request('search') }}" placeholder="Поиск по заголовку и описанию">
                 </div>
 
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-md-3 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="bi bi-search"></i> Поиск
                     </button>
@@ -113,10 +108,6 @@
                                         <span class="badge bg-primary">Я покупатель</span>
                                     @else
                                         <span class="badge bg-info">Ищу дилера</span>
-                                    @endif
-
-                                    @if($announcement->category)
-                                        <span class="badge bg-secondary">{{ $announcement->category }}</span>
                                     @endif
                                 </div>
                             </div>

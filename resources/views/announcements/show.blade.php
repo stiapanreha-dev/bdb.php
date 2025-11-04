@@ -14,10 +14,6 @@
                             @else
                                 <span class="badge bg-info">Ищу дилера</span>
                             @endif
-
-                            @if($announcement->category)
-                                <span class="badge bg-secondary">{{ $announcement->category }}</span>
-                            @endif
                         </div>
                         <div>
                             @auth

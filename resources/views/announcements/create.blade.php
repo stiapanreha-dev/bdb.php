@@ -37,16 +37,6 @@
                             @enderror
                         </div>
 
-                        <!-- Категория -->
-                        <div class="mb-3">
-                            <label for="category" class="form-label">Категория</label>
-                            <input type="text" class="form-control @error('category') is-invalid @enderror" id="category" name="category" value="{{ old('category') }}" placeholder="Например: Строительство, IT, Продукты">
-                            @error('category')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <small class="text-muted">Необязательное поле</small>
-                        </div>
-
                         <!-- Заголовок -->
                         <div class="mb-3">
                             <label for="title" class="form-label">Заголовок <span class="text-danger">*</span></label>

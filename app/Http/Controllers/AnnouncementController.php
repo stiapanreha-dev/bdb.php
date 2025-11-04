@@ -24,11 +24,6 @@ class AnnouncementController extends Controller
             $query->where('type', $request->type);
         }
 
-        // Фильтр по категории
-        if ($request->has('category') && $request->category != '') {
-            $query->where('category', $request->category);
-        }
-
         // Поиск по заголовку и описанию
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
@@ -67,7 +62,6 @@ class AnnouncementController extends Controller
 
         $validated = $request->validate([
             'type' => ['required', 'in:supplier,buyer,dealer'],
-            'category' => ['nullable', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', function ($attribute, $value, $fail) {
                 // Проверяем что Editor.js JSON содержит блоки
@@ -100,7 +94,6 @@ class AnnouncementController extends Controller
         $announcement = new Announcement();
         $announcement->user_id = $user->id;
         $announcement->type = $validated['type'];
-        $announcement->category = $validated['category'] ?? null;
         $announcement->title = $validated['title'];
         $announcement->description = $validated['description'];
         $announcement->images = $images;
@@ -164,7 +157,6 @@ class AnnouncementController extends Controller
 
         $validated = $request->validate([
             'type' => ['required', 'in:supplier,buyer,dealer'],
-            'category' => ['nullable', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', function ($attribute, $value, $fail) {
                 // Проверяем что Editor.js JSON содержит блоки
@@ -192,7 +184,6 @@ class AnnouncementController extends Controller
         ]);
 
         $announcement->type = $validated['type'];
-        $announcement->category = $validated['category'] ?? null;
         $announcement->title = $validated['title'];
         $announcement->description = $validated['description'];
         $announcement->images = $images;
