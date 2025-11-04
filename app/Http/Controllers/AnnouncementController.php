@@ -320,6 +320,51 @@ class AnnouncementController extends Controller
     }
 
     /**
+     * Bulk delete announcements (admin only).
+     */
+    public function bulkDelete(Request $request)
+    {
+        // Проверка прав администратора
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            abort(403, 'Доступ запрещен');
+        }
+
+        // Получаем массив ID из запроса
+        $idsJson = $request->input('ids');
+
+        if (!$idsJson) {
+            return redirect()->route('announcements.index')->with('error', 'Не выбрано ни одного объявления');
+        }
+
+        try {
+            $ids = json_decode($idsJson, true);
+
+            if (!is_array($ids) || empty($ids)) {
+                return redirect()->route('announcements.index')->with('error', 'Некорректные данные');
+            }
+
+            // Удаляем объявления
+            $deleted = Announcement::whereIn('id', $ids)->delete();
+
+            \Log::info('[ANNOUNCEMENT] Bulk delete', [
+                'admin_id' => Auth::id(),
+                'deleted_count' => $deleted,
+                'ids' => $ids
+            ]);
+
+            return redirect()->route('announcements.index')->with('success', "Успешно удалено объявлений: {$deleted}");
+
+        } catch (\Exception $e) {
+            \Log::error('[ANNOUNCEMENT] Bulk delete failed', [
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id()
+            ]);
+
+            return redirect()->route('announcements.index')->with('error', 'Ошибка при удалении объявлений');
+        }
+    }
+
+    /**
      * Register announcement as purchase in zakupki table.
      */
     private function registerAsPurchase(Announcement $announcement)

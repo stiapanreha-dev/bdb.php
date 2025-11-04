@@ -52,11 +52,43 @@
         </div>
     @endif
 
+    <!-- Панель массовых действий для админа -->
+    @auth
+        @if(Auth::user()->isAdmin())
+            <div class="mb-3">
+                <div class="d-flex gap-2 align-items-center">
+                    <button type="button" id="selectAllBtn" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-check-square"></i> Выбрать все
+                    </button>
+                    <button type="button" id="bulkDeleteBtn" class="btn btn-sm btn-danger" style="display: none;">
+                        <i class="bi bi-trash"></i> Удалить выбранные (<span id="selectedCount">0</span>)
+                    </button>
+                </div>
+            </div>
+        @endif
+    @endauth
+
+    <!-- Форма массового удаления -->
+    <form id="bulkDeleteForm" method="POST" action="{{ route('announcements.bulkDelete') }}" style="display: none;">
+        @csrf
+        @method('DELETE')
+        <input type="hidden" name="ids" id="selectedIds" value="">
+    </form>
+
     <!-- Список объявлений -->
     <div class="row">
         @forelse($announcements as $announcement)
             <div class="col-md-6 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 announcement-card" data-announcement-id="{{ $announcement->id }}">
+                    <!-- Чекбокс для админа -->
+                    @auth
+                        @if(Auth::user()->isAdmin())
+                            <div class="announcement-checkbox">
+                                <input type="checkbox" class="form-check-input announcement-select" value="{{ $announcement->id }}" id="announcement-{{ $announcement->id }}">
+                            </div>
+                        @endif
+                    @endauth
+
                     <div class="d-flex h-100">
                         @if($announcement->images && count($announcement->images) > 0)
                             <div class="announcement-thumbnail">
@@ -134,6 +166,27 @@
 
 @push('styles')
 <style>
+    .announcement-card {
+        position: relative;
+    }
+    .announcement-checkbox {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+        background: white;
+        padding: 5px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .announcement-checkbox input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    .announcement-card.selected {
+        box-shadow: 0 0 0 3px #0d6efd;
+    }
     .announcement-thumbnail {
         flex-shrink: 0;
         width: 30%;
@@ -228,5 +281,84 @@
         max-width: 100%;
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.announcement-select');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+    const selectedCountSpan = document.getElementById('selectedCount');
+    const bulkDeleteForm = document.getElementById('bulkDeleteForm');
+    const selectedIdsInput = document.getElementById('selectedIds');
+
+    if (!checkboxes.length) return; // Если нет чекбоксов (не админ), выходим
+
+    // Обновление состояния кнопок и счетчика
+    function updateUI() {
+        const selectedCheckboxes = document.querySelectorAll('.announcement-select:checked');
+        const count = selectedCheckboxes.length;
+
+        selectedCountSpan.textContent = count;
+
+        if (count > 0) {
+            bulkDeleteBtn.style.display = 'inline-block';
+        } else {
+            bulkDeleteBtn.style.display = 'none';
+        }
+
+        // Обновление визуального выделения карточек
+        checkboxes.forEach(checkbox => {
+            const card = checkbox.closest('.announcement-card');
+            if (checkbox.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+
+        // Обновление текста кнопки "Выбрать все"
+        if (count === checkboxes.length) {
+            selectAllBtn.innerHTML = '<i class="bi bi-square"></i> Снять выделение';
+        } else {
+            selectAllBtn.innerHTML = '<i class="bi bi-check-square"></i> Выбрать все';
+        }
+    }
+
+    // Обработчик изменения чекбоксов
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateUI);
+    });
+
+    // Кнопка "Выбрать все / Снять выделение"
+    selectAllBtn.addEventListener('click', function() {
+        const allChecked = document.querySelectorAll('.announcement-select:checked').length === checkboxes.length;
+
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = !allChecked;
+        });
+
+        updateUI();
+    });
+
+    // Кнопка "Удалить выбранные"
+    bulkDeleteBtn.addEventListener('click', function() {
+        const selectedCheckboxes = document.querySelectorAll('.announcement-select:checked');
+        const count = selectedCheckboxes.length;
+
+        if (count === 0) return;
+
+        if (confirm(`Вы уверены, что хотите удалить ${count} объявлений?`)) {
+            // Собираем ID выбранных объявлений
+            const ids = Array.from(selectedCheckboxes).map(cb => cb.value);
+            selectedIdsInput.value = JSON.stringify(ids);
+
+            // Отправляем форму
+            bulkDeleteForm.submit();
+        }
+    });
+});
+</script>
 @endpush
 </x-app-layout>
