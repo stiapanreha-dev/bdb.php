@@ -84,6 +84,19 @@ Route::middleware('auth')->group(function () {
 });
 Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 
+// Articles routes (статьи)
+Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/articles/create', [App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
+    // Специфичные маршруты должны идти ПЕРЕД маршрутами с параметрами
+    Route::delete('/articles/bulk-delete', [App\Http\Controllers\ArticleController::class, 'bulkDelete'])->name('articles.bulkDelete');
+    Route::get('/articles/{id}/edit', [App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.edit');
+    Route::patch('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
+});
+Route::get('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
+
 Route::get('/invite', function () {
     return '<h1>Пригласи друга</h1><p>Страница в разработке</p>';
 })->name('invite');

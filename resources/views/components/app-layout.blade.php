@@ -63,6 +63,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('articles.index') }}">
+                            Статьи
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('news.index') }}">
                             Новости <span class="badge bg-light text-dark">{{ $news_count ?? 0 }}</span>
                         </a>
