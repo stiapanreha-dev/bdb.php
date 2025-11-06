@@ -68,7 +68,6 @@ Route::middleware(['module:ideas'])->group(function () {
 // Announcements routes (доска объявлений)
 Route::middleware(['module:announcements'])->group(function () {
     Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('announcements.index');
-    Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 });
 Route::middleware(['auth', 'module:announcements'])->group(function () {
     Route::get('/announcements/create', [App\Http\Controllers\AnnouncementController::class, 'create'])->name('announcements.create');
@@ -87,11 +86,13 @@ Route::middleware(['auth', 'module:announcements'])->group(function () {
     // Announcement images upload (up to 5 images)
     Route::post('/api/upload-announcement-images', [App\Http\Controllers\ImageUploadController::class, 'uploadAnnouncementImages'])->name('announcement.images.upload');
 });
+Route::middleware(['module:announcements'])->group(function () {
+    Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
+});
 
 // Articles routes (статьи)
 Route::middleware(['module:articles'])->group(function () {
     Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
-    Route::get('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 });
 Route::middleware(['auth', 'module:articles'])->group(function () {
     Route::get('/articles/create', [App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
@@ -101,6 +102,9 @@ Route::middleware(['auth', 'module:articles'])->group(function () {
     Route::get('/articles/{id}/edit', [App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.edit');
     Route::patch('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
+});
+Route::middleware(['module:articles'])->group(function () {
+    Route::get('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 });
 
 Route::get('/invite', function () {
