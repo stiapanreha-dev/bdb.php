@@ -1,149 +1,152 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 py-8">
-        <div class="max-w-6xl mx-auto">
-            <h1 class="text-3xl font-bold mb-6">Управление модулями</h1>
+<div class="row mb-3">
+    <div class="col-md-12">
+        <h2>Управление модулями</h2>
+        <p class="text-muted">
+            Управляйте доступностью модулей системы. Отключенные модули будут скрыты из меню и недоступны для пользователей.
+        </p>
+    </div>
+</div>
 
-            @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                    {{ session('success') }}
-                </div>
-            @endif
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
-            @if (session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {{ session('error') }}
-                </div>
-            @endif
+@if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="p-6">
-                    <p class="text-gray-600 mb-4">
-                        Управляйте доступностью модулей системы. Отключенные модули будут скрыты из меню
-                        и недоступны для пользователей.
-                    </p>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Модуль
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Описание
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Статус
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Настройки
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($modules as $module)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{ $module->module_name }}
-                                        </div>
-                                        <div class="text-xs text-gray-500">
-                                            {{ $module->module_key }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-600">
-                                            {{ $module->description ?? 'Нет описания' }}
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                class="sr-only peer module-toggle"
-                                                data-module-key="{{ $module->module_key }}"
-                                                {{ $module->is_enabled ? 'checked' : '' }}
-                                            >
-                                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                            <span class="ms-3 text-sm font-medium text-gray-900">
-                                                {{ $module->is_enabled ? 'Включен' : 'Отключен' }}
-                                            </span>
-                                        </label>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        @if ($module->hasSettings())
-                                            <a href="{{ $module->settings_route }}"
-                                               class="text-blue-600 hover:text-blue-800">
-                                                Настройки
-                                            </a>
-                                        @else
-                                            <span class="text-gray-400">—</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Модуль</th>
+                        <th>Описание</th>
+                        <th>Статус</th>
+                        <th>Настройки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($modules as $module)
+                        <tr>
+                            <td>
+                                <strong>{{ $module->module_name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ $module->module_key }}</small>
+                            </td>
+                            <td>
+                                {{ $module->description ?? 'Нет описания' }}
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input
+                                        class="form-check-input module-toggle"
+                                        type="checkbox"
+                                        role="switch"
+                                        id="toggle-{{ $module->module_key }}"
+                                        data-module-key="{{ $module->module_key }}"
+                                        {{ $module->is_enabled ? 'checked' : '' }}
+                                    >
+                                    <label class="form-check-label" for="toggle-{{ $module->module_key }}">
+                                        <span class="status-text badge bg-{{ $module->is_enabled ? 'success' : 'secondary' }}">
+                                            {{ $module->is_enabled ? 'Включен' : 'Отключен' }}
+                                        </span>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                @if ($module->hasSettings())
+                                    <a href="{{ $module->settings_route }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-gear"></i> Настройки
+                                    </a>
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 
-    @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggles = document.querySelectorAll('.module-toggle');
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggles = document.querySelectorAll('.module-toggle');
 
-            toggles.forEach(toggle => {
-                toggle.addEventListener('change', function() {
-                    const moduleKey = this.dataset.moduleKey;
-                    const isEnabled = this.checked;
-                    const statusText = this.parentElement.querySelector('span');
-                    const originalText = statusText.textContent;
-                    statusText.textContent = 'Обновление...';
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const moduleKey = this.dataset.moduleKey;
+                const isEnabled = this.checked;
+                const statusBadge = this.parentElement.querySelector('.status-text');
+                const originalClasses = statusBadge.className;
+                const originalText = statusBadge.textContent;
 
-                    fetch('/admin/modules/toggle', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            module_key: moduleKey,
-                            is_enabled: isEnabled
-                        })
+                // Показываем индикатор загрузки
+                statusBadge.className = 'status-text badge bg-warning';
+                statusBadge.textContent = 'Обновление...';
+
+                fetch('/admin/modules/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        module_key: moduleKey,
+                        is_enabled: isEnabled
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            statusText.textContent = isEnabled ? 'Включен' : 'Отключен';
-                            showNotification(data.message, 'success');
-                        } else {
-                            toggle.checked = !isEnabled;
-                            statusText.textContent = originalText;
-                            showNotification(data.message || 'Ошибка обновления статуса', 'error');
-                        }
-                    })
-                    .catch(error => {
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        statusBadge.className = 'status-text badge bg-' + (isEnabled ? 'success' : 'secondary');
+                        statusBadge.textContent = isEnabled ? 'Включен' : 'Отключен';
+                        showNotification(data.message, 'success');
+                    } else {
                         toggle.checked = !isEnabled;
-                        statusText.textContent = originalText;
-                        showNotification('Ошибка соединения с сервером', 'error');
-                        console.error('Error:', error);
-                    });
+                        statusBadge.className = originalClasses;
+                        statusBadge.textContent = originalText;
+                        showNotification(data.message || 'Ошибка обновления статуса', 'danger');
+                    }
+                })
+                .catch(error => {
+                    toggle.checked = !isEnabled;
+                    statusBadge.className = originalClasses;
+                    statusBadge.textContent = originalText;
+                    showNotification('Ошибка соединения с сервером', 'danger');
+                    console.error('Error:', error);
                 });
             });
-
-            function showNotification(message, type) {
-                const notification = document.createElement('div');
-                notification.className = 'fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg z-50 ' +
-                    (type === 'success' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700');
-                notification.textContent = message;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            }
         });
-    </script>
-    @endpush
+
+        function showNotification(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(alertDiv);
+
+            // Автоматически удаляем уведомление через 3 секунды
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+    });
+</script>
+@endpush
 </x-app-layout>
