@@ -3,7 +3,7 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-body">
-                <h3 class="card-title mb-4">Добавить новость</h3>
+                <h3 class="card-title mb-4">Редактировать новость</h3>
 
                 @if ($errors->any())
                     <div class="alert alert-danger mb-4">
@@ -15,8 +15,9 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('news.store') }}" id="newsForm">
+                <form method="POST" action="{{ route('news.update', $news) }}" id="newsEditForm">
                     @csrf
+                    @method('PATCH')
 
                     <div class="mb-3">
                         <label for="title" class="form-label">Заголовок</label>
@@ -24,7 +25,7 @@
                                class="form-control @error('title') is-invalid @enderror"
                                id="title"
                                name="title"
-                               value="{{ old('title') }}"
+                               value="{{ old('title', $news->title) }}"
                                required>
                         @error('title')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -37,7 +38,7 @@
                                class="form-control @error('published_at') is-invalid @enderror"
                                id="published_at"
                                name="published_at"
-                               value="{{ old('published_at', now()->format('Y-m-d\TH:i')) }}">
+                               value="{{ old('published_at', $news->published_at ? $news->published_at->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}">
                         @error('published_at')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -49,7 +50,7 @@
                         <div id="editorjs"></div>
                         <textarea class="d-none @error('content') is-invalid @enderror"
                                   id="content"
-                                  name="content">{{ old('content') }}</textarea>
+                                  name="content">{{ old('content', $news->content) }}</textarea>
                         @error('content')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -59,7 +60,7 @@
                     <div class="mb-3">
                         <label for="news_images" class="form-label">Дополнительные изображения</label>
                         <input type="file" class="form-control @error('images') is-invalid @enderror" id="news_images" accept="image/*" multiple>
-                        <input type="hidden" id="images_urls" name="images" value="{{ old('images') }}">
+                        <input type="hidden" id="images_urls" name="images" value="{{ old('images', $news->images ? json_encode($news->images) : '') }}">
                         @error('images')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -69,8 +70,14 @@
                         <div id="images_preview" class="mt-2 row g-2"></div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Опубликовать</button>
-                    <a href="{{ route('news.index') }}" class="btn btn-secondary">Отмена</a>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ route('news.show', $news) }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Отменить
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Сохранить изменения
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -203,9 +210,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return {};
             })()
         });
+
     } catch (error) {
         console.error('Ошибка инициализации Editor.js:', error);
-        alert('Редактор не загрузился. Пожалуйста, обновите страницу.');
+        document.getElementById('editorjs').style.display = 'none';
+        const textarea = document.getElementById('content');
+        textarea.classList.remove('d-none');
+        textarea.rows = 10;
+        alert('Редактор не загрузился. Используйте обычное текстовое поле.');
         return;
     }
 
@@ -214,6 +226,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const imagesPreview = document.getElementById('images_preview');
     const imagesUrlsInput = document.getElementById('images_urls');
     let uploadedImages = [];
+
+    // Загружаем существующие изображения из hidden input
+    const existingImagesJson = imagesUrlsInput.value;
+    if (existingImagesJson) {
+        try {
+            const existingUrls = JSON.parse(existingImagesJson);
+            if (Array.isArray(existingUrls)) {
+                uploadedImages = existingUrls.map(url => ({ url: url }));
+                renderImagePreviews();
+            }
+        } catch (e) {
+            console.error('Failed to parse existing images:', e);
+        }
+    }
 
     imageInput.addEventListener('change', async function(e) {
         const files = Array.from(e.target.files);
@@ -304,9 +330,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Сохранение данных перед отправкой формы
-    const form = document.getElementById('newsForm');
+    const form = document.getElementById('newsEditForm');
+
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
+
+        if (!editor) {
+            const textareaValue = document.getElementById('content').value.trim();
+            if (!textareaValue) {
+                alert('Пожалуйста, введите содержание новости');
+                return false;
+            }
+            form.submit();
+            return;
+        }
 
         try {
             const outputData = await editor.save();

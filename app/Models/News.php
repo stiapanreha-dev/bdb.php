@@ -14,6 +14,8 @@ class News extends Model
     protected $fillable = [
         'title',
         'content',
+        'images',
+        'published_at',
         'is_published',
     ];
 
@@ -26,6 +28,8 @@ class News extends Model
     {
         return [
             'is_published' => 'boolean',
+            'images' => 'array',
+            'published_at' => 'datetime',
         ];
     }
 

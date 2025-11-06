@@ -168,6 +168,7 @@ class AnnouncementController extends Controller
             }],
             'images' => ['nullable', 'json'],
             'register_as_purchase' => ['boolean'],
+            'published_at' => ['nullable', 'date'],
         ]);
 
         // Обрабатываем images (из JSON строки в массив)
@@ -189,6 +190,12 @@ class AnnouncementController extends Controller
         $announcement->description = $validated['description'];
         $announcement->images = $images;
         $announcement->register_as_purchase = $request->has('register_as_purchase');
+
+        // Обновляем дату публикации только если это админ и поле передано
+        if (Auth::user()->isAdmin() && $request->has('published_at')) {
+            $announcement->published_at = $validated['published_at'] ?? $announcement->published_at;
+        }
+
         $announcement->save();
 
         return redirect()->route('announcements.show', $announcement->id)->with('success', 'Объявление успешно обновлено');

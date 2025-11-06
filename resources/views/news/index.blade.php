@@ -8,29 +8,124 @@
     @endauth
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 @if($news->isNotEmpty())
     @foreach($news as $item)
         <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                        <h5 class="card-title">{{ $item->title }}</h5>
-                        <div class="card-text news-content">@editorJsRender($item->content)</div>
-                        <p class="text-muted small mt-3">{{ $item->created_at->format('d.m.Y H:i') }}</p>
+            @if($item->images && count($item->images) > 0)
+                <div class="row g-0">
+                    <div class="col-md-3">
+                        <img src="{{ $item->images[0] }}" class="img-fluid rounded-start" style="width: 100%; height: 200px; object-fit: cover;" alt="{{ $item->title }}">
                     </div>
-                    @auth
-                        @if(auth()->user()->isAdmin())
-                        <div>
-                            <form method="POST" action="{{ route('news.destroy', $item) }}" onsubmit="return confirm('Вы уверены, что хотите удалить эту новость?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-                            </form>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title">
+                                        <a href="{{ route('news.show', $item) }}" class="text-decoration-none">{{ $item->title }}</a>
+                                    </h5>
+                                    <div class="card-text news-preview">
+                                        @php
+                                            $text = '';
+                                            try {
+                                                $decoded = json_decode($item->content);
+                                                if (json_last_error() === JSON_ERROR_NONE && isset($decoded->blocks)) {
+                                                    foreach ($decoded->blocks as $block) {
+                                                        if (isset($block->data->text)) {
+                                                            $text .= strip_tags($block->data->text) . ' ';
+                                                        }
+                                                    }
+                                                } else {
+                                                    $text = strip_tags($item->content);
+                                                }
+                                            } catch (\Exception $e) {
+                                                $text = strip_tags($item->content);
+                                            }
+                                        @endphp
+                                        {{ \Illuminate\Support\Str::limit($text, 200) }}
+                                    </div>
+                                    <p class="text-muted small mt-3">
+                                        <i class="bi bi-calendar3"></i>
+                                        {{ $item->published_at ? $item->published_at->format('d.m.Y H:i') : $item->created_at->format('d.m.Y H:i') }}
+                                    </p>
+                                </div>
+                                @auth
+                                    @if(auth()->user()->isAdmin())
+                                    <div class="ms-3">
+                                        <a href="{{ route('news.edit', $item) }}" class="btn btn-sm btn-outline-primary mb-1">
+                                            <i class="bi bi-pencil"></i> Редактировать
+                                        </a>
+                                        <form method="POST" action="{{ route('news.destroy', $item) }}" onsubmit="return confirm('Вы уверены, что хотите удалить эту новость?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Удалить
+                                            </button>
+                                        </form>
+                                    </div>
+                                    @endif
+                                @endauth
+                            </div>
                         </div>
-                        @endif
-                    @endauth
+                    </div>
                 </div>
-            </div>
+            @else
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">
+                                <a href="{{ route('news.show', $item) }}" class="text-decoration-none">{{ $item->title }}</a>
+                            </h5>
+                            <div class="card-text news-preview">
+                                @php
+                                    $text = '';
+                                    try {
+                                        $decoded = json_decode($item->content);
+                                        if (json_last_error() === JSON_ERROR_NONE && isset($decoded->blocks)) {
+                                            foreach ($decoded->blocks as $block) {
+                                                if (isset($block->data->text)) {
+                                                    $text .= strip_tags($block->data->text) . ' ';
+                                                }
+                                            }
+                                        } else {
+                                            $text = strip_tags($item->content);
+                                        }
+                                    } catch (\Exception $e) {
+                                        $text = strip_tags($item->content);
+                                    }
+                                @endphp
+                                {{ \Illuminate\Support\Str::limit($text, 300) }}
+                            </div>
+                            <p class="text-muted small mt-3">
+                                <i class="bi bi-calendar3"></i>
+                                {{ $item->published_at ? $item->published_at->format('d.m.Y H:i') : $item->created_at->format('d.m.Y H:i') }}
+                            </p>
+                        </div>
+                        @auth
+                            @if(auth()->user()->isAdmin())
+                            <div class="ms-3">
+                                <a href="{{ route('news.edit', $item) }}" class="btn btn-sm btn-outline-primary mb-1">
+                                    <i class="bi bi-pencil"></i> Редактировать
+                                </a>
+                                <form method="POST" action="{{ route('news.destroy', $item) }}" onsubmit="return confirm('Вы уверены, что хотите удалить эту новость?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i> Удалить
+                                    </button>
+                                </form>
+                            </div>
+                            @endif
+                        @endauth
+                    </div>
+                </div>
+            @endif
         </div>
     @endforeach
 @else
