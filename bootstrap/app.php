@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             '/payment/webhook',
             'payment/webhook',
         ]);
+
+        // Регистрация alias для middleware
+        $middleware->alias([
+            'module' => \App\Http\Middleware\CheckModuleEnabled::class,
+        ]);
     })
     ->withSchedule(function (Schedule $schedule) {
         // Send newsletters hourly (actual interval controlled by settings)

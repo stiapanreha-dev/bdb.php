@@ -1,3 +1,6 @@
+@php
+    use App\Models\ModuleSetting;
+@endphp
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -57,26 +60,35 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
+                    @if(ModuleSetting::isModuleEnabled('announcements'))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('announcements.index') }}">
                             Доска объявлений
                         </a>
                     </li>
+                    @endif
+                    @if(ModuleSetting::isModuleEnabled('articles'))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('articles.index') }}">
                             Статьи
                         </a>
                     </li>
+                    @endif
+                    @if(ModuleSetting::isModuleEnabled('news'))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('news.index') }}">
                             Новости <span class="badge bg-light text-dark">{{ $news_count ?? 0 }}</span>
                         </a>
                     </li>
+                    @endif
+                    @if(ModuleSetting::isModuleEnabled('ideas'))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('ideas.index') }}">
                             Есть идея <span class="badge bg-light text-dark">{{ $ideas_count ?? 0 }}</span>
                         </a>
                     </li>
+                    @endif
+                    @if(ModuleSetting::isModuleEnabled('newsletters'))
                     @auth
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('newsletters.index') }}">
@@ -84,6 +96,7 @@
                         </a>
                     </li>
                     @endauth
+                    @endif
 {{--                    <li class="nav-item">--}}
 {{--                        <a class="nav-link" href="{{ route('invite') }}">Пригласи друга</a>--}}
 {{--                    </li>--}}
@@ -125,6 +138,7 @@
                                     <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.modules') }}">Модули</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
                                 @endif
@@ -199,6 +213,7 @@
                                     <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.modules') }}">Модули</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
                                 @endif

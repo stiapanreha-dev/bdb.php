@@ -8,9 +8,11 @@ use App\Models\NewsletterSetting;
 use App\Models\Payment;
 use App\Models\Newsletter;
 use App\Models\NewsletterLog;
+use App\Models\ModuleSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 class AdminController extends Controller
 {
@@ -354,6 +356,46 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.cache')
                 ->with('error', 'Ошибка очистки кеша: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display list of modules.
+     */
+    public function modules()
+    {
+        $modules = ModuleSetting::orderBy('sort_order')->get();
+
+        return view('admin.modules', compact('modules'));
+    }
+
+    /**
+     * Update module status (enable/disable).
+     */
+    public function updateModuleStatus(Request $request)
+    {
+        $request->validate([
+            'module_key' => 'required|string|exists:module_settings,module_key',
+            'is_enabled' => 'required|boolean',
+        ]);
+
+        try {
+            $module = ModuleSetting::where('module_key', $request->module_key)->firstOrFail();
+            $module->is_enabled = $request->is_enabled;
+            $module->save();
+
+            // Очищаем кеш для этого модуля
+            Cache::forget("module_enabled_{$request->module_key}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Статус модуля обновлен',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка обновления статуса: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

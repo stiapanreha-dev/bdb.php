@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Newsletter routes (for authenticated users)
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'module:newsletters'])->group(function () {
     Route::get('/newsletters', [NewsletterController::class, 'index'])->name('newsletters.index');
     Route::post('/newsletters', [NewsletterController::class, 'store'])->name('newsletters.store');
     Route::post('/newsletters/keywords', [NewsletterController::class, 'updateKeywords'])->name('newsletters.keywords');
@@ -59,13 +59,18 @@ Route::patch('/news/{news}', [App\Http\Controllers\NewsController::class, 'updat
 Route::delete('/news/{news}', [App\Http\Controllers\NewsController::class, 'destroy'])->name('news.destroy');
 
 // Ideas routes
-Route::get('/ideas', [App\Http\Controllers\IdeasController::class, 'index'])->name('ideas.index');
-Route::get('/ideas/create', [App\Http\Controllers\IdeasController::class, 'create'])->name('ideas.create');
-Route::post('/ideas', [App\Http\Controllers\IdeasController::class, 'store'])->name('ideas.store');
+Route::middleware(['module:ideas'])->group(function () {
+    Route::get('/ideas', [App\Http\Controllers\IdeasController::class, 'index'])->name('ideas.index');
+    Route::get('/ideas/create', [App\Http\Controllers\IdeasController::class, 'create'])->name('ideas.create');
+    Route::post('/ideas', [App\Http\Controllers\IdeasController::class, 'store'])->name('ideas.store');
+});
 
 // Announcements routes (доска объявлений)
-Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('announcements.index');
-Route::middleware('auth')->group(function () {
+Route::middleware(['module:announcements'])->group(function () {
+    Route::get('/announcements', [App\Http\Controllers\AnnouncementController::class, 'index'])->name('announcements.index');
+    Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
+});
+Route::middleware(['auth', 'module:announcements'])->group(function () {
     Route::get('/announcements/create', [App\Http\Controllers\AnnouncementController::class, 'create'])->name('announcements.create');
     Route::post('/announcements', [App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
     // Специфичные маршруты должны идти ПЕРЕД маршрутами с параметрами
@@ -82,11 +87,13 @@ Route::middleware('auth')->group(function () {
     // Announcement images upload (up to 5 images)
     Route::post('/api/upload-announcement-images', [App\Http\Controllers\ImageUploadController::class, 'uploadAnnouncementImages'])->name('announcement.images.upload');
 });
-Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 
 // Articles routes (статьи)
-Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
-Route::middleware('auth')->group(function () {
+Route::middleware(['module:articles'])->group(function () {
+    Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
+});
+Route::middleware(['auth', 'module:articles'])->group(function () {
     Route::get('/articles/create', [App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
     Route::post('/articles', [App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
     // Специфичные маршруты должны идти ПЕРЕД маршрутами с параметрами
@@ -95,7 +102,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
 });
-Route::get('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 
 Route::get('/invite', function () {
     return '<h1>Пригласи друга</h1><p>Страница в разработке</p>';
@@ -148,6 +154,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Cache management routes
     Route::get('/cache', [App\Http\Controllers\AdminController::class, 'cache'])->name('admin.cache');
     Route::post('/cache/clear', [App\Http\Controllers\AdminController::class, 'clearCache'])->name('admin.cache.clear');
+
+    // Module management routes
+    Route::get('/modules', [App\Http\Controllers\AdminController::class, 'modules'])->name('admin.modules');
+    Route::post('/modules/toggle', [App\Http\Controllers\AdminController::class, 'updateModuleStatus'])->name('admin.modules.toggle');
 
     // Tariff management routes
     Route::resource('tariffs', App\Http\Controllers\Admin\TariffController::class)->names([
