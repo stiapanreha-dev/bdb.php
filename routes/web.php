@@ -136,6 +136,15 @@ Route::get('/tariffs', function () {
     return view('static.tariffs');
 })->name('tariffs');
 
+// Ticket routes (for authenticated users)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets.index');
+    Route::get('/tickets/create', [App\Http\Controllers\TicketController::class, 'create'])->name('tickets.create');
+    Route::post('/tickets', [App\Http\Controllers\TicketController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/{ticket}', [App\Http\Controllers\TicketController::class, 'show'])->name('tickets.show');
+    Route::post('/tickets/{ticket}/message', [App\Http\Controllers\TicketController::class, 'addMessage'])->name('tickets.addMessage');
+});
+
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
@@ -173,6 +182,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'update' => 'admin.tariffs.update',
         'destroy' => 'admin.tariffs.destroy',
     ]);
+
+    // Ticket management routes (admin)
+    Route::get('/tickets', [App\Http\Controllers\AdminTicketController::class, 'index'])->name('admin.tickets.index');
+    Route::get('/tickets/{ticket}', [App\Http\Controllers\AdminTicketController::class, 'show'])->name('admin.tickets.show');
+    Route::patch('/tickets/{ticket}/status', [App\Http\Controllers\AdminTicketController::class, 'updateStatus'])->name('admin.tickets.updateStatus');
+    Route::post('/tickets/{ticket}/message', [App\Http\Controllers\AdminTicketController::class, 'addMessage'])->name('admin.tickets.addMessage');
 });
 
 // Subscription routes

@@ -21,6 +21,8 @@
 
     <!-- Bootstrap CSS (local) -->
     <link href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     <!-- Yandex Verification -->
@@ -102,6 +104,22 @@
 {{--                    </li>--}}
                 </ul>
                 <ul class="navbar-nav d-lg-none">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="supportDropdownMobile" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-question-circle"></i> Поддержка
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="supportDropdownMobile">
+                            <li><a class="dropdown-item" href="{{ route('support') }}"><i class="bi bi-envelope"></i> Написать в поддержку</a></li>
+                            <li><a class="dropdown-item" href="https://t.me/cdvks" target="_blank"><i class="bi bi-telegram"></i> Написать в Telegram</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            @auth
+                                <li><a class="dropdown-item" href="{{ route('tickets.index') }}"><i class="bi bi-ticket-perforated"></i> Мои обращения</a></li>
+                                <li><a class="dropdown-item" href="{{ route('tickets.create') }}"><i class="bi bi-plus-circle"></i> Создать обращение</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            @endauth
+                            <li><a class="dropdown-item" href="{{ route('support') }}#faq"><i class="bi bi-book"></i> База знаний</a></li>
+                        </ul>
+                    </li>
                     @auth
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="mobileUserDropdown" data-bs-toggle="dropdown">
@@ -134,6 +152,7 @@
                                     <li><h6 class="dropdown-header">Администрирование</h6></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.users') }}">Управление пользователями</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.ideas') }}">Модерация идей</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.tickets.index') }}">Управление тикетами</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.tariffs.index') }}">Управление тарифами</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
@@ -158,6 +177,22 @@
                     @endauth
                 </ul>
                 <div class="d-none d-lg-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="supportDropdownDesktop" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-question-circle"></i> Поддержка
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="supportDropdownDesktop">
+                            <li><a class="dropdown-item" href="{{ route('support') }}"><i class="bi bi-envelope"></i> Написать в поддержку</a></li>
+                            <li><a class="dropdown-item" href="https://t.me/cdvks" target="_blank"><i class="bi bi-telegram"></i> Написать в Telegram</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            @auth
+                                <li><a class="dropdown-item" href="{{ route('tickets.index') }}"><i class="bi bi-ticket-perforated"></i> Мои обращения</a></li>
+                                <li><a class="dropdown-item" href="{{ route('tickets.create') }}"><i class="bi bi-plus-circle"></i> Создать обращение</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            @endauth
+                            <li><a class="dropdown-item" href="{{ route('support') }}#faq"><i class="bi bi-book"></i> База знаний</a></li>
+                        </ul>
+                    </div>
                     @auth
                         @php
                             $activeSubscription = auth()->user()->activeSubscription;
@@ -209,6 +244,7 @@
                                     <li><h6 class="dropdown-header">Администрирование</h6></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.users') }}">Управление пользователями</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.ideas') }}">Модерация идей</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.tickets.index') }}">Управление тикетами</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.tariffs.index') }}">Управление тарифами</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
