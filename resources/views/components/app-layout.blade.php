@@ -79,14 +79,14 @@
                     @if(ModuleSetting::isModuleEnabled('news'))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('news.index') }}">
-                            Новости <span class="badge bg-light text-dark">{{ $news_count ?? 0 }}</span>
+                            Новости
                         </a>
                     </li>
                     @endif
                     @if(ModuleSetting::isModuleEnabled('ideas'))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('ideas.index') }}">
-                            Есть идея <span class="badge bg-light text-dark">{{ $ideas_count ?? 0 }}</span>
+                            Есть идея
                         </a>
                     </li>
                     @endif
@@ -104,6 +104,7 @@
 {{--                    </li>--}}
                 </ul>
                 <ul class="navbar-nav d-lg-none">
+                    @if(!auth()->check() || !auth()->user()->isAdmin())
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="supportDropdownMobile" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-question-circle"></i> Поддержка
@@ -120,6 +121,7 @@
                             <li><a class="dropdown-item" href="{{ route('support') }}#faq"><i class="bi bi-book"></i> База знаний</a></li>
                         </ul>
                     </li>
+                    @endif
                     @auth
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="mobileUserDropdown" data-bs-toggle="dropdown">
@@ -177,6 +179,7 @@
                     @endauth
                 </ul>
                 <div class="d-none d-lg-flex align-items-center">
+                    @if(!auth()->check() || !auth()->user()->isAdmin())
                     <div class="dropdown me-3">
                         <a class="nav-link dropdown-toggle text-white" href="#" id="supportDropdownDesktop" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-question-circle"></i> Поддержка
@@ -193,6 +196,7 @@
                             <li><a class="dropdown-item" href="{{ route('support') }}#faq"><i class="bi bi-book"></i> База знаний</a></li>
                         </ul>
                     </div>
+                    @endif
                     @auth
                         @php
                             $activeSubscription = auth()->user()->activeSubscription;
