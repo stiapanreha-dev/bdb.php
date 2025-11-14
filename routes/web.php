@@ -107,6 +107,11 @@ Route::middleware(['module:articles'])->group(function () {
     Route::get('/articles/{id}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 });
 
+// Shop routes
+Route::get('/shop', [App\Http\Controllers\ShopController::class, 'index'])->name('shop.index');
+Route::get('/shop/{slug}', [App\Http\Controllers\ShopController::class, 'show'])->name('shop.show');
+Route::post('/shop/{id}/purchase', [App\Http\Controllers\ShopController::class, 'purchase'])->middleware('auth')->name('shop.purchase');
+
 Route::get('/invite', function () {
     return '<h1>Пригласи друга</h1><p>Страница в разработке</p>';
 })->name('invite');
