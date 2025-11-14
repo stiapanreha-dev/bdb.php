@@ -26,6 +26,7 @@ class ZakupkiController extends Controller
         $dateFrom = $request->get('date_from');
         $dateTo = $request->get('date_to');
         $searchText = trim($request->get('search_text', ''));
+        $purchaseTypeFilter = $request->get('purchase_type_filter', 'all'); // all, null, not_null
 
         // Convert dates
         $dateFromObj = $dateFrom ? Carbon::parse($dateFrom) : null;
@@ -75,7 +76,8 @@ class ZakupkiController extends Controller
             $limit,
             $offset,
             $restrictToIds,
-            !Auth::check() // count_all for unauthenticated
+            !Auth::check(), // count_all for unauthenticated
+            $purchaseTypeFilter
         );
 
         // Apply data masking
@@ -93,6 +95,7 @@ class ZakupkiController extends Controller
             'date_from' => $dateFrom ?? '',
             'date_to' => $dateTo ?? '',
             'search_text' => $searchText,
+            'purchase_type_filter' => $purchaseTypeFilter,
             'has_full_access' => $hasFullAccess,
             'show_masked_email' => $showMaskedData,
             'show_masked_phone' => $showMaskedData,
@@ -193,7 +196,8 @@ class ZakupkiController extends Controller
         int $limit,
         int $offset,
         ?array $restrictToIds = null,
-        bool $countAll = false
+        bool $countAll = false,
+        string $purchaseTypeFilter = 'all'
     ): array {
         $query = DB::connection('mssql')->table('zakupki as z')
             ->select([
@@ -225,6 +229,16 @@ class ZakupkiController extends Controller
                 $countQuery->whereIn('z.id', $restrictToIds);
             }
         }
+
+        // Apply purchase_type filter (for admins)
+        if ($purchaseTypeFilter === 'null') {
+            $query->whereNull('z.purchase_type');
+            $countQuery->whereNull('z.purchase_type');
+        } elseif ($purchaseTypeFilter === 'not_null') {
+            $query->whereNotNull('z.purchase_type');
+            $countQuery->whereNotNull('z.purchase_type');
+        }
+        // 'all' - no filter applied
 
         // Apply date filters (simple string comparison for SQL Server)
         if ($dateFrom) {

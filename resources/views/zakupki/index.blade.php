@@ -18,7 +18,7 @@
 <div class="row mb-4">
     <div class="col-md-4">
         <label for="dbTypeSelect" class="form-label fw-bold fs-5">Выберите базу данных:</label>
-        <select class="form-select form-select-lg" id="dbTypeSelect" onchange="switchDatabase(this.value)" style="border: 2px solid #2c5aa0; font-weight: 500;">
+        <select class="form-select form-select-lg" id="dbTypeSelect" onchange="switchDatabase(this.value)" style="border: 2px solid #f7f7fb; font-weight: 500;">
             <option value="zakupki" selected>1. Закупки</option>
             <option value="companies">2. Предприятия России</option>
         </select>
@@ -37,10 +37,19 @@
             <div class="col-md-2">
                 <input type="date" class="form-control" name="date_to" value="{{ $date_to }}">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <input type="text" class="form-control" name="search_text"
                        placeholder="Товар/услуга" value="{{ $search_text }}">
             </div>
+            @if(Auth::check() && Auth::user()->isAdmin())
+            <div class="col-md-2">
+                <select class="form-select" name="purchase_type_filter" title="Фильтр по типу закупки (только для админа)">
+                    <option value="all" {{ $purchase_type_filter == 'all' ? 'selected' : '' }}>Все записи</option>
+                    <option value="null" {{ $purchase_type_filter == 'null' ? 'selected' : '' }}>Тип NULL</option>
+                    <option value="not_null" {{ $purchase_type_filter == 'not_null' ? 'selected' : '' }}>Тип заполнен</option>
+                </select>
+            </div>
+            @endif
             <div class="col-md-1">
                 <button type="submit" class="btn btn-primary w-100">
                     Поиск
@@ -52,7 +61,7 @@
                 </a>
             </div>
             @auth
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <a href="{{ route('zakupki.export', request()->query()) }}" class="btn btn-success w-100">
                     Экспорт
                 </a>
@@ -76,6 +85,9 @@
                         <th>Email</th>
                         <th>Телефон</th>
                         <th>Адрес</th>
+                        @if(Auth::check() && Auth::user()->isAdmin())
+                        <th>Тип</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -88,10 +100,19 @@
                         <td>{{ $item['email'] ?? '' }}</td>
                         <td>{{ $item['phone'] ?? '' }}</td>
                         <td>{{ $item['address'] ?? '' }}</td>
+                        @if(Auth::check() && Auth::user()->isAdmin())
+                        <td>
+                            @if(isset($item['purchase_type']) && $item['purchase_type'] !== null)
+                                <span class="badge bg-primary">{{ $item['purchase_type'] }}</span>
+                            @else
+                                <span class="badge bg-secondary">NULL</span>
+                            @endif
+                        </td>
+                        @endif
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center">Нет данных</td>
+                        <td colspan="{{ Auth::check() && Auth::user()->isAdmin() ? '8' : '7' }}" class="text-center">Нет данных</td>
                     </tr>
                     @endforelse
                 </tbody>

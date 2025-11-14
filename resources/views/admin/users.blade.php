@@ -62,6 +62,16 @@
                                     {{ $user->isAdmin() ? 'Снять admin' : 'Назначить admin' }}
                                 </button>
                             </form>
+
+                            @if(!$user->isAdmin())
+                            <form method="POST" action="{{ route('admin.users.delete', $user) }}" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить пользователя {{ $user->name }} ({{ $user->email }})?\n\nВнимание: Это действие необратимо!');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" title="Удалить пользователя">
+                                    <i class="bi bi-trash"></i> Удалить
+                                </button>
+                            </form>
+                            @endif
                             @else
                                 <span class="text-muted">Вы</span>
                             @endif

@@ -60,6 +60,52 @@ class AdminController extends Controller
     }
 
     /**
+     * Delete user.
+     */
+    public function deleteUser(User $user)
+    {
+        // Проверка: нельзя удалить самого себя
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.users')
+                ->with('error', 'Вы не можете удалить самого себя');
+        }
+
+        // Проверка: нельзя удалить другого администратора
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.users')
+                ->with('error', 'Нельзя удалить администратора');
+        }
+
+        $userName = $user->name;
+        $userEmail = $user->email;
+
+        try {
+            // Удаляем пользователя (связанные данные удалятся через каскад в миграциях)
+            $user->delete();
+
+            \Log::info('[ADMIN] User deleted', [
+                'deleted_user_id' => $user->id,
+                'deleted_user_name' => $userName,
+                'deleted_user_email' => $userEmail,
+                'deleted_by' => auth()->id(),
+                'deleted_by_name' => auth()->user()->name
+            ]);
+
+            return redirect()->route('admin.users')
+                ->with('success', "Пользователь {$userName} ({$userEmail}) успешно удален");
+        } catch (\Exception $e) {
+            \Log::error('[ADMIN] Failed to delete user', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'admin_id' => auth()->id()
+            ]);
+
+            return redirect()->route('admin.users')
+                ->with('error', 'Ошибка при удалении пользователя: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Display list of ideas for moderation.
      */
     public function ideas()

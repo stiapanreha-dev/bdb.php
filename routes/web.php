@@ -150,6 +150,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/users', [App\Http\Controllers\AdminController::class, 'users'])->name('admin.users');
     Route::post('/users/{user}/toggle-admin', [App\Http\Controllers\AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
     Route::post('/users/{user}/update-balance', [App\Http\Controllers\AdminController::class, 'updateBalance'])->name('admin.users.update-balance');
+    Route::delete('/users/{user}', [App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.users.delete');
 
     Route::get('/ideas', [App\Http\Controllers\AdminController::class, 'ideas'])->name('admin.ideas');
     Route::post('/ideas/{idea}/update-status', [App\Http\Controllers\AdminController::class, 'updateIdeaStatus'])->name('admin.ideas.update-status');
