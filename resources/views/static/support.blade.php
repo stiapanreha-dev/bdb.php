@@ -16,8 +16,8 @@
                 <div class="mb-4">
                     <h6><i class="bi bi-telegram"></i> Telegram</h6>
                     <p class="mb-2">Самый быстрый способ связи:</p>
-                    <a href="https://t.me/cdvks" class="btn btn-primary" target="_blank">
-                        <i class="bi bi-telegram"></i> @cdvks
+                    <a href="https://t.me/DbLogic" class="btn btn-primary" target="_blank">
+                        <i class="bi bi-telegram"></i> @DbLogic
                     </a>
                 </div>
 
@@ -28,7 +28,6 @@
                         support@businessdb.ru
                     </a>
                 </div>
-
                 <div class="mb-0">
                     <h6><i class="bi bi-clock"></i> Время работы</h6>
                     <p class="mb-0">
