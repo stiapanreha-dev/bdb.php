@@ -20,7 +20,7 @@
                 <div class="col-md-4">
                     <label for="dbTypeSelect" class="form-label fw-bold fs-5">Выберите базу данных:</label>
                     <select class="form-select form-select-lg" id="dbTypeSelect" onchange="switchDatabase(this.value)"
-                            style="border: 2px solid #f7f7fb; font-weight: 500;">
+                            style="border: 2px solid #3598db; font-weight: 500;">
                         <option value="zakupki">1. Закупки</option>
                         <option value="companies" selected>2. Предприятия России</option>
                     </select>
