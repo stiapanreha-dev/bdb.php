@@ -202,6 +202,11 @@ Route::middleware('auth')->group(function () {
   - Оптимизация запросов с CONVERT(DATE) для SQL Server
   - Маскирование данных для неоплаченных пользователей
 - `CompanyController` - работа с компаниями (только business2025)
+- `ShopController` - интернет-магазин
+  - Каталог товаров с фильтрацией по категориям
+  - Детальная страница товара с Editor.js описанием
+  - Система покупок с интеграцией в баланс пользователя
+  - Подсчет просмотров и покупок
 - `AdminController` - админ-панель
   - Управление пользователями (баланс, роли)
   - Модерация идей (одобрение/отклонение/возврат на рассмотрение)
@@ -240,13 +245,17 @@ Route::middleware('auth')->group(function () {
 - `companies/index.blade.php` - список компаний с фильтрами
 - `companies/show.blade.php` - карточка компании
 
+**Shop (магазин):**
+- `shop/index.blade.php` - каталог товаров с категориями и поиском
+- `shop/show.blade.php` - карточка товара с описанием и кнопкой покупки
+
 **Admin (админ-панель):**
 - `admin/users.blade.php` - управление пользователями
 - `admin/ideas.blade.php` - модерация идей
 - `admin/sql.blade.php` - **SQL редактор** для выполнения запросов
 
 **Layouts:**
-- `layouts/app.blade.php` - главный layout с навигацией, footer, модалками
+- `components/app-layout.blade.php` - главный layout с навигацией, footer, модалками
 
 ### Стили (public/css/)
 
@@ -285,6 +294,10 @@ Route::middleware('auth')->group(function () {
 - `ideas` - идеи пользователей
 - `news` - новости
 - `transactions` - транзакции пользователей
+- `shop_categories` - категории товаров (иерархические с parent_id)
+- `shop_products` - товары с изображениями и Editor.js описаниями
+- `shop_product_views` - просмотры товаров (логирование)
+- `shop_product_purchases` - покупки товаров
 
 ## Конфигурация окружения
 
@@ -786,7 +799,145 @@ Route::post('/payment/webhook', [PaymentController::class, 'webhook']);
 
 Все views используют компонент `<x-app-layout>`, а не директиву `@extends`.
 
+## Система магазина (Shop)
+
+### Описание
+
+Полнофункциональный интернет-магазин для продажи товаров и услуг за внутреннюю валюту.
+
+**URL:** https://businessdb.ru/shop
+
+### Структура таблиц
+
+**shop_categories** - иерархические категории товаров:
+- `id` - ID категории
+- `name` - название категории
+- `slug` - URL-slug (уникальный)
+- `parent_id` - ID родительской категории (nullable, foreign key)
+- `description` - описание категории
+- `image` - изображение категории
+- `is_active` - активность категории
+- `sort_order` - порядок сортировки
+
+**shop_products** - товары:
+- `id` - ID товара
+- `category_id` - ID категории (foreign key)
+- `name` - название товара
+- `slug` - URL-slug (уникальный)
+- `short_description` - краткое описание
+- `description` - полное описание (JSON для Editor.js)
+- `image` - изображение товара
+- `price` - цена (decimal 10,2)
+- `views_count` - счетчик просмотров
+- `purchases_count` - счетчик покупок
+- `is_active` - активность товара
+- `created_by` - ID создателя (foreign key к users)
+
+**shop_product_views** - логирование просмотров:
+- `id` - ID записи
+- `product_id` - ID товара (foreign key)
+- `user_id` - ID пользователя (nullable, foreign key)
+- `ip_address` - IP адрес
+- `user_agent` - User Agent
+- `created_at` - дата просмотра
+
+**shop_product_purchases** - история покупок:
+- `id` - ID покупки
+- `product_id` - ID товара (foreign key)
+- `user_id` - ID покупателя (foreign key)
+- `price` - цена на момент покупки
+- `status` - статус (pending, completed, canceled)
+- `created_at` - дата покупки
+
+### Модели
+
+**ShopCategory:**
+- Связи: `belongsTo` (parent), `hasMany` (children, products)
+- Методы: каскадное удаление подкатегорий и товаров
+
+**ShopProduct:**
+- Связи: `belongsTo` (category, creator), `hasMany` (views, purchases)
+- Методы: `incrementViews()`, `incrementPurchases()`, `getFormattedPriceAttribute()`
+- Casts: `description` → array (Editor.js JSON), `price` → decimal:2
+
+**ShopProductView / ShopProductPurchase:**
+- Связи: `belongsTo` (product, user)
+
+### Контроллер ShopController
+
+**index(Request $request):**
+- Каталог товаров с пагинацией (20 на страницу)
+- Фильтрация по категориям (`?category=ID`)
+- Поиск по названию и краткому описанию (`?search=query`)
+- Отображение дерева категорий в боковой панели
+
+**show(Request $request, $slug):**
+- Детальная страница товара
+- Логирование просмотра (IP, User Agent)
+- Инкремент счетчика просмотров
+- Отображение Editor.js контента
+
+**purchase(Request $request, $id):**
+- Проверка авторизации
+- Проверка баланса пользователя
+- Списание средств через транзакцию
+- Создание записи покупки
+- Создание транзакции в таблице transactions
+- Инкремент счетчика покупок
+
+### Маршруты
+
+```php
+// Публичные маршруты
+Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shop.show');
+
+// Покупка товара (только авторизованные)
+Route::post('/shop/{id}/purchase', [ShopController::class, 'purchase'])
+    ->middleware('auth')
+    ->name('shop.purchase');
+```
+
+### Интеграция с балансом
+
+При покупке товара:
+1. Проверяется баланс пользователя (`$user->balance >= $product->price`)
+2. Начинается транзакция БД (`DB::beginTransaction()`)
+3. Списывается баланс (`$user->balance -= $product->price`)
+4. Создается запись в `shop_product_purchases`
+5. Создается запись в `transactions` с типом 'purchase'
+6. Инкрементируется счетчик покупок товара
+7. Коммитится транзакция (`DB::commit()`)
+8. При ошибке откатывается (`DB::rollBack()`)
+
+### Цветовая схема
+
+- **Основной цвет:** `#3598db` (синий)
+- **Акцентный цвет:** `#2e86c1` (темно-синий)
+- **Цена:** `#27ae60` (зеленый)
+
+### TODO: Админ-панель для магазина
+
+- [ ] CRUD категорий товаров
+- [ ] CRUD товаров
+- [ ] Загрузка изображений для товаров
+- [ ] Статистика продаж
+- [ ] Управление заказами
+
 ## История изменений
+
+### 2025-11-15
+- ✅ Создана система магазина (Shop)
+  - 4 таблицы: shop_categories, shop_products, shop_product_views, shop_product_purchases
+  - 5 моделей с полными связями
+  - ShopController с методами: index, show, purchase
+  - 2 представления: shop/index.blade.php, shop/show.blade.php
+  - Интеграция с балансом пользователя и системой транзакций
+  - Иерархические категории (родитель-потомок)
+  - Поиск и фильтрация по категориям
+  - Подсчет просмотров и покупок
+  - Editor.js для описаний товаров
+  - Цветовая схема: #3598db (основной), #2e86c1 (акцент), #27ae60 (цена)
 
 ### 2025-11-02
 - ✅ Завершена интеграция Editor.js в модуль новостей и доску объявлений
@@ -837,4 +988,4 @@ Route::post('/payment/webhook', [PaymentController::class, 'webhook']);
 
 ---
 
-**Последнее обновление:** 2025-11-02 23:10
+**Последнее обновление:** 2025-11-15 02:30
