@@ -111,11 +111,13 @@ Route::middleware(['module:articles'])->group(function () {
 });
 
 // Shop routes
-Route::get('/shop', [App\Http\Controllers\ShopController::class, 'index'])->name('shop.index');
-Route::get('/shop/my-purchases', [App\Http\Controllers\ShopController::class, 'myPurchases'])->middleware('auth')->name('shop.my-purchases');
-Route::get('/shop/download/{id}', [App\Http\Controllers\ShopController::class, 'downloadAttachment'])->middleware('auth')->name('shop.download');
-Route::get('/shop/{slug}', [App\Http\Controllers\ShopController::class, 'show'])->name('shop.show');
-Route::post('/shop/{id}/purchase', [App\Http\Controllers\ShopController::class, 'purchase'])->middleware('auth')->name('shop.purchase');
+Route::middleware(['module:shop'])->group(function () {
+    Route::get('/shop', [App\Http\Controllers\ShopController::class, 'index'])->name('shop.index');
+    Route::get('/shop/my-purchases', [App\Http\Controllers\ShopController::class, 'myPurchases'])->middleware('auth')->name('shop.my-purchases');
+    Route::get('/shop/download/{id}', [App\Http\Controllers\ShopController::class, 'downloadAttachment'])->middleware('auth')->name('shop.download');
+    Route::get('/shop/{slug}', [App\Http\Controllers\ShopController::class, 'show'])->name('shop.show');
+    Route::post('/shop/{id}/purchase', [App\Http\Controllers\ShopController::class, 'purchase'])->middleware('auth')->name('shop.purchase');
+});
 
 Route::get('/invite', function () {
     return '<h1>Пригласи друга</h1><p>Страница в разработке</p>';

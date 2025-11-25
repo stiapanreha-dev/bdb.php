@@ -90,11 +90,13 @@
                         </a>
                     </li>
                     @endif
+                    @if(ModuleSetting::isModuleEnabled('shop'))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('shop.index') }}">
                             Магазин
                         </a>
                     </li>
+                    @endif
                     @if(ModuleSetting::isModuleEnabled('newsletters'))
                     @auth
                     <li class="nav-item">
