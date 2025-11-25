@@ -111,7 +111,7 @@
                                     </a>
                                 </td>
                                 <td class="text-end">{{ $product->purchases_count }}</td>
-                                <td class="text-end text-success">{{ number_format($product->purchases_sum_price ?? 0, 0, '.', ' ') }} ₽</td>
+                                <td class="text-end text-success">{{ number_format($product->completed_revenue ?? 0, 0, '.', ' ') }} ₽</td>
                             </tr>
                             @endforeach
                         </tbody>

@@ -246,23 +246,17 @@ class ShopProductController extends Controller
             ->orderBy('date')
             ->get();
 
-        // Top 10 products by sales
-        $topProducts = ShopProduct::withCount(['purchases' => function ($query) {
-                $query->where('status', 'completed');
-            }])
-            ->withSum(['purchases' => function ($query) {
+        // Top 10 products by sales (use table column, not withCount to avoid ambiguity)
+        $topProducts = ShopProduct::withSum(['purchases as completed_revenue' => function ($query) {
                 $query->where('status', 'completed');
             }], 'price')
             ->orderByDesc('purchases_count')
             ->limit(10)
             ->get();
 
-        // Products with conversion data
+        // Products with conversion data (use table column directly)
         $productsWithConversion = ShopProduct::where('views_count', '>', 0)
-            ->withCount(['purchases' => function ($query) {
-                $query->where('status', 'completed');
-            }])
-            ->orderByRaw('(purchases_count * 100.0 / views_count) DESC')
+            ->orderByRaw('(shop_products.purchases_count * 100.0 / shop_products.views_count) DESC')
             ->limit(10)
             ->get()
             ->map(function ($product) {
