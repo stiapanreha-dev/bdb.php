@@ -85,6 +85,9 @@ Route::middleware(['auth', 'module:announcements'])->group(function () {
 
     // Announcement images upload (up to 5 images)
     Route::post('/api/upload-announcement-images', [App\Http\Controllers\ImageUploadController::class, 'uploadAnnouncementImages'])->name('announcement.images.upload');
+
+    // Shop images upload for Editor.js
+    Route::post('/api/upload-shop-image', [App\Http\Controllers\ImageUploadController::class, 'uploadShopImage'])->name('shop.image.upload');
 });
 Route::middleware(['module:announcements'])->group(function () {
     Route::get('/announcements/{id}', [App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
@@ -188,6 +191,32 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'update' => 'admin.tariffs.update',
         'destroy' => 'admin.tariffs.destroy',
     ]);
+
+    // Shop category management routes
+    Route::resource('shop/categories', App\Http\Controllers\Admin\ShopCategoryController::class)->names([
+        'index' => 'admin.shop.categories.index',
+        'create' => 'admin.shop.categories.create',
+        'store' => 'admin.shop.categories.store',
+        'edit' => 'admin.shop.categories.edit',
+        'update' => 'admin.shop.categories.update',
+        'destroy' => 'admin.shop.categories.destroy',
+    ])->except(['show']);
+
+    // Shop product management routes
+    Route::resource('shop/products', App\Http\Controllers\Admin\ShopProductController::class)->names([
+        'index' => 'admin.shop.products.index',
+        'create' => 'admin.shop.products.create',
+        'store' => 'admin.shop.products.store',
+        'show' => 'admin.shop.products.show',
+        'edit' => 'admin.shop.products.edit',
+        'update' => 'admin.shop.products.update',
+        'destroy' => 'admin.shop.products.destroy',
+    ]);
+    Route::post('shop/products/{id}/restore', [App\Http\Controllers\Admin\ShopProductController::class, 'restore'])->name('admin.shop.products.restore');
+
+    // Shop statistics and purchases
+    Route::get('shop/statistics', [App\Http\Controllers\Admin\ShopProductController::class, 'statistics'])->name('admin.shop.statistics');
+    Route::get('shop/purchases', [App\Http\Controllers\Admin\ShopProductController::class, 'purchases'])->name('admin.shop.purchases');
 
     // Ticket management routes (admin)
     Route::get('/tickets', [App\Http\Controllers\AdminTicketController::class, 'index'])->name('admin.tickets.index');

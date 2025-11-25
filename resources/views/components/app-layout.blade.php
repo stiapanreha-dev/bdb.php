@@ -164,6 +164,13 @@
                                     <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Магазин</h6></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.shop.categories.index') }}"><i class="bi bi-folder me-2"></i>Категории</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.shop.products.index') }}"><i class="bi bi-box me-2"></i>Товары</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.shop.statistics') }}"><i class="bi bi-graph-up me-2"></i>Статистика продаж</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.shop.purchases') }}"><i class="bi bi-cart-check me-2"></i>История покупок</a></li>
+                                    <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.modules') }}">Модули</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
@@ -258,6 +265,13 @@
                                     <li><a class="dropdown-item" href="{{ route('admin.payments') }}">Платежи ЮKassa</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletters') }}">Статистика рассылок</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.newsletter-settings') }}">Настройки рассылки</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Магазин</h6></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.shop.categories.index') }}"><i class="bi bi-folder me-2"></i>Категории</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.shop.products.index') }}"><i class="bi bi-box me-2"></i>Товары</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.shop.statistics') }}"><i class="bi bi-graph-up me-2"></i>Статистика продаж</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.shop.purchases') }}"><i class="bi bi-cart-check me-2"></i>История покупок</a></li>
+                                    <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.modules') }}">Модули</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.sql') }}">SQL Запросы</a></li>
