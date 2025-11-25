@@ -81,6 +81,7 @@ class ShopProductController extends Controller
             'short_description' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'attachment' => 'nullable|file|max:51200', // 50MB max
             'price' => 'required|numeric|min:0',
             'is_active' => 'nullable',
         ]);
@@ -102,6 +103,15 @@ class ShopProductController extends Controller
             $filename = Str::slug($validated['name']) . '-' . time() . '.' . $image->getClientOriginalExtension();
             $path = $image->storeAs('shop/products', $filename, 'public');
             $validated['image'] = $path;
+        }
+
+        // Handle attachment upload (file available after purchase)
+        if ($request->hasFile('attachment')) {
+            $attachment = $request->file('attachment');
+            $filename = Str::slug($validated['name']) . '-' . time() . '.' . $attachment->getClientOriginalExtension();
+            $path = $attachment->storeAs('shop/attachments', $filename, 'local'); // Store in private storage
+            $validated['attachment'] = $path;
+            $validated['attachment_name'] = $attachment->getClientOriginalName();
         }
 
         ShopProduct::create($validated);
@@ -155,6 +165,7 @@ class ShopProductController extends Controller
             'short_description' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'attachment' => 'nullable|file|max:51200', // 50MB max
             'price' => 'required|numeric|min:0',
             'is_active' => 'nullable',
         ]);
@@ -186,6 +197,27 @@ class ShopProductController extends Controller
         if ($request->has('delete_image') && $product->image) {
             Storage::disk('public')->delete($product->image);
             $validated['image'] = null;
+        }
+
+        // Handle attachment upload
+        if ($request->hasFile('attachment')) {
+            // Delete old attachment
+            if ($product->attachment) {
+                Storage::disk('local')->delete($product->attachment);
+            }
+
+            $attachment = $request->file('attachment');
+            $filename = Str::slug($validated['name']) . '-' . time() . '.' . $attachment->getClientOriginalExtension();
+            $path = $attachment->storeAs('shop/attachments', $filename, 'local');
+            $validated['attachment'] = $path;
+            $validated['attachment_name'] = $attachment->getClientOriginalName();
+        }
+
+        // Handle attachment deletion
+        if ($request->has('delete_attachment') && $product->attachment) {
+            Storage::disk('local')->delete($product->attachment);
+            $validated['attachment'] = null;
+            $validated['attachment_name'] = null;
         }
 
         $product->update($validated);

@@ -168,6 +168,24 @@
                 </div>
             </div>
 
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="bi bi-paperclip me-1"></i>Прикреплённый файл
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="file"
+                               class="form-control @error('attachment') is-invalid @enderror"
+                               id="attachment"
+                               name="attachment">
+                        <div class="form-text">Файл, доступный покупателю после оплаты. Максимум 50 МБ</div>
+                        @error('attachment')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-body">
                     <button type="button" id="submitBtn" class="btn btn-primary w-100 mb-2">

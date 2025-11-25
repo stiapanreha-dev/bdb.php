@@ -180,6 +180,42 @@
                 </div>
             </div>
 
+            <div class="card mb-3">
+                <div class="card-header">
+                    <i class="bi bi-paperclip me-1"></i>Прикреплённый файл
+                </div>
+                <div class="card-body">
+                    @if($product->attachment)
+                    <div class="mb-2 p-2 bg-light rounded">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="bi bi-file-earmark me-2"></i>
+                                <strong>{{ $product->attachment_name }}</strong>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="delete_attachment"
+                                       name="delete_attachment">
+                                <label class="form-check-label text-danger" for="delete_attachment">
+                                    Удалить
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <input type="file"
+                           class="form-control @error('attachment') is-invalid @enderror"
+                           id="attachment"
+                           name="attachment">
+                    <div class="form-text">Файл, доступный покупателю после оплаты. Максимум 50 МБ</div>
+                    @error('attachment')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
             <div class="card mb-3 bg-light">
                 <div class="card-header">Статистика</div>
                 <div class="card-body">

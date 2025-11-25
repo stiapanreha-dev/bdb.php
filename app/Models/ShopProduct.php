@@ -20,6 +20,8 @@ class ShopProduct extends Model
         'short_description',
         'description',
         'image',
+        'attachment',
+        'attachment_name',
         'price',
         'is_active',
         'created_by',

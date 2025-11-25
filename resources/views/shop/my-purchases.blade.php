@@ -18,6 +18,13 @@
 </div>
 @endif
 
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
+
 @if($purchases->count() > 0)
 <div class="card">
     <div class="card-body">
@@ -76,11 +83,22 @@
                             @endif
                         </td>
                         <td class="text-end">
-                            @if($purchase->product && $purchase->product->is_active)
-                            <a href="{{ route('shop.show', $purchase->product->slug) }}"
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i>
-                            </a>
+                            @if($purchase->product)
+                                @if($purchase->status === 'completed' && $purchase->product->attachment)
+                                <a href="{{ route('shop.download', $purchase->product->id) }}"
+                                   class="btn btn-sm btn-success me-1"
+                                   title="Скачать файл">
+                                    <i class="bi bi-download"></i>
+                                    {{ $purchase->product->attachment_name ?? 'Файл' }}
+                                </a>
+                                @endif
+                                @if($purchase->product->is_active)
+                                <a href="{{ route('shop.show', $purchase->product->slug) }}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   title="Просмотр товара">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                @endif
                             @endif
                         </td>
                     </tr>

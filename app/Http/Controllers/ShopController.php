@@ -10,6 +10,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ShopController extends Controller
 {
@@ -149,6 +150,49 @@ class ShopController extends Controller
             ->paginate(20);
 
         return view('shop.my-purchases', compact('purchases'));
+    }
+
+    /**
+     * Download attachment for purchased product.
+     */
+    public function downloadAttachment($id)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login')
+                ->with('error', 'Для скачивания необходимо авторизоваться');
+        }
+
+        $product = ShopProduct::findOrFail($id);
+
+        // Check if product has attachment
+        if (!$product->attachment) {
+            return back()->with('error', 'У этого товара нет прикреплённого файла');
+        }
+
+        // Check if user has purchased this product
+        $purchase = ShopProductPurchase::where('user_id', Auth::id())
+            ->where('product_id', $product->id)
+            ->where('status', 'completed')
+            ->first();
+
+        if (!$purchase) {
+            return back()->with('error', 'Вы не приобретали этот товар');
+        }
+
+        // Check if file exists
+        if (!Storage::disk('local')->exists($product->attachment)) {
+            \Log::error('[SHOP] Attachment file not found', [
+                'product_id' => $product->id,
+                'path' => $product->attachment,
+            ]);
+            return back()->with('error', 'Файл не найден. Обратитесь в поддержку.');
+        }
+
+        // Return file download
+        return Storage::disk('local')->download(
+            $product->attachment,
+            $product->attachment_name ?? basename($product->attachment)
+        );
     }
 
     /**
