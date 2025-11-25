@@ -22,9 +22,17 @@ class ShopController extends Controller
         $query = ShopProduct::with('category')
             ->where('is_active', true);
 
-        // Filter by category
+        // Filter by category (by slug)
+        $currentCategory = null;
         if ($request->has('category') && $request->category) {
-            $query->where('category_id', $request->category);
+            $currentCategory = ShopCategory::where('slug', $request->category)->first();
+            if ($currentCategory) {
+                // Include products from this category and its children
+                $categoryIds = collect([$currentCategory->id]);
+                $childIds = ShopCategory::where('parent_id', $currentCategory->id)->pluck('id');
+                $categoryIds = $categoryIds->merge($childIds);
+                $query->whereIn('category_id', $categoryIds);
+            }
         }
 
         // Search
@@ -45,7 +53,7 @@ class ShopController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        return view('shop.index', compact('products', 'categories'));
+        return view('shop.index', compact('products', 'categories', 'currentCategory'));
     }
 
     /**

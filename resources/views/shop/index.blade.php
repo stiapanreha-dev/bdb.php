@@ -9,18 +9,18 @@
             </div>
             <div class="list-group list-group-flush">
                 @forelse($categories as $category)
-                    <a href="{{ route('shop.index', ['category' => $category->id]) }}"
-                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ request('category') == $category->id ? 'active' : '' }}">
+                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ request('category') == $category->slug ? 'active' : '' }}">
                         {{ $category->name }}
                         @if($category->children->count() > 0)
                             <i class="bi bi-chevron-right"></i>
                         @endif
                     </a>
 
-                    @if($category->children->count() > 0 && request('category') == $category->id)
+                    @if($category->children->count() > 0 && request('category') == $category->slug)
                         @foreach($category->children as $child)
-                            <a href="{{ route('shop.index', ['category' => $child->id]) }}"
-                               class="list-group-item list-group-item-action ps-4 {{ request('category') == $child->id ? 'active' : '' }}">
+                            <a href="{{ route('shop.index', ['category' => $child->slug]) }}"
+                               class="list-group-item list-group-item-action ps-4 {{ request('category') == $child->slug ? 'active' : '' }}">
                                 {{ $child->name }}
                             </a>
                         @endforeach
