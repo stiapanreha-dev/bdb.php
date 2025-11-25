@@ -2,27 +2,30 @@
 
 ## Обзор проекта
 
-Laravel 11 приложение для работы с базой данных компаний и закупок.
+Laravel 12 приложение для работы с базой данных компаний и закупок.
 
 **URL продакшена:** https://businessdb.ru/
 
 ## Архитектура
 
 ### Стек технологий
-- **Framework:** Laravel 11.x
-- **PHP:** 8.2+ (локально 8.3, продакшн 8.2)
+- **Framework:** Laravel 12.x
+- **PHP:** 8.2+ (локально 8.3, продакшн 8.3)
 - **База данных:**
-  - **PostgreSQL** - основная БД для Laravel (users, news, ideas, transactions)
-  - **Microsoft SQL Server** - внешняя БД (2 подключения: `mssql` и `mssql_cp1251` для работы с компаниями и закупками)
-- **Frontend:** Blade templates, Tailwind CSS, Alpine.js
-- **Экспорт:** Maatwebsite Excel (для экспорта в .xlsx)
+  - **PostgreSQL** - основная БД для Laravel (users, news, ideas, transactions и др.)
+  - **Microsoft SQL Server** - внешняя БД (подключения: `mssql`, `mssql_cp1251`, `mssql_2020-2026`)
+- **Frontend:** Blade templates, Tailwind CSS 3.1, Alpine.js 3.4
+- **Сборка:** Vite 7.x
+- **Экспорт:** Maatwebsite Excel 3.1 (для экспорта в .xlsx)
+- **Редактор контента:** Editor.js (alaminfirdows/laravel-editorjs ^2.3)
+- **Платежи:** YooKassa SDK (yoomoney/yookassa-sdk-php ^3.11)
 
 ### Подключения к БД
 
 В проекте используется несколько подключений:
 
 1. **pgsql** (по умолчанию) - PostgreSQL для локальных таблиц Laravel
-   - users, news, ideas, transactions и другие таблицы приложения
+   - users, news, ideas, transactions, payments, tariffs, newsletters и другие таблицы приложения
 
 2. **mssql** - MS SQL Server подключение (UTF-8) к базе business2025
    - Для работы с внешней БД компаний и текущих закупок
@@ -171,11 +174,11 @@ gh run view [run_id]
 - После изменений в `composer.json` не забудьте выполнить `composer install` на сервере
 - **Opcache:** После деплоя автоматически очищается через `php artisan optimize:clear`
 
-## Особенности Laravel 11
+## Особенности Laravel 12
 
 ### Middleware в контроллерах
 
-⚠️ **Важно:** В Laravel 11 метод `$this->middleware()` в конструкторах контроллеров **удален**.
+⚠️ **Важно:** В Laravel 11+ метод `$this->middleware()` в конструкторах контроллеров **удален**.
 
 **НЕправильно (вызовет ошибку):**
 ```php
@@ -195,109 +198,214 @@ Route::middleware('auth')->group(function () {
 
 ## Структура проекта
 
-### Основные контроллеры
+### Контроллеры (app/Http/Controllers/)
 
-- `ZakupkiController` - работа с закупками (главная страница)
-  - Поддержка year-based баз данных
-  - Оптимизация запросов с CONVERT(DATE) для SQL Server
-  - Маскирование данных для неоплаченных пользователей
-- `CompanyController` - работа с компаниями (только business2025)
-- `ShopController` - интернет-магазин
-  - Каталог товаров с фильтрацией по категориям
-  - Детальная страница товара с Editor.js описанием
-  - Система покупок с интеграцией в баланс пользователя
-  - Подсчет просмотров и покупок
-- `AdminController` - админ-панель
-  - Управление пользователями (баланс, роли)
-  - Модерация идей (одобрение/отклонение/возврат на рассмотрение)
-  - **SQL редактор** - выполнение SELECT запросов к базам данных
-- `ProfileController` - профиль пользователя (из Laravel Breeze)
-- `NewsController` - новости
-- `IdeasController` - идеи пользователей
+**Основные контроллеры:**
 
-### Helpers
+| Контроллер | Описание |
+|------------|----------|
+| `ZakupkiController` | Закупки (главная страница), поддержка year-based БД, маскирование данных |
+| `CompanyController` | Компании (только business2025), требует auth |
+| `ShopController` | Интернет-магазин: каталог, карточка товара, покупки |
+| `AdminController` | Админ-панель: пользователи, идеи, SQL, рассылки, платежи, кеш, модули |
+| `Admin/TariffController` | CRUD тарифных планов |
+| `NewsController` | Новости (с Editor.js) |
+| `AnnouncementController` | Доска объявлений (с Editor.js, до 5 изображений) |
+| `ArticleController` | Статьи (модуль, с Editor.js) |
+| `IdeasController` | Идеи пользователей |
+| `NewsletterController` | Управление рассылками (модуль, требует подписку) |
+| `TicketController` | Тикеты поддержки (для пользователей) |
+| `AdminTicketController` | Управление тикетами (для админов) |
+| `PaymentController` | Платежи ЮKassa |
+| `SubscriptionController` | Подписки на тарифы |
+| `ProfileController` | Профиль пользователя (аватар, контакты) |
+| `ImageUploadController` | Загрузка изображений для Editor.js |
+| `LogController` | Логирование с клиента |
+
+### Модели (app/Models/)
+
+**22 модели:**
+
+| Модель | Описание |
+|--------|----------|
+| `User` | Пользователь (balance, role, avatar, work_email, work_phone) |
+| `Newsletter` | Рассылка новостей |
+| `NewsletterKeyword` | Ключевые слова для рассылки |
+| `NewsletterLog` | Логи отправок рассылок |
+| `NewsletterSetting` | Глобальные настройки рассылок (KV storage) |
+| `Payment` | Платежи ЮKassa |
+| `Transaction` | Транзакции (внутренние операции) |
+| `Tariff` | Тарифные планы |
+| `UserSubscription` | Подписки пользователей на тарифы |
+| `TariffHistory` | История изменений тарифов |
+| `News` | Новости (с Editor.js) |
+| `Idea` | Идеи пользователей |
+| `Announcement` | Объявления (supplier/buyer/dealer, с Editor.js) |
+| `Article` | Статьи (модуль, с Editor.js) |
+| `ModuleSetting` | Управление модулями |
+| `Ticket` | Тикеты поддержки |
+| `TicketMessage` | Сообщения в тикетах |
+| `ShopCategory` | Категории товаров (иерархические) |
+| `ShopProduct` | Товары магазина |
+| `ShopProductView` | Просмотры товаров |
+| `ShopProductPurchase` | Покупки товаров |
+| `EmailVerification` | Верификация email |
+
+### Artisan команды (app/Console/Commands/)
+
+| Команда | Описание |
+|---------|----------|
+| `php artisan newsletters:send` | Отправка рассылок с закупками по ключевым словам |
+| `php artisan newsletters:renew` | Автоматическое продление подписок на рассылку (500₽/мес) |
+| `php artisan db:migrate-from-sqlite` | Миграция данных из SQLite в PostgreSQL |
+| `php artisan db:fix-sequences` | Исправление последовательностей PostgreSQL |
+
+### Middleware (app/Http/Middleware/)
+
+| Middleware | Использование |
+|------------|---------------|
+| `CheckModuleEnabled` | `Route::middleware(['module:announcements'])` |
+| `EnsureEmailVerified` | Проверка верификации email |
+| `EnsurePhoneVerified` | Проверка верификации телефона |
+
+### Helpers (app/Helpers/)
 
 - `DataMaskingHelper` - маскирование email, телефонов, сайтов для пользователей без баланса
+- `ModuleHelper` - функция `module_enabled($key)` для проверки включения модуля
 
-### Exports
+### Exports (app/Exports/)
 
 - `CompaniesExport` - экспорт компаний в Excel
-- `ZakupkiExport` - экспорт закупок в Excel (максимум 10 000 записей)
+- `CompanyExport` - экспорт одной компании
+- `ZakupkiExport` - экспорт закупок в Excel (максимум 10,000 записей)
+- `NewsletterExport` - экспорт закупок для рассылки
+
+## Система модулей
+
+Проект использует систему модулей, которая может быть включена/отключена администратором через `/admin/modules`:
+
+| Модуль | Ключ | Описание |
+|--------|------|----------|
+| Рассылки | `newsletters` | Рассылки закупок по ключевым словам |
+| Объявления | `announcements` | Доска объявлений |
+| Статьи | `articles` | Статьи пользователей |
+| Идеи | `ideas` | Идеи пользователей |
+
+**Использование в роутах:**
+```php
+Route::middleware(['module:announcements'])->group(function () {
+    Route::get('/announcements', [AnnouncementController::class, 'index']);
+});
+```
+
+**Проверка в коде:**
+```php
+if (module_enabled('newsletters')) {
+    // Модуль включен
+}
+```
+
+## Views (resources/views/)
+
+### Структура директорий
+
+```
+resources/views/
+├── admin/                  # Админ-панель
+│   ├── cache.blade.php
+│   ├── ideas.blade.php
+│   ├── modules.blade.php
+│   ├── newsletter-settings.blade.php
+│   ├── newsletters.blade.php
+│   ├── payments.blade.php
+│   ├── sql.blade.php
+│   ├── tickets-index.blade.php
+│   ├── tickets-show.blade.php
+│   ├── users.blade.php
+│   └── tariffs/            # CRUD тарифов
+├── announcements/          # Объявления (с Editor.js)
+├── articles/               # Статьи (с Editor.js)
+├── auth/                   # Аутентификация
+├── companies/              # Компании
+├── components/             # Blade компоненты
+│   └── app-layout.blade.php  # Главный layout
+├── emails/                 # Email шаблоны
+├── errors/                 # Страницы ошибок
+├── ideas/                  # Идеи
+├── news/                   # Новости (с Editor.js)
+├── newsletters/            # Управление рассылками
+├── payments/               # История платежей
+├── profile/                # Профиль пользователя
+├── shop/                   # Магазин
+├── static/                 # Статические страницы
+├── subscriptions/          # Подписки на тарифы
+├── tickets/                # Тикеты поддержки
+└── zakupki/                # Закупки
+```
+
+### Layout
+
+**⚠️ ВАЖНО:** В проекте используется **единственный** layout файл:
+- `resources/views/components/app-layout.blade.php` - используется через компонент `<x-app-layout>`
+
+Все views используют компонент `<x-app-layout>`, а не директиву `@extends`.
 
 ### Статические страницы (resources/views/static/)
 
-- `support.blade.php` - страница технической поддержки
-  - Контакты: Telegram (@cdvks), Email (support@businessdb.ru)
-  - FAQ с ответами на частые вопросы
-  - Полезные ссылки
+- `support.blade.php` - техническая поддержка (Telegram @cdvks, support@businessdb.ru)
 - `privacy-policy.blade.php` - политика конфиденциальности
 - `terms-of-service.blade.php` - пользовательское соглашение
 - `offer.blade.php` - публичная оферта
 - `contacts.blade.php` - контактная информация
+- `tariffs.blade.php` - информация о тарифах
 
-### Views (resources/views/)
+## База данных
 
-**Zakupki (закупки):**
-- `zakupki/index.blade.php` - список закупок с фильтрами
-- `zakupki/detail.blade.php` - карточка закупки (детальная информация)
+### MS SQL Server (внешняя)
 
-**Companies (компании):**
-- `companies/index.blade.php` - список компаний с фильтрами
-- `companies/show.blade.php` - карточка компании
+**Структура баз данных:**
 
-**Shop (магазин):**
-- `shop/index.blade.php` - каталог товаров с категориями и поиском
-- `shop/show.blade.php` - карточка товара с описанием и кнопкой покупки
+| База | Содержимое |
+|------|------------|
+| `business2020-2024` | Закупки соответствующего года |
+| `business2025` | **Основная**: компании (db_companies) + закупки 2025 |
+| `business2026` | Закупки 2026 года |
 
-**Admin (админ-панель):**
-- `admin/users.blade.php` - управление пользователями
-- `admin/ideas.blade.php` - модерация идей
-- `admin/sql.blade.php` - **SQL редактор** для выполнения запросов
-
-**Layouts:**
-- `components/app-layout.blade.php` - главный layout с навигацией, footer, модалками
-
-### Стили (public/css/)
-
-- `style.css` - глобальные стили приложения
-  - CSS переменные: `--primary-color`, `--secondary-color`
-  - Стили для карточек, таблиц, форм, кнопок
-  - Responsive дизайн
-  - Print стили для карточек закупок
-
-### База данных (MS SQL Server)
-
-**⚠️ ВАЖНО: Структура MS SQL Server баз данных**
-
-Данные разделены на несколько баз данных по годам:
-- `business2020` - закупки 2020 года
-- `business2021` - закупки 2021 года
-- `business2022` - закупки 2022 года
-- `business2023` - закупки 2023 года
-- `business2024` - закупки 2024 года
-- `business2025` - **основная база** (компании + закупки 2025 года)
-- `business2026` - закупки 2026 года
-
-**Таблицы в базе business2025 (основная):**
-- `db_companies` - компании (ТОЛЬКО в business2025!)
-- `db_rubrics` - рубрики компаний (ТОЛЬКО в business2025!)
-- `db_subrubrics` - подрубрики компаний (ТОЛЬКО в business2025!)
-- `db_cities` - города (ТОЛЬКО в business2025!)
+**Таблицы в business2025:**
+- `db_companies` - компании (ТОЛЬКО здесь!)
+- `db_rubrics` - рубрики компаний
+- `db_subrubrics` - подрубрики компаний
+- `db_cities` - города
 - `zakupki` - закупки 2025 года
+- `zakupki_specification` - спецификации закупок
 
-**Таблицы в базах business2020-2026 (по годам):**
-- `zakupki` - закупки соответствующего года
-- `zakupki_specification` - спецификации закупок соответствующего года
+### PostgreSQL (локальная)
 
-**Локальные таблицы Laravel (PostgreSQL):**
-- `users` - пользователи
-- `ideas` - идеи пользователей
-- `news` - новости
-- `transactions` - транзакции пользователей
-- `shop_categories` - категории товаров (иерархические с parent_id)
-- `shop_products` - товары с изображениями и Editor.js описаниями
-- `shop_product_views` - просмотры товаров (логирование)
-- `shop_product_purchases` - покупки товаров
+**Основные таблицы Laravel:**
+
+| Таблица | Описание |
+|---------|----------|
+| `users` | Пользователи |
+| `transactions` | Транзакции |
+| `payments` | Платежи ЮKassa |
+| `tariffs` | Тарифные планы |
+| `user_subscriptions` | Подписки пользователей |
+| `tariff_history` | История изменений тарифов |
+| `news` | Новости |
+| `ideas` | Идеи |
+| `announcements` | Объявления |
+| `articles` | Статьи |
+| `newsletters` | Рассылки |
+| `newsletter_keywords` | Ключевые слова рассылок |
+| `newsletter_logs` | Логи рассылок |
+| `newsletter_settings` | Настройки рассылок |
+| `tickets` | Тикеты поддержки |
+| `ticket_messages` | Сообщения тикетов |
+| `shop_categories` | Категории товаров |
+| `shop_products` | Товары |
+| `shop_product_views` | Просмотры товаров |
+| `shop_product_purchases` | Покупки товаров |
+| `module_settings` | Настройки модулей |
 
 ## Конфигурация окружения
 
@@ -316,142 +424,216 @@ DB_DATABASE=businessdb
 DB_USERNAME=postgres
 DB_PASSWORD=
 
-# MS SQL Server подключения (для внешних данных)
-# Локально: buss (единая база для разработки)
-# Продакшн: business2025 (основная) + business2020-2026 (по годам)
+# MS SQL Server подключения
 MSSQL_HOST=172.26.192.1
 MSSQL_PORT=1433
 MSSQL_DATABASE=buss
 MSSQL_USERNAME=sa
 MSSQL_PASSWORD=***
+
+# ЮKassa
+YOOKASSA_SHOP_ID=1197477
+YOOKASSA_SECRET_KEY=test_***
 ```
 
-### .env (продакшн) - TODO: обновить на PostgreSQL
+### .env (продакшн)
 
 ```env
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://businessdb.ru
 
-# TODO: Установить PostgreSQL на Ubuntu Server
-# DB_CONNECTION=pgsql
-# DB_HOST=localhost
-# DB_PORT=5432
-# DB_DATABASE=businessdb
-# DB_USERNAME=businessdb_user
-# DB_PASSWORD=***
+# PostgreSQL
+DB_CONNECTION=pgsql
+DB_HOST=localhost
+DB_PORT=5432
+DB_DATABASE=businessdb
+DB_USERNAME=businessdb_user
+DB_PASSWORD=***
 
-# Временно SQLite (устарело)
-DB_CONNECTION=sqlite
-
-# MS SQL Server подключения (для внешних данных)
-# ⚠️ На продакшене используется business2025 (содержит компании)
-# ⚠️ Для работы с закупками по годам используются mssql_2020-2026
+# MS SQL Server подключения
 MSSQL_HOST=172.26.192.1
 MSSQL_PORT=1433
 MSSQL_DATABASE=business2025
 MSSQL_USERNAME=sa
 MSSQL_PASSWORD=***
+
+# ЮKassa
+YOOKASSA_SHOP_ID=***
+YOOKASSA_SECRET_KEY=live_***
 ```
+
+## Админ-панель
+
+### Доступные страницы администратора
+
+Все админ-страницы требуют роль `admin` и доступны через выпадающее меню "Админ".
+
+| Страница | URL | Описание |
+|----------|-----|----------|
+| Пользователи | `/admin/users` | Баланс, роли, удаление |
+| Идеи | `/admin/ideas` | Модерация идей |
+| Тарифы | `/admin/tariffs` | CRUD тарифных планов |
+| Платежи | `/admin/payments` | Статистика платежей ЮKassa |
+| Рассылки | `/admin/newsletters` | Статистика рассылок |
+| Настройки рассылки | `/admin/newsletter-settings` | Интервалы, продление подписок |
+| SQL Запросы | `/admin/sql` | SELECT запросы к любой БД |
+| Тикеты | `/admin/tickets` | Управление тикетами поддержки |
+| Кеш | `/admin/cache` | Очистка кеша |
+| Модули | `/admin/modules` | Включение/отключение модулей |
+
+### SQL Admin Panel
+
+**Доступ:** https://businessdb.ru/admin/sql
+
+**Возможности:**
+- Выполнение SELECT запросов к любой базе данных
+- Выбор подключения: pgsql, mssql, mssql_2020-2026, mssql_cp1251
+- Ограничение: максимум 1000 строк, таймаут 10 секунд
+
+**Безопасность:**
+- Разрешены только SELECT запросы
+- Блокируются: DROP, TRUNCATE, DELETE, UPDATE, INSERT, ALTER, CREATE, GRANT, REVOKE, EXEC
+
+## Платежная система ЮKassa
+
+### Конфигурация
+
+Конфигурация в `config/services.php`:
+```php
+'yookassa' => [
+    'shop_id' => env('YOOKASSA_SHOP_ID'),
+    'secret_key' => env('YOOKASSA_SECRET_KEY'),
+],
+```
+
+### Модель Payment
+
+**Поля:**
+- `yookassa_payment_id` - ID платежа в системе ЮKassa (уникальный)
+- `amount` - сумма платежа
+- `currency` - валюта (по умолчанию RUB)
+- `status` - статус (pending, succeeded, canceled)
+- `payment_method` - способ оплаты
+- `metadata` - дополнительные данные (JSON)
+- `paid_at` - дата и время оплаты
+
+**Методы:** `isSucceeded()`, `isPending()`, `isCanceled()`
+
+### Маршруты платежей
+
+```php
+// Авторизованные пользователи
+Route::post('/payment/create', [PaymentController::class, 'create']);
+Route::get('/payment/callback', [PaymentController::class, 'callback']);
+Route::get('/payment/history', [PaymentController::class, 'history']);
+Route::get('/payment/status/{paymentId}', [PaymentController::class, 'status']);
+
+// Webhook (публичный)
+Route::post('/payment/webhook', [PaymentController::class, 'webhook']);
+```
+
+### Тестовые карты ЮKassa
+
+- Успешная оплата: `5555 5555 5555 4477`
+- Отклоненная оплата: `5555 5555 5555 5599`
+- CVC: любые 3 цифры
+- Срок действия: любая будущая дата
+
+## Система магазина (Shop)
+
+### Описание
+
+Полнофункциональный интернет-магазин для продажи товаров и услуг за внутреннюю валюту.
+
+**URL:** https://businessdb.ru/shop
+
+### Таблицы
+
+| Таблица | Описание |
+|---------|----------|
+| `shop_categories` | Иерархические категории (parent_id) |
+| `shop_products` | Товары (Editor.js описание, изображения) |
+| `shop_product_views` | Логирование просмотров (IP, User Agent) |
+| `shop_product_purchases` | История покупок |
+
+### Интеграция с балансом
+
+При покупке товара:
+1. Проверяется баланс пользователя
+2. Начинается DB транзакция
+3. Списывается баланс
+4. Создается запись покупки
+5. Создается запись в `transactions`
+6. Инкрементируется счетчик покупок
+7. Коммитится транзакция
+
+## Система тикетов поддержки
+
+### Описание
+
+Система тикетов для связи пользователей с поддержкой.
+
+### Модель Ticket
+
+**Поля:**
+- `ticket_number` - уникальный 10-значный номер
+- `phone`, `country_code` - телефон пользователя
+- `subject` - тема тикета
+- `message` - сообщение
+- `status` - статус (new, in_progress, closed)
+- `closed_at` - дата закрытия
+
+**Методы:** `generateTicketNumber()`, `isNew()`, `isInProgress()`, `isClosed()`, `getStatusBadgeClass()`, `getStatusName()`
+
+### Модель TicketMessage
+
+**Поля:**
+- `message` - текст сообщения
+- `attachments` - прикрепленные файлы (array)
+
+## Editor.js интеграция
+
+Проект использует **Editor.js** (v2.0+) для редактирования контента в:
+- Новостях (News)
+- Объявлениях (Announcement)
+- Статьях (Article)
+- Товарах магазина (ShopProduct)
+
+**Пакет:** `alaminfirdows/laravel-editorjs` ^2.3
+
+**Рендеринг в Blade:**
+```blade
+@editorJsRender($content)
+```
+
+**Плагины:** Header, List (EditorjsList), SimpleImage, Quote, Delimiter, Table, Checklist, Embed
 
 ## Troubleshooting
 
 ### Проблема: "could not find driver" для MS SQL
 
 **Решение (Ubuntu):**
-1. Установите драйверы SQL Server:
-   ```bash
-   sudo apt install php8.3-sqlsrv php8.3-pdo-sqlsrv
-   ```
-2. Проверьте что расширения загружены:
-   ```bash
-   php -m | grep sqlsrv
-   ```
-3. Перезапустите PHP-FPM:
-   ```bash
-   sudo systemctl restart php8.3-fpm
-   ```
+```bash
+sudo apt install php8.3-sqlsrv php8.3-pdo-sqlsrv
+php -m | grep sqlsrv
+sudo systemctl restart php8.3-fpm
+```
 
 ### Проблема: "Call to undefined method middleware()"
 
-**Решение:**
-Удалите конструктор `__construct()` с вызовом `$this->middleware()` из контроллера.
-Middleware должен быть определен в routes/web.php.
+**Решение:** Удалите `$this->middleware()` из конструктора контроллера. Используйте middleware в routes/web.php.
 
-### Проблема: Nginx не запускается
+### Проблема: 504 Gateway Timeout
 
-**Диагностика:**
-```bash
-sudo nginx -t  # Проверка синтаксиса
-sudo systemctl status nginx
-```
-
-Проверьте логи:
-- `/var/log/nginx/error.log`
-- `/var/log/nginx/businessdb-error.log`
-
-### Проблема: Ошибка доступа к файлам (403 Forbidden)
-
-**Решение:**
-1. Проверьте права на директории:
-   ```bash
-   sudo chown -R alex:www-data /home/alex/businessdb
-   sudo chmod -R 755 /home/alex/businessdb/storage
-   sudo chmod -R 755 /home/alex/businessdb/bootstrap/cache
-   ```
-2. Проверьте конфигурацию Nginx (root, index директивы)
-
-### Проблема: 504 Gateway Timeout / Медленные запросы к SQL Server
-
-**Причина:**
-- Нехватка памяти в buffer pool SQL Server
-- Отсутствие индексов на полях с фильтрацией (особенно `created` в таблице zakupki)
-- Большое количество записей (1.8+ млн в business2025)
-
-**Решение:**
-
-1. **Создать индексы на таблицах zakupki:**
-   - Скрипт: `database/sql/create_zakupki_indexes.sql`
-   - Документация: `database/sql/README_INDEXES.md`
-   - Создает индексы:
-     - `idx_zakupki_created` - для фильтрации по датам
-     - `idx_zakupki_created_customer` - для комбинированных запросов
-
-2. **Выполнить скрипт на SQL Server:**
-   ```bash
-   # Через sqlcmd (на Windows Server с SQL Server)
-   sqlcmd -S 172.26.192.1 -U sa -P your_password -i database/sql/create_zakupki_indexes.sql
-
-   # Или через SSMS (SQL Server Management Studio)
-   # Открыть файл и нажать F5
-   ```
-
-3. **Проверить созданные индексы:**
-   ```sql
-   USE business2025;
-   SELECT i.name AS IndexName, c.name AS ColumnName
-   FROM sys.indexes i
-   INNER JOIN sys.index_columns ic ON i.object_id = ic.object_id AND i.index_id = ic.index_id
-   INNER JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id
-   WHERE i.object_id = OBJECT_ID('zakupki')
-   ORDER BY i.name;
-   ```
-
-4. **Оптимизация запросов в коде:**
-   - Используйте `CONVERT(DATE, created)` вместо `CAST`
-   - Всегда указывайте даты в формате 'Y-m-d' (строка)
-   - Ограничивайте поиск периодом до 30 дней
-
-**Ожидаемый результат:**
-- Ускорение запросов на 50-90%
-- Снижение нагрузки на SQL Server
-- Устранение ошибок 504 Gateway Timeout
+**Решение:** Создать индексы на таблицах zakupki:
+- Скрипт: `database/sql/create_zakupki_indexes.sql`
+- Документация: `database/sql/README_INDEXES.md`
 
 ### Проблема: Ошибка "trim(): Argument must be of type string, InputBag given"
 
-**Причина:** Использование `$request->query` (встроенное свойство Laravel) вместо `$request->input('query')`
+**Причина:** Использование `$request->query` вместо `$request->input('query')`
 
-**Решение:**
 ```php
 // ❌ Неправильно
 $query = trim($request->query);
@@ -462,81 +644,36 @@ $query = trim($request->input('query'));
 
 ## Полезные команды
 
-### SSH подключение к серверу
+### SSH подключение
 ```bash
 ssh XBMC
-# или напрямую
+# или
 ssh -i ~/.ssh/id_smtb alex@176.117.212.121
-```
-
-### Проверка PHP модулей на сервере
-```bash
-php -m
-php -v
-```
-
-### Проверка git статуса на сервере
-```bash
-cd /home/alex/businessdb
-git status
-git log --oneline -5
 ```
 
 ### Очистка кеша Laravel
 ```bash
-php artisan optimize:clear  # Очищает все кеши (config, cache, view, route, opcache)
-
-# Или по отдельности:
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
-php artisan route:clear
+php artisan optimize:clear  # Очищает все кеши
 ```
 
-### SQL Admin Panel
-
-**Доступ:** https://businessdb.ru/admin/sql (требуется admin роль)
-
-**Возможности:**
-- Выполнение SELECT запросов к любой базе данных
-- Выбор подключения: pgsql, mssql (business2025), mssql_2020-2026, mssql_cp1251
-- Ограничение результата: максимум 1000 строк
-- Таймаут: 10 секунд для MSSQL
-- Отображение времени выполнения запроса
-
-**Безопасность:**
-- Разрешены только SELECT запросы
-- Блокируются операции: DROP, TRUNCATE, DELETE, UPDATE, INSERT, ALTER, CREATE, GRANT, REVOKE, EXEC
-
-**Примеры запросов:**
-```sql
--- Последние закупки
-SELECT TOP 20 id, created, purchase_object, customer, start_cost
-FROM zakupki
-ORDER BY id DESC;
-
--- Компании (только в business2025)
-SELECT TOP 20 id, name, city, phone, email
-FROM db_companies
-ORDER BY id DESC;
-
--- Проверка индексов
-SELECT i.name AS IndexName, c.name AS ColumnName
-FROM sys.indexes i
-INNER JOIN sys.index_columns ic ON i.object_id = ic.object_id
-WHERE i.object_id = OBJECT_ID('zakupki');
-```
-
-### Миграция данных из SQLite в PostgreSQL
+### Миграция из SQLite в PostgreSQL
 ```bash
-# Локально (через Docker)
+# Локально
 docker exec devilbox-php83-1 php /shared/httpd/businessdb/artisan db:migrate-from-sqlite
 
-# С указанием пути к SQLite базе
-docker exec devilbox-php83-1 php /shared/httpd/businessdb/artisan db:migrate-from-sqlite /path/to/database.sqlite
+# На сервере
+php artisan db:migrate-from-sqlite /path/to/database.sqlite
+```
 
-# На продакшне (после установки PostgreSQL)
-php artisan db:migrate-from-sqlite C:\soft\bussiness.db2\bdb.php\database\database.sqlite
+### Отправка рассылок
+```bash
+php artisan newsletters:send
+php artisan newsletters:send --user_id=1
+```
+
+### Продление подписок на рассылку
+```bash
+php artisan newsletters:renew
 ```
 
 ## Контакты и ресурсы
@@ -544,448 +681,59 @@ php artisan db:migrate-from-sqlite C:\soft\bussiness.db2\bdb.php\database\databa
 - **Git репозиторий:** https://github.com/stiapanreha-dev/bdb.php
 - **Сервер:** Ubuntu Server "moon" (176.117.212.121)
 - **MS SQL Server:** 172.26.192.1:1433
-  - **Базы данных:**
-    - `business2025` (основная) - компании (db_companies) + закупки 2025
-    - `business2020-2026` (по годам) - закупки соответствующих годов
 
-## Миграция с SQLite на PostgreSQL
+## Зависимости
 
-### Статус миграции
+### Composer (PHP)
 
-- **Локальная разработка:** ✅ Завершена (25.10.2025)
-- **Продакшн:** ❌ Ожидается (требуется установка PostgreSQL на Windows Server)
+**Основные:**
+- laravel/framework ^12.0
+- alaminfirdows/laravel-editorjs ^2.3
+- doctrine/dbal ^4.3
+- maatwebsite/excel ^3.1
+- yoomoney/yookassa-sdk-php ^3.11
 
-### Что было сделано
+**Dev:**
+- laravel/breeze ^2.3
+- phpunit/phpunit ^11.5.3
 
-1. Создана база данных `businessdb` в PostgreSQL
-2. Выполнены все миграции Laravel
-3. Создана команда `db:migrate-from-sqlite` для переноса данных
-4. Успешно перенесены данные из SQLite в PostgreSQL (users, news, ideas, transactions)
-5. Обновлена конфигурация `.env` для работы с PostgreSQL
+### NPM (Frontend)
 
-### План для продакшн-сервера (Ubuntu)
-
-1. **Установить PostgreSQL на Ubuntu Server:**
-   ```bash
-   sudo apt update
-   sudo apt install postgresql postgresql-contrib
-   sudo systemctl start postgresql
-   sudo systemctl enable postgresql
-   ```
-
-2. **Создать базу данных и пользователя:**
-   ```bash
-   sudo -u postgres psql
-   CREATE DATABASE businessdb;
-   CREATE USER businessdb_user WITH ENCRYPTED PASSWORD 'your_secure_password';
-   GRANT ALL PRIVILEGES ON DATABASE businessdb TO businessdb_user;
-   \q
-   ```
-
-3. **Скопировать SQLite базу с продакшна локально:**
-   ```bash
-   scp XBMC:/home/alex/businessdb/database/database.sqlite ./prod-database.sqlite
-   ```
-
-4. **Обновить .env на продакшне:**
-   ```bash
-   ssh XBMC
-   cd /home/alex/businessdb
-   nano .env
-   # Изменить DB_CONNECTION=sqlite на DB_CONNECTION=pgsql
-   # Добавить настройки PostgreSQL
-   ```
-
-5. **Выполнить миграции и импорт данных:**
-   ```bash
-   cd /home/alex/businessdb
-   php artisan migrate
-   php artisan db:migrate-from-sqlite /home/alex/businessdb/database/database.sqlite
-   ```
-
-6. **Проверить работу приложения:**
-   ```bash
-   php artisan tinker --execute="echo 'Users: ' . \App\Models\User::count();"
-   ```
-
-7. **Создать бэкап SQLite и удалить файл:**
-   ```bash
-   cp database/database.sqlite database/database.sqlite.backup
-   # После проверки работы можно удалить database.sqlite
-   ```
-
----
-
-## Платежная система ЮKassa
-
-### Конфигурация
-
-Добавлены ключи в `.env`:
-```env
-YOOKASSA_SHOP_ID=1197477
-YOOKASSA_SECRET_KEY=test_bx4U_uV7ewcOpFZ_Xkm-0NZLAREJSr6KVHkj1jbp9PQ
-```
-
-Конфигурация в `config/services.php`:
-```php
-'yookassa' => [
-    'shop_id' => env('YOOKASSA_SHOP_ID'),
-    'secret_key' => env('YOOKASSA_SECRET_KEY'),
-],
-```
-
-### Модели и миграции
-
-**Таблица `payments` (PostgreSQL):**
-- `id` - ID платежа
-- `user_id` - ID пользователя (связь с users)
-- `yookassa_payment_id` - ID платежа в системе ЮKassa (уникальный)
-- `amount` - сумма платежа
-- `currency` - валюта (по умолчанию RUB)
-- `status` - статус (pending, succeeded, canceled)
-- `payment_method` - способ оплаты (заполняется после оплаты)
-- `description` - описание платежа
-- `metadata` - дополнительные данные (JSON)
-- `paid_at` - дата и время оплаты
-- `created_at`, `updated_at` - временные метки
-
-**Модель Payment:**
-- Связь `belongsTo` с моделью User
-- Helper-методы: `isSucceeded()`, `isPending()`, `isCanceled()`
-- Cast для metadata (array), paid_at (datetime), amount (decimal:2)
-
-### Контроллер PaymentController
-
-**Основные методы:**
-
-1. **create(Request $request)** - создание платежа
-   - Валидация суммы и описания
-   - Создание платежа через YooKassa API
-   - Сохранение записи в БД
-   - Перенаправление на страницу оплаты ЮKassa
-
-2. **webhook(Request $request)** - обработка уведомлений от ЮKassa
-   - Проверка типа уведомления (payment.succeeded)
-   - Обновление статуса платежа
-   - Начисление баланса пользователю
-   - Создание транзакции
-
-3. **callback(Request $request)** - возврат после оплаты
-   - Перенаправление на страницу подписок с сообщением
-
-4. **history()** - история платежей пользователя
-   - Отображение списка платежей с пагинацией
-
-5. **status($paymentId)** - проверка статуса платежа
-   - Получение актуального статуса из API ЮKassa
-   - Обновление данных в БД
-
-### Маршруты
-
-```php
-// Авторизованные пользователи
-Route::middleware(['auth'])->group(function () {
-    Route::post('/payment/create', [PaymentController::class, 'create']);
-    Route::get('/payment/callback', [PaymentController::class, 'callback']);
-    Route::get('/payment/history', [PaymentController::class, 'history']);
-    Route::get('/payment/status/{paymentId}', [PaymentController::class, 'status']);
-});
-
-// Webhook (публичный, без авторизации)
-Route::post('/payment/webhook', [PaymentController::class, 'webhook']);
-```
-
-### Интеграция в интерфейс
-
-**Страница подписок (`/subscriptions`):**
-- Форма пополнения баланса
-- Отображение текущего баланса
-- Ссылка на историю платежей
-
-**Страница истории (`/payment/history`):**
-- Таблица со всеми платежами пользователя
-- Статус платежа (цветные badges)
-- Дата, сумма, способ оплаты, описание
-- Пагинация
-
-### Настройка webhook в ЮKassa
-
-В личном кабинете ЮKassa необходимо настроить URL для уведомлений:
-
-**Локально (для тестирования):**
-- Использовать ngrok или локaltуннель для получения публичного URL
-- URL webhook: `https://your-domain.ngrok.io/payment/webhook`
-
-**Продакшн:**
-- URL webhook: `https://businessdb.ru/payment/webhook`
-- HTTP метод: POST
-- Формат: JSON
-
-### Тестирование
-
-**Тестовые карты ЮKassa:**
-- Успешная оплата: `5555 5555 5555 4477`
-- Отклоненная оплата: `5555 5555 5555 5599`
-- CVC: любые 3 цифры
-- Срок действия: любая будущая дата
-- Имя держателя: любое
-
-**Проверка платежа:**
-1. Авторизуйтесь на сайте
-2. Перейдите на `/subscriptions`
-3. Введите сумму пополнения и нажмите "Пополнить через ЮKassa"
-4. Выполните тестовую оплату
-5. После успешной оплаты баланс должен обновиться автоматически
-
-**Проверка webhook:**
-- Логи уведомлений: `storage/logs/laravel.log`
-- Поиск: `Payment succeeded` или `YooKassa webhook error`
-
-### Безопасность
-
-- Webhook доступен без авторизации (требование ЮKassa)
-- Проверка idempotency через уникальный ID платежа
-- Защита от повторной обработки (проверка статуса перед начислением)
-- Логирование всех операций с платежами
-
-## Админ-панель
-
-### Доступные страницы администратора
-
-Все админ-страницы требуют роль `admin` и доступны через выпадающее меню "Админ".
-
-1. **Управление пользователями** (`/admin/users`)
-   - Просмотр всех пользователей
-   - Изменение баланса пользователей
-   - Назначение/снятие роли admin
-
-2. **Модерация идей** (`/admin/ideas`)
-   - Просмотр всех идей пользователей
-   - Одобрение/отклонение/возврат идей на рассмотрение
-   - Удаление идей
-
-3. **Управление тарифами** (`/admin/tariffs`)
-   - CRUD операции для тарифных планов
-   - Настройка цен и длительности подписок
-
-4. **Платежи ЮKassa** (`/admin/payments`) ⭐ NEW
-   - Просмотр всех платежей с детальной информацией
-   - Статистика по платежам (успешные, в ожидании, отменённые)
-   - Фильтрация по статусу, пользователю и датам
-   - Информация о способах оплаты и ID транзакций
-
-5. **Статистика рассылок** (`/admin/newsletters`) ⭐ NEW
-   - Общая статистика по всем рассылкам
-   - Список всех рассылок пользователей с фильтрацией
-   - История последних 50 отправок за 30 дней
-   - Информация о ключевых словах и статусе подписок
-   - Количество отправленных закупок в письмах
-
-6. **Настройки рассылки** (`/admin/newsletter-settings`)
-   - Управление автоматической рассылкой новостей
-   - Настройка интервала отправки (10-1440 минут)
-   - Управление автоматическим продлением подписок
-   - Настройка времени продления подписок (UTC+3)
-
-7. **SQL Запросы** (`/admin/sql`)
-   - Выполнение SELECT запросов к любой базе данных
-   - Выбор подключения (pgsql, mssql, mssql_2020-2026)
-   - Ограничение: только SELECT, максимум 1000 строк, таймаут 10 сек
-
-### Layout файл
-
-**⚠️ ВАЖНО:** В проекте используется **единственный** layout файл:
-- `resources/views/components/app-layout.blade.php` - используется через компонент `<x-app-layout>`
-
-Все views используют компонент `<x-app-layout>`, а не директиву `@extends`.
-
-## Система магазина (Shop)
-
-### Описание
-
-Полнофункциональный интернет-магазин для продажи товаров и услуг за внутреннюю валюту.
-
-**URL:** https://businessdb.ru/shop
-
-### Структура таблиц
-
-**shop_categories** - иерархические категории товаров:
-- `id` - ID категории
-- `name` - название категории
-- `slug` - URL-slug (уникальный)
-- `parent_id` - ID родительской категории (nullable, foreign key)
-- `description` - описание категории
-- `image` - изображение категории
-- `is_active` - активность категории
-- `sort_order` - порядок сортировки
-
-**shop_products** - товары:
-- `id` - ID товара
-- `category_id` - ID категории (foreign key)
-- `name` - название товара
-- `slug` - URL-slug (уникальный)
-- `short_description` - краткое описание
-- `description` - полное описание (JSON для Editor.js)
-- `image` - изображение товара
-- `price` - цена (decimal 10,2)
-- `views_count` - счетчик просмотров
-- `purchases_count` - счетчик покупок
-- `is_active` - активность товара
-- `created_by` - ID создателя (foreign key к users)
-
-**shop_product_views** - логирование просмотров:
-- `id` - ID записи
-- `product_id` - ID товара (foreign key)
-- `user_id` - ID пользователя (nullable, foreign key)
-- `ip_address` - IP адрес
-- `user_agent` - User Agent
-- `created_at` - дата просмотра
-
-**shop_product_purchases** - история покупок:
-- `id` - ID покупки
-- `product_id` - ID товара (foreign key)
-- `user_id` - ID покупателя (foreign key)
-- `price` - цена на момент покупки
-- `status` - статус (pending, completed, canceled)
-- `created_at` - дата покупки
-
-### Модели
-
-**ShopCategory:**
-- Связи: `belongsTo` (parent), `hasMany` (children, products)
-- Методы: каскадное удаление подкатегорий и товаров
-
-**ShopProduct:**
-- Связи: `belongsTo` (category, creator), `hasMany` (views, purchases)
-- Методы: `incrementViews()`, `incrementPurchases()`, `getFormattedPriceAttribute()`
-- Casts: `description` → array (Editor.js JSON), `price` → decimal:2
-
-**ShopProductView / ShopProductPurchase:**
-- Связи: `belongsTo` (product, user)
-
-### Контроллер ShopController
-
-**index(Request $request):**
-- Каталог товаров с пагинацией (20 на страницу)
-- Фильтрация по категориям (`?category=ID`)
-- Поиск по названию и краткому описанию (`?search=query`)
-- Отображение дерева категорий в боковой панели
-
-**show(Request $request, $slug):**
-- Детальная страница товара
-- Логирование просмотра (IP, User Agent)
-- Инкремент счетчика просмотров
-- Отображение Editor.js контента
-
-**purchase(Request $request, $id):**
-- Проверка авторизации
-- Проверка баланса пользователя
-- Списание средств через транзакцию
-- Создание записи покупки
-- Создание транзакции в таблице transactions
-- Инкремент счетчика покупок
-
-### Маршруты
-
-```php
-// Публичные маршруты
-Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
-Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shop.show');
-
-// Покупка товара (только авторизованные)
-Route::post('/shop/{id}/purchase', [ShopController::class, 'purchase'])
-    ->middleware('auth')
-    ->name('shop.purchase');
-```
-
-### Интеграция с балансом
-
-При покупке товара:
-1. Проверяется баланс пользователя (`$user->balance >= $product->price`)
-2. Начинается транзакция БД (`DB::beginTransaction()`)
-3. Списывается баланс (`$user->balance -= $product->price`)
-4. Создается запись в `shop_product_purchases`
-5. Создается запись в `transactions` с типом 'purchase'
-6. Инкрементируется счетчик покупок товара
-7. Коммитится транзакция (`DB::commit()`)
-8. При ошибке откатывается (`DB::rollBack()`)
-
-### Цветовая схема
-
-- **Основной цвет:** `#3598db` (синий)
-- **Акцентный цвет:** `#2e86c1` (темно-синий)
-- **Цена:** `#27ae60` (зеленый)
-
-### TODO: Админ-панель для магазина
-
-- [ ] CRUD категорий товаров
-- [ ] CRUD товаров
-- [ ] Загрузка изображений для товаров
-- [ ] Статистика продаж
-- [ ] Управление заказами
+- laravel-vite-plugin ^2.0.0
+- vite ^7.0.7
+- tailwindcss ^3.1.0
+- alpinejs ^3.4.2
+- axios ^1.11.0
 
 ## История изменений
 
+### 2025-11-25
+- ✅ Обновлена документация в соответствии с текущим состоянием кода
+- ✅ Добавлена информация о всех контроллерах и моделях
+- ✅ Документирована система модулей
+- ✅ Добавлена информация о системе тикетов
+- ✅ Обновлена информация о версии Laravel (12.x)
+
 ### 2025-11-15
 - ✅ Создана система магазина (Shop)
-  - 4 таблицы: shop_categories, shop_products, shop_product_views, shop_product_purchases
-  - 5 моделей с полными связями
-  - ShopController с методами: index, show, purchase
-  - 2 представления: shop/index.blade.php, shop/show.blade.php
-  - Интеграция с балансом пользователя и системой транзакций
-  - Иерархические категории (родитель-потомок)
-  - Поиск и фильтрация по категориям
-  - Подсчет просмотров и покупок
-  - Editor.js для описаний товаров
-  - Цветовая схема: #3598db (основной), #2e86c1 (акцент), #27ae60 (цена)
+
+### 2025-11-07
+- ✅ Создана система тикетов поддержки
+
+### 2025-11-06
+- ✅ Добавлен модуль статей (Articles)
+- ✅ Создана система управления модулями
 
 ### 2025-11-02
-- ✅ Завершена интеграция Editor.js в модуль новостей и доску объявлений
-  - Установлен Laravel пакет alaminfirdows/laravel-editorjs для рендеринга
-  - Заменен Quill.js на Editor.js во всех формах создания/редактирования
-  - Использованы официальные CDN плагины: Header, List, SimpleImage, Quote, Delimiter, Table, Checklist, Embed
-  - Исправлен класс List на EditorjsList (изменение в v2.0)
-  - Удален плагин Code (не требуется для новостей и объявлений)
-  - Обновлено отображение контента с использованием @editorJsRender директивы
-  - Добавлены стили для превью контента в списках
+- ✅ Интеграция Editor.js в новости и объявления
 
-### 2025-11-01 (вечер)
-- ✅ Создана админ-страница "Платежи ЮKassa" (/admin/payments)
-  - Статистика по платежам (успешные, в ожидании, отменённые)
-  - Фильтрация по статусу, пользователю и датам
-  - Детальная информация о каждом платеже (ID ЮKassa, способ оплаты, дата оплаты)
-- ✅ Создана админ-страница "Статистика рассылок" (/admin/newsletters)
-  - Общая статистика (всего рассылок, активных, отправлено сегодня)
-  - Список всех рассылок с фильтрацией по статусу и пользователю
-  - История последних 50 отправок за 30 дней
-  - Информация о ключевых словах и подписках каждой рассылки
-- ✅ Добавлены ссылки на новые админ-страницы в меню
-- ✅ Удален неиспользуемый файл `resources/views/layouts/app.blade.php`
-- ✅ Исправлена кодировка файлов (UTF-8)
-
-### 2025-11-01 (утро)
+### 2025-11-01
 - ✅ Интегрирован платежный шлюз ЮKassa
-- ✅ Создана таблица payments для хранения информации о платежах
-- ✅ Реализован PaymentController с обработкой платежей и webhook
-- ✅ Добавлена форма пополнения баланса на странице подписок
-- ✅ Создана страница истории платежей для пользователей
-- ✅ Добавлена система управления настройками рассылки
-- ✅ Исправлена кодировка файла newsletter-settings.blade.php
-
-### 2025-10-31
-- ✅ Реализован SQL admin panel (/admin/sql) с поддержкой всех баз данных
-- ✅ Создана страница технической поддержки (/support)
-- ✅ Оптимизация SQL Server: созданы скрипты для индексов на таблицах zakupki
-- ✅ Исправлена ошибка в ZakupkiController (datetime conversion для SQL Server)
-- ✅ Добавлена кнопка "Отменить" для возврата идей на рассмотрение
-- ✅ Обновлен footer: ссылка /tariffs → /subscriptions
-- ✅ Настроен автоматический деплой через GitHub Actions с очисткой opcache
+- ✅ Создана система рассылок
 
 ### 2025-10-25
-- ✅ Миграция с SQLite на PostgreSQL (локальная разработка)
-- ✅ Настроен Devilbox с PostgreSQL 15
-- ✅ Создана команда db:migrate-from-sqlite для переноса данных
+- ✅ Миграция с SQLite на PostgreSQL
 
 ---
 
-**Последнее обновление:** 2025-11-15 02:30
+**Последнее обновление:** 2025-11-25

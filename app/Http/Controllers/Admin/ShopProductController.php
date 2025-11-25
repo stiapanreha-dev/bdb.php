@@ -92,7 +92,8 @@ class ShopProductController extends Controller
 
         // Parse description JSON from Editor.js
         if ($request->filled('description')) {
-            $validated['description'] = json_decode($request->description, true);
+            $description = $request->input('description');
+            $validated['description'] = is_string($description) ? json_decode($description, true) : $description;
         }
 
         // Handle image upload
@@ -162,7 +163,8 @@ class ShopProductController extends Controller
 
         // Parse description JSON from Editor.js
         if ($request->filled('description')) {
-            $validated['description'] = json_decode($request->description, true);
+            $description = $request->input('description');
+            $validated['description'] = is_string($description) ? json_decode($description, true) : $description;
         } else {
             $validated['description'] = null;
         }
