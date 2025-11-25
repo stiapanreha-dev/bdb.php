@@ -18,7 +18,7 @@
 |------------|----------|
 | `ZakupkiController` | Закупки (главная), year-based БД, маскирование |
 | `CompanyController` | Компании (business2025), требует auth |
-| `ShopController` | Магазин: каталог, карточка, покупки, скачивание |
+| `ShopController` | Магазин: каталог, категории, карточка, покупки, скачивание |
 | `NewsController` | Новости (Editor.js) |
 | `AnnouncementController` | Объявления (Editor.js, до 5 изображений) |
 | `ArticleController` | Статьи (модуль, Editor.js) |
