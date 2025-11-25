@@ -149,6 +149,7 @@
                             <ul class="dropdown-menu" aria-labelledby="mobileUserDropdown">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
                                 <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-card-list"></i> Тарифы и подписки</a></li>
+                                <li><a class="dropdown-item" href="{{ route('shop.my-purchases') }}"><i class="bi bi-bag-check"></i> Мои покупки</a></li>
                                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#balanceModal"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ route('privacy-policy') }}"><i class="bi bi-shield-check"></i> Политика конфиденциальности</a></li>
@@ -250,6 +251,7 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
                                 <li><a class="dropdown-item" href="{{ route('subscriptions.index') }}"><i class="bi bi-card-list"></i> Тарифы и подписки</a></li>
+                                <li><a class="dropdown-item" href="{{ route('shop.my-purchases') }}"><i class="bi bi-bag-check"></i> Мои покупки</a></li>
                                 <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#balanceModal"><i class="bi bi-wallet2"></i> Пополнить баланс</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ route('privacy-policy') }}"><i class="bi bi-shield-check"></i> Политика конфиденциальности</a></li>

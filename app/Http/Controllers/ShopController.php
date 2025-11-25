@@ -139,6 +139,19 @@ class ShopController extends Controller
     }
 
     /**
+     * Display user's purchases.
+     */
+    public function myPurchases()
+    {
+        $purchases = ShopProductPurchase::with('product')
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('shop.my-purchases', compact('purchases'));
+    }
+
+    /**
      * Log product view.
      */
     private function logProductView(ShopProduct $product, Request $request): void
