@@ -94,8 +94,8 @@ class ShopCategoryController extends Controller
             'parent_id' => 'nullable|exists:shop_categories,id',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'is_active' => 'boolean',
-            'sort_order' => 'integer|min:0',
+            'is_active' => 'nullable',
+            'sort_order' => 'nullable|integer|min:0',
         ]);
 
         // Prevent category from being its own parent
