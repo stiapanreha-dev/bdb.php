@@ -67,7 +67,7 @@
                 <!-- Полное описание (Editor.js) -->
                 @if($product->description)
                     <div class="product-description">
-                        @editorJsRender($product->description)
+                        @editorJsRender(is_array($product->description) ? json_encode($product->description) : $product->description)
                     </div>
                 @else
                     <p class="text-muted">Описание товара отсутствует.</p>

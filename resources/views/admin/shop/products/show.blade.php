@@ -90,7 +90,7 @@
         <div class="card mb-3">
             <div class="card-header">Описание</div>
             <div class="card-body">
-                @editorJsRender($product->description)
+                @editorJsRender(is_array($product->description) ? json_encode($product->description) : $product->description)
             </div>
         </div>
         @endif
