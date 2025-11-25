@@ -22,18 +22,7 @@ class ShopController extends Controller
         $query = ShopProduct::with('category')
             ->where('is_active', true);
 
-        // Filter by category (by slug)
         $currentCategory = null;
-        if ($request->has('category') && $request->category) {
-            $currentCategory = ShopCategory::where('slug', $request->category)->first();
-            if ($currentCategory) {
-                // Include products from this category and its children
-                $categoryIds = collect([$currentCategory->id]);
-                $childIds = ShopCategory::where('parent_id', $currentCategory->id)->pluck('id');
-                $categoryIds = $categoryIds->merge($childIds);
-                $query->whereIn('category_id', $categoryIds);
-            }
-        }
 
         // Search
         if ($request->has('search') && $request->search) {
@@ -45,6 +34,36 @@ class ShopController extends Controller
         }
 
         $products = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        // Get all categories with their children
+        $categories = ShopCategory::with('children')
+            ->whereNull('parent_id')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('shop.index', compact('products', 'categories', 'currentCategory'));
+    }
+
+    /**
+     * Display products by category.
+     */
+    public function category($slug)
+    {
+        $currentCategory = ShopCategory::where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        // Include products from this category and its children
+        $categoryIds = collect([$currentCategory->id]);
+        $childIds = ShopCategory::where('parent_id', $currentCategory->id)->pluck('id');
+        $categoryIds = $categoryIds->merge($childIds);
+
+        $products = ShopProduct::with('category')
+            ->where('is_active', true)
+            ->whereIn('category_id', $categoryIds)
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
         // Get all categories with their children
         $categories = ShopCategory::with('children')

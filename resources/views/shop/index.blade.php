@@ -9,18 +9,18 @@
             </div>
             <div class="list-group list-group-flush">
                 @forelse($categories as $category)
-                    <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
-                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ request('category') == $category->slug ? 'active' : '' }}">
+                    <a href="{{ route('shop.category', $category->slug) }}"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ $currentCategory && $currentCategory->id == $category->id ? 'active' : '' }}">
                         {{ $category->name }}
                         @if($category->children->count() > 0)
                             <i class="bi bi-chevron-right"></i>
                         @endif
                     </a>
 
-                    @if($category->children->count() > 0 && request('category') == $category->slug)
+                    @if($category->children->count() > 0 && $currentCategory && ($currentCategory->id == $category->id || $currentCategory->parent_id == $category->id))
                         @foreach($category->children as $child)
-                            <a href="{{ route('shop.index', ['category' => $child->slug]) }}"
-                               class="list-group-item list-group-item-action ps-4 {{ request('category') == $child->slug ? 'active' : '' }}">
+                            <a href="{{ route('shop.category', $child->slug) }}"
+                               class="list-group-item list-group-item-action ps-4 {{ $currentCategory && $currentCategory->id == $child->id ? 'active' : '' }}">
                                 {{ $child->name }}
                             </a>
                         @endforeach
@@ -122,7 +122,7 @@
         @empty
             <div class="alert alert-info">
                 <i class="bi bi-info-circle"></i> Товары не найдены.
-                @if(request('search') || request('category'))
+                @if(request('search') || $currentCategory)
                     <a href="{{ route('shop.index') }}">Сбросить фильтры</a>
                 @endif
             </div>
