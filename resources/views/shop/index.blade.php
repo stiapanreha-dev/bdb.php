@@ -31,13 +31,13 @@
             </div>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <p class="small text-muted mb-0">
-                    <i class="bi bi-info-circle"></i> Можно сделать симпатичный выпадающий список категорий товара для экономии места + поиск товара.
-                </p>
-            </div>
-        </div>
+{{--        <div class="card shadow-sm">--}}
+{{--            <div class="card-body">--}}
+{{--                <p class="small text-muted mb-0">--}}
+{{--                    <i class="bi bi-info-circle"></i> Можно сделать симпатичный выпадающий список категорий товара для экономии места + поиск товара.--}}
+{{--                </p>--}}
+{{--            </div>--}}
+{{--        </div>--}}
     </div>
 
     <!-- Основной контент -->
