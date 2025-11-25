@@ -32,12 +32,9 @@ composer.phar
 Windows_*.zip
 query
 
-# Documentation (local only)
-CLAUDE.md
-MIGRATION_STATUS.md
-README_MIGRATION.md
+# Documentation (local archives)
+docs/archive/
 
 # Database backups
-prod-database.sqlite
+*.sqlite
 *.sqlite.backup
-database.sqlite.backup
