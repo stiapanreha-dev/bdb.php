@@ -94,6 +94,7 @@ function confirmModal() {
         type: 'warning',
         confirmText: 'OK',
         formId: null,
+        redirectUrl: null,
 
         open(detail) {
             this.title = detail.title || 'Подтверждение';
@@ -101,6 +102,7 @@ function confirmModal() {
             this.type = detail.type || 'warning';
             this.confirmText = detail.confirmText || 'OK';
             this.formId = detail.form || null;
+            this.redirectUrl = detail.redirect || null;
             this.show = true;
             document.body.style.overflow = 'hidden';
         },
@@ -116,6 +118,8 @@ function confirmModal() {
                 if (form) {
                     form.submit();
                 }
+            } else if (this.redirectUrl) {
+                window.location.href = this.redirectUrl;
             }
             this.close();
         },
@@ -132,3 +136,14 @@ function confirmModal() {
     }
 }
 </script>
+
+{{-- Auto-open modal from session --}}
+@if(session('modal'))
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    window.dispatchEvent(new CustomEvent('confirm', {
+        detail: @json(session('modal'))
+    }));
+});
+</script>
+@endif

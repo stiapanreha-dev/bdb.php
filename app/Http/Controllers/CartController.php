@@ -45,7 +45,13 @@ class CartController extends Controller
             ->exists();
 
         if ($alreadyPurchased) {
-            return back()->with('warning', "Вы уже покупали товар \"{$product->name}\". <a href=\"" . route('shop.my-purchases') . "\">Перейти в историю покупок</a>");
+            return back()->with('modal', [
+                'title' => 'Товар уже куплен',
+                'message' => "Вы уже покупали товар \"{$product->name}\"",
+                'type' => 'warning',
+                'confirmText' => 'История покупок',
+                'redirect' => route('shop.my-purchases'),
+            ]);
         }
 
         $cart = $user->getOrCreateCart();

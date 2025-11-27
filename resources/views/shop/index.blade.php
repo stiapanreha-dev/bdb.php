@@ -90,11 +90,16 @@
                             </h5>
                             <div class="mb-2">
                                 <span class="text-muted me-3">
-                                    <i class="bi bi-eye"></i> Просмотры: {{ $product->views_count }}
+                                    <i class="bi bi-eye"></i> {{ $product->views_count }}
                                 </span>
-                                <span class="text-muted">
-                                    <i class="bi bi-cart-check"></i> Продажи: {{ $product->purchases_count }}
+                                <span class="text-muted me-3">
+                                    <i class="bi bi-cart-check"></i> {{ $product->purchases_count }}
                                 </span>
+                                @if($product->attachment && $product->formatted_attachment_size)
+                                <span class="text-info">
+                                    <i class="bi bi-file-earmark-arrow-down"></i> {{ $product->formatted_attachment_size }}
+                                </span>
+                                @endif
                             </div>
                             @if($product->short_description)
                                 <p class="text-muted mb-0">{{ $product->short_description }}</p>
