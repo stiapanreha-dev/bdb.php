@@ -92,4 +92,45 @@ class ShopProduct extends Model
     {
         return number_format($this->price, 0, '.', ' ') . ' ₽';
     }
+
+    /**
+     * Get attachment file size
+     */
+    public function getAttachmentSizeAttribute(): ?int
+    {
+        if (!$this->attachment) {
+            return null;
+        }
+
+        // Attachments stored in private storage (local disk -> storage/app/private/)
+        $path = storage_path('app/private/' . $this->attachment);
+
+        if (file_exists($path)) {
+            return filesize($path);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get formatted attachment file size
+     */
+    public function getFormattedAttachmentSizeAttribute(): ?string
+    {
+        $size = $this->attachment_size;
+
+        if ($size === null) {
+            return null;
+        }
+
+        if ($size >= 1073741824) {
+            return number_format($size / 1073741824, 2) . ' ГБ';
+        } elseif ($size >= 1048576) {
+            return number_format($size / 1048576, 2) . ' МБ';
+        } elseif ($size >= 1024) {
+            return number_format($size / 1024, 2) . ' КБ';
+        } else {
+            return $size . ' байт';
+        }
+    }
 }

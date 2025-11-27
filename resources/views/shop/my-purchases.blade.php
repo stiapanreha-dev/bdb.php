@@ -90,6 +90,9 @@
                                    title="Скачать файл">
                                     <i class="bi bi-download"></i>
                                     {{ $purchase->product->attachment_name ?? 'Файл' }}
+                                    @if($purchase->product->formatted_attachment_size)
+                                    <span class="badge bg-light text-dark ms-1">{{ $purchase->product->formatted_attachment_size }}</span>
+                                    @endif
                                 </a>
                                 @endif
                                 @if($purchase->product->is_active)

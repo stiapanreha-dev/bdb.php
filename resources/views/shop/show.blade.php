@@ -19,16 +19,12 @@
                     {{ $product->formatted_price }}
                 </h3>
                 @auth
-                    {{-- Добавить в корзину с количеством --}}
+                    {{-- Добавить в корзину --}}
                     <form method="POST" action="{{ route('shop.cart.add', $product->id) }}" class="d-inline">
                         @csrf
-                        <div class="input-group">
-                            <input type="number" name="quantity" value="1" min="1" max="99"
-                                   class="form-control" style="width: 70px;">
-                            <button type="submit" class="btn btn-outline-success">
-                                <i class="bi bi-cart-plus"></i> В корзину
-                            </button>
-                        </div>
+                        <button type="submit" class="btn btn-outline-success">
+                            <i class="bi bi-cart-plus"></i> В корзину
+                        </button>
                     </form>
                     {{-- Купить сейчас --}}
                     <form id="buy-now-form" method="POST" action="{{ route('shop.purchase', $product->id) }}" class="d-inline">
@@ -62,9 +58,14 @@
             <span class="badge bg-secondary me-2">
                 <i class="bi bi-eye"></i> Просмотры: {{ $product->views_count }}
             </span>
-            <span class="badge bg-success">
+            <span class="badge bg-success me-2">
                 <i class="bi bi-cart-check"></i> Продажи: {{ $product->purchases_count }}
             </span>
+            @if($product->attachment && $product->formatted_attachment_size)
+            <span class="badge bg-info">
+                <i class="bi bi-file-earmark-arrow-down"></i> Файл: {{ $product->formatted_attachment_size }}
+            </span>
+            @endif
         </div>
 
         <!-- Основная карточка -->

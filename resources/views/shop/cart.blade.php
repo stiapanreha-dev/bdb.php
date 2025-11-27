@@ -81,6 +81,9 @@
                                     @if($item->product->category)
                                     <br><small class="text-muted">{{ $item->product->category->name }}</small>
                                     @endif
+                                    @if($item->product->attachment && $item->product->formatted_attachment_size)
+                                    <br><small class="text-info"><i class="bi bi-file-earmark-arrow-down"></i> {{ $item->product->formatted_attachment_size }}</small>
+                                    @endif
                                 </td>
                                 <td class="text-end">
                                     <strong class="text-success">{{ $item->product->formatted_price }}</strong>

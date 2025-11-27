@@ -36,7 +36,19 @@ class CartController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $cart = Auth::user()->getOrCreateCart();
+        $user = Auth::user();
+
+        // Check if user already purchased this product
+        $alreadyPurchased = ShopProductPurchase::where('user_id', $user->id)
+            ->where('product_id', $product->id)
+            ->where('status', 'completed')
+            ->exists();
+
+        if ($alreadyPurchased) {
+            return back()->with('warning', "Вы уже покупали товар \"{$product->name}\". <a href=\"" . route('shop.my-purchases') . "\">Перейти в историю покупок</a>");
+        }
+
+        $cart = $user->getOrCreateCart();
 
         // Check if product already in cart
         $cartItem = $cart->items()->where('product_id', $product->id)->first();
