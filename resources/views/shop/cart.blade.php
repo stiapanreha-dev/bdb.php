@@ -54,9 +54,7 @@
                             <tr>
                                 <th style="width: 80px;"></th>
                                 <th>Товар</th>
-                                <th class="text-center" style="width: 150px;">Количество</th>
                                 <th class="text-end" style="width: 120px;">Цена</th>
-                                <th class="text-end" style="width: 120px;">Сумма</th>
                                 <th style="width: 50px;"></th>
                             </tr>
                         </thead>
@@ -84,25 +82,8 @@
                                     <br><small class="text-muted">{{ $item->product->category->name }}</small>
                                     @endif
                                 </td>
-                                <td class="text-center">
-                                    <form method="POST" action="{{ route('shop.cart.update', $item->id) }}" class="d-inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <div class="input-group input-group-sm" style="width: 120px; margin: 0 auto;">
-                                            <input type="number" name="quantity" value="{{ $item->quantity }}"
-                                                   min="1" max="99" class="form-control text-center"
-                                                   onchange="this.form.submit()">
-                                            <button type="submit" class="btn btn-outline-secondary" title="Обновить">
-                                                <i class="bi bi-arrow-repeat"></i>
-                                            </button>
-                                        </div>
-                                    </form>
-                                </td>
                                 <td class="text-end">
-                                    {{ $item->product->formatted_price }}
-                                </td>
-                                <td class="text-end">
-                                    <strong class="text-success">{{ $item->formatted_subtotal }}</strong>
+                                    <strong class="text-success">{{ $item->product->formatted_price }}</strong>
                                 </td>
                                 <td>
                                     <form method="POST" action="{{ route('shop.cart.remove', $item->id) }}">

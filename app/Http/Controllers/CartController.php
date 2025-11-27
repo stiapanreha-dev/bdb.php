@@ -32,31 +32,25 @@ class CartController extends Controller
      */
     public function add(Request $request, $productId)
     {
-        $request->validate([
-            'quantity' => 'nullable|integer|min:1|max:99',
-        ]);
-
         $product = ShopProduct::where('id', $productId)
             ->where('is_active', true)
             ->firstOrFail();
 
         $cart = Auth::user()->getOrCreateCart();
-        $quantity = $request->input('quantity', 1);
 
         // Check if product already in cart
         $cartItem = $cart->items()->where('product_id', $product->id)->first();
 
         if ($cartItem) {
-            // Update quantity
-            $cartItem->quantity += $quantity;
-            $cartItem->save();
-        } else {
-            // Create new cart item
-            $cart->items()->create([
-                'product_id' => $product->id,
-                'quantity' => $quantity,
-            ]);
+            // Product already in cart - do nothing
+            return back()->with('info', "Товар \"{$product->name}\" уже в корзине");
         }
+
+        // Create new cart item
+        $cart->items()->create([
+            'product_id' => $product->id,
+            'quantity' => 1,
+        ]);
 
         return back()->with('success', "Товар \"{$product->name}\" добавлен в корзину");
     }
@@ -156,17 +150,15 @@ class CartController extends Controller
 
             // Create purchase records for each item
             foreach ($cart->items as $item) {
-                for ($i = 0; $i < $item->quantity; $i++) {
-                    ShopProductPurchase::create([
-                        'product_id' => $item->product->id,
-                        'user_id' => $user->id,
-                        'price' => $item->product->price,
-                        'status' => 'completed',
-                    ]);
-                }
+                ShopProductPurchase::create([
+                    'product_id' => $item->product->id,
+                    'user_id' => $user->id,
+                    'price' => $item->product->price,
+                    'status' => 'completed',
+                ]);
 
                 // Update purchases_count
-                $item->product->increment('purchases_count', $item->quantity);
+                $item->product->increment('purchases_count');
             }
 
             // Create transaction record

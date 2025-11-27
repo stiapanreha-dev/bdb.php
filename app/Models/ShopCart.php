@@ -25,13 +25,13 @@ class ShopCart extends Model
     public function getTotalAttribute(): float
     {
         return $this->items->sum(function ($item) {
-            return $item->product->price * $item->quantity;
+            return $item->product->price;
         });
     }
 
     public function getItemCountAttribute(): int
     {
-        return $this->items->sum('quantity');
+        return $this->items->count();
     }
 
     public function getFormattedTotalAttribute(): string
