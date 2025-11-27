@@ -11,23 +11,42 @@
             </ol>
         </nav>
 
-        <!-- Заголовок с кнопкой покупки -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>{{ $product->name }}</h2>
-            <div>
-                <h3 class="mb-0 me-3 d-inline" style="color: #27ae60; font-weight: bold;">
+        <!-- Заголовок с кнопками покупки -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h2 class="mb-0">{{ $product->name }}</h2>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <h3 class="mb-0" style="color: #27ae60; font-weight: bold;">
                     {{ $product->formatted_price }}
                 </h3>
                 @auth
-                    <form method="POST" action="{{ route('shop.purchase', $product->id) }}" class="d-inline">
+                    {{-- Добавить в корзину с количеством --}}
+                    <form method="POST" action="{{ route('shop.cart.add', $product->id) }}" class="d-inline">
                         @csrf
-                        <button type="submit"
-                                class="btn btn-lg"
-                                style="background-color: #3598db; color: white;"
-                                onclick="return confirm('Подтвердите покупку товара \"{{ $product->name }}\" за {{ $product->formatted_price }}');">
-                            <i class="bi bi-cart-check"></i> Купить
-                        </button>
+                        <div class="input-group">
+                            <input type="number" name="quantity" value="1" min="1" max="99"
+                                   class="form-control" style="width: 70px;">
+                            <button type="submit" class="btn btn-outline-success">
+                                <i class="bi bi-cart-plus"></i> В корзину
+                            </button>
+                        </div>
                     </form>
+                    {{-- Купить сейчас --}}
+                    <form id="buy-now-form" method="POST" action="{{ route('shop.purchase', $product->id) }}" class="d-inline">
+                        @csrf
+                    </form>
+                    <button type="button"
+                            class="btn btn-lg"
+                            style="background-color: #3598db; color: white;"
+                            x-data
+                            @click="$dispatch('confirm', {
+                                title: 'Купить сейчас?',
+                                message: '{{ $product->name }} за {{ $product->formatted_price }}',
+                                type: 'success',
+                                confirmText: 'Купить',
+                                form: 'buy-now-form'
+                            })">
+                        <i class="bi bi-cart-check"></i> Купить сейчас
+                    </button>
                 @else
                     <a href="{{ route('login') }}"
                        class="btn btn-lg"

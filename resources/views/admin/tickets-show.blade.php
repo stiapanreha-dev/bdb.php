@@ -187,14 +187,22 @@
                         </form>
 
                         @if(!$ticket->isClosed())
-                            <form action="{{ route('admin.tickets.updateStatus', $ticket) }}" method="POST" class="mt-2">
+                            <form id="close-ticket-form" action="{{ route('admin.tickets.updateStatus', $ticket) }}" method="POST" class="d-none">
                                 @csrf
                                 @method('PATCH')
                                 <input type="hidden" name="status" value="closed">
-                                <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Вы уверены, что хотите закрыть это обращение?')">
-                                    <i class="bi bi-x-circle"></i> Закрыть обращение
-                                </button>
                             </form>
+                            <button type="button" class="btn btn-danger w-100 mt-2"
+                                    x-data
+                                    @click="$dispatch('confirm', {
+                                        title: 'Закрыть обращение?',
+                                        message: 'После закрытия пользователь не сможет отправлять сообщения',
+                                        type: 'warning',
+                                        confirmText: 'Закрыть',
+                                        form: 'close-ticket-form'
+                                    })">
+                                <i class="bi bi-x-circle"></i> Закрыть обращение
+                            </button>
                         @endif
                     </div>
                 </div>

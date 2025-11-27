@@ -64,13 +64,22 @@
                             </form>
 
                             @if(!$user->isAdmin())
-                            <form method="POST" action="{{ route('admin.users.delete', $user) }}" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить пользователя {{ $user->name }} ({{ $user->email }})?\n\nВнимание: Это действие необратимо!');">
+                            <form id="delete-user-{{ $user->id }}" method="POST" action="{{ route('admin.users.delete', $user) }}" class="d-none">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" title="Удалить пользователя">
-                                    <i class="bi bi-trash"></i> Удалить
-                                </button>
                             </form>
+                            <button type="button" class="btn btn-sm btn-danger"
+                                    title="Удалить пользователя"
+                                    x-data
+                                    @click="$dispatch('confirm', {
+                                        title: 'Удалить пользователя?',
+                                        message: '{{ $user->name }} ({{ $user->email }}). Внимание: это действие необратимо!',
+                                        type: 'danger',
+                                        confirmText: 'Удалить',
+                                        form: 'delete-user-{{ $user->id }}'
+                                    })">
+                                <i class="bi bi-trash"></i> Удалить
+                            </button>
                             @endif
                             @else
                                 <span class="text-muted">Вы</span>

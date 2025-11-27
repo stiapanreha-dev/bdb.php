@@ -61,13 +61,21 @@
                                         <a href="{{ route('news.edit', $item) }}" class="btn btn-sm btn-outline-primary mb-1">
                                             <i class="bi bi-pencil"></i> Редактировать
                                         </a>
-                                        <form method="POST" action="{{ route('news.destroy', $item) }}" onsubmit="return confirm('Вы уверены, что хотите удалить эту новость?');">
+                                        <form id="delete-news-{{ $item->id }}" method="POST" action="{{ route('news.destroy', $item) }}" class="d-none">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i> Удалить
-                                            </button>
                                         </form>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                x-data
+                                                @click="$dispatch('confirm', {
+                                                    title: 'Удалить новость?',
+                                                    message: 'Новость будет удалена без возможности восстановления',
+                                                    type: 'danger',
+                                                    confirmText: 'Удалить',
+                                                    form: 'delete-news-{{ $item->id }}'
+                                                })">
+                                            <i class="bi bi-trash"></i> Удалить
+                                        </button>
                                     </div>
                                     @endif
                                 @endauth
@@ -113,13 +121,21 @@
                                 <a href="{{ route('news.edit', $item) }}" class="btn btn-sm btn-outline-primary mb-1">
                                     <i class="bi bi-pencil"></i> Редактировать
                                 </a>
-                                <form method="POST" action="{{ route('news.destroy', $item) }}" onsubmit="return confirm('Вы уверены, что хотите удалить эту новость?');">
+                                <form id="delete-news-list-{{ $item->id }}" method="POST" action="{{ route('news.destroy', $item) }}" class="d-none">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i> Удалить
-                                    </button>
                                 </form>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                        x-data
+                                        @click="$dispatch('confirm', {
+                                            title: 'Удалить новость?',
+                                            message: 'Новость будет удалена без возможности восстановления',
+                                            type: 'danger',
+                                            confirmText: 'Удалить',
+                                            form: 'delete-news-list-{{ $item->id }}'
+                                        })">
+                                    <i class="bi bi-trash"></i> Удалить
+                                </button>
                             </div>
                             @endif
                         @endauth

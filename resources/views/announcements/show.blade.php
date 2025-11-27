@@ -21,13 +21,21 @@
                                     <a href="{{ route('announcements.edit', $announcement->id) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i> Редактировать
                                     </a>
-                                    <form action="{{ route('announcements.destroy', $announcement->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить это объявление?')">
+                                    <form id="delete-announcement-form" action="{{ route('announcements.destroy', $announcement->id) }}" method="POST" class="d-none">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i> Удалить
-                                        </button>
                                     </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            x-data
+                                            @click="$dispatch('confirm', {
+                                                title: 'Удалить объявление?',
+                                                message: 'Объявление будет удалено без возможности восстановления',
+                                                type: 'danger',
+                                                confirmText: 'Удалить',
+                                                form: 'delete-announcement-form'
+                                            })">
+                                        <i class="bi bi-trash"></i> Удалить
+                                    </button>
                                 @endif
                             @endauth
                         </div>

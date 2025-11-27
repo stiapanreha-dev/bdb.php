@@ -349,14 +349,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (count === 0) return;
 
-        if (confirm(`Вы уверены, что хотите удалить ${count} объявлений?`)) {
-            // Собираем ID выбранных объявлений
-            const ids = Array.from(selectedCheckboxes).map(cb => cb.value);
-            selectedIdsInput.value = JSON.stringify(ids);
+        // Собираем ID выбранных объявлений
+        const ids = Array.from(selectedCheckboxes).map(cb => cb.value);
+        selectedIdsInput.value = JSON.stringify(ids);
 
-            // Отправляем форму
-            bulkDeleteForm.submit();
-        }
+        // Показываем модальное окно подтверждения
+        window.dispatchEvent(new CustomEvent('confirm', {
+            detail: {
+                title: 'Удалить объявления?',
+                message: `Будет удалено объявлений: ${count}`,
+                type: 'danger',
+                confirmText: 'Удалить',
+                form: bulkDeleteForm.id
+            }
+        }));
     });
 });
 </script>

@@ -17,13 +17,21 @@
                                     <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i> Редактировать
                                     </a>
-                                    <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить эту статью?')">
+                                    <form id="delete-article-form" action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-none">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i> Удалить
-                                        </button>
                                     </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            x-data
+                                            @click="$dispatch('confirm', {
+                                                title: 'Удалить статью?',
+                                                message: 'Статья будет удалена без возможности восстановления',
+                                                type: 'danger',
+                                                confirmText: 'Удалить',
+                                                form: 'delete-article-form'
+                                            })">
+                                        <i class="bi bi-trash"></i> Удалить
+                                    </button>
                                 @endif
                             @endauth
                         </div>

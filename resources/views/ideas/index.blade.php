@@ -22,11 +22,21 @@
                     @auth
                         @if(auth()->user()->isAdmin())
                         <div class="ms-3">
-                            <form method="POST" action="{{ route('admin.ideas.delete', $idea) }}" onsubmit="return confirm('Вы уверены, что хотите удалить эту идею?');">
+                            <form id="delete-idea-{{ $idea->id }}" method="POST" action="{{ route('admin.ideas.delete', $idea) }}" class="d-none">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                             </form>
+                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                    x-data
+                                    @click="$dispatch('confirm', {
+                                        title: 'Удалить идею?',
+                                        message: 'Идея будет удалена без возможности восстановления',
+                                        type: 'danger',
+                                        confirmText: 'Удалить',
+                                        form: 'delete-idea-{{ $idea->id }}'
+                                    })">
+                                Удалить
+                            </button>
                         </div>
                         @endif
                     @endauth

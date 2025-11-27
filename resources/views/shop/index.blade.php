@@ -101,18 +101,26 @@
                             @endif
                         </div>
 
-                        <!-- Цена и кнопка покупки -->
+                        <!-- Цена и кнопки -->
                         <div class="col-md-3 text-end d-flex flex-column justify-content-between">
                             <div>
                                 <h3 class="mb-0" style="color: #27ae60; font-weight: bold;">
                                     {{ $product->formatted_price }}
                                 </h3>
                             </div>
-                            <div>
+                            <div class="d-flex gap-2 justify-content-end">
+                                @auth
+                                <form method="POST" action="{{ route('shop.cart.add', $product->id) }}" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-success" title="В корзину">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </button>
+                                </form>
+                                @endauth
                                 <a href="{{ route('shop.show', $product->slug) }}"
-                                   class="btn btn-primary w-100"
+                                   class="btn btn-primary"
                                    style="background-color: #3598db; border-color: #3598db;">
-                                    <i class="bi bi-cart-plus"></i> Купить
+                                    <i class="bi bi-eye"></i> Подробнее
                                 </a>
                             </div>
                         </div>

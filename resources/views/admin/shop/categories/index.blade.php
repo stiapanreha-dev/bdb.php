@@ -82,16 +82,22 @@
                                    class="btn btn-sm btn-outline-primary" title="Редактировать">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form method="POST"
-                                      action="{{ route('admin.shop.categories.destroy', $category) }}"
-                                      class="d-inline"
-                                      onsubmit="return confirm('Удалить категорию {{ $category->name }}?')">
+                                <form id="delete-category-{{ $category->id }}" method="POST"
+                                      action="{{ route('admin.shop.categories.destroy', $category) }}" class="d-none">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Удалить">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
                                 </form>
+                                <button type="button" class="btn btn-sm btn-outline-danger" title="Удалить"
+                                        x-data
+                                        @click="$dispatch('confirm', {
+                                            title: 'Удалить категорию?',
+                                            message: '{{ $category->name }}',
+                                            type: 'danger',
+                                            confirmText: 'Удалить',
+                                            form: 'delete-category-{{ $category->id }}'
+                                        })">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -137,16 +143,22 @@
                                    class="btn btn-sm btn-outline-primary" title="Редактировать">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form method="POST"
-                                      action="{{ route('admin.shop.categories.destroy', $child) }}"
-                                      class="d-inline"
-                                      onsubmit="return confirm('Удалить категорию {{ $child->name }}?')">
+                                <form id="delete-subcategory-{{ $child->id }}" method="POST"
+                                      action="{{ route('admin.shop.categories.destroy', $child) }}" class="d-none">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Удалить">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
                                 </form>
+                                <button type="button" class="btn btn-sm btn-outline-danger" title="Удалить"
+                                        x-data
+                                        @click="$dispatch('confirm', {
+                                            title: 'Удалить категорию?',
+                                            message: '{{ $child->name }}',
+                                            type: 'danger',
+                                            confirmText: 'Удалить',
+                                            form: 'delete-subcategory-{{ $child->id }}'
+                                        })">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>

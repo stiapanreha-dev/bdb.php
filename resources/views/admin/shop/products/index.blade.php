@@ -155,16 +155,22 @@
                                        class="btn btn-sm btn-outline-primary" title="Редактировать">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form method="POST"
-                                          action="{{ route('admin.shop.products.destroy', $product) }}"
-                                          class="d-inline"
-                                          onsubmit="return confirm('Удалить товар {{ $product->name }}?')">
+                                    <form id="delete-product-{{ $product->id }}" method="POST"
+                                          action="{{ route('admin.shop.products.destroy', $product) }}" class="d-none">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Удалить">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
                                     </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Удалить"
+                                            x-data
+                                            @click="$dispatch('confirm', {
+                                                title: 'Удалить товар?',
+                                                message: '{{ $product->name }}',
+                                                type: 'danger',
+                                                confirmText: 'Удалить',
+                                                form: 'delete-product-{{ $product->id }}'
+                                            })">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 @endif
                             </div>
                         </td>

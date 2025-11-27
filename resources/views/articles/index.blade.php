@@ -321,14 +321,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (count === 0) return;
 
-        if (confirm(`Вы уверены, что хотите удалить ${count} статей?`)) {
-            // Собираем ID выбранных статей
-            const ids = Array.from(selectedCheckboxes).map(cb => cb.value);
-            selectedIdsInput.value = JSON.stringify(ids);
+        // Собираем ID выбранных статей
+        const ids = Array.from(selectedCheckboxes).map(cb => cb.value);
+        selectedIdsInput.value = JSON.stringify(ids);
 
-            // Отправляем форму
-            bulkDeleteForm.submit();
-        }
+        // Показываем модальное окно подтверждения
+        window.dispatchEvent(new CustomEvent('confirm', {
+            detail: {
+                title: 'Удалить статьи?',
+                message: `Будет удалено статей: ${count}`,
+                type: 'danger',
+                confirmText: 'Удалить',
+                form: bulkDeleteForm.id
+            }
+        }));
     });
 });
 </script>

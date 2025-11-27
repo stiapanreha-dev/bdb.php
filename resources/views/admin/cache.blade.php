@@ -50,13 +50,21 @@
                         <p class="card-text text-muted">
                             Очистить все типы кеша одновременно (optimize:clear)
                         </p>
-                        <form method="POST" action="{{ route('admin.cache.clear') }}" onsubmit="return confirm('Вы уверены, что хотите очистить весь кеш?')">
+                        <form id="clear-all-cache-form" method="POST" action="{{ route('admin.cache.clear') }}" class="d-none">
                             @csrf
                             <input type="hidden" name="type" value="all">
-                            <button type="submit" class="btn btn-danger w-100">
-                                <i class="bi bi-trash"></i> Очистить весь кеш
-                            </button>
                         </form>
+                        <button type="button" class="btn btn-danger w-100"
+                                x-data
+                                @click="$dispatch('confirm', {
+                                    title: 'Очистить весь кеш?',
+                                    message: 'Будут очищены все типы кеша приложения',
+                                    type: 'warning',
+                                    confirmText: 'Очистить',
+                                    form: 'clear-all-cache-form'
+                                })">
+                            <i class="bi bi-trash"></i> Очистить весь кеш
+                        </button>
                     </div>
                 </div>
             </div>

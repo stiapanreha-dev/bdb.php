@@ -36,7 +36,18 @@
                                 <i class="bi bi-camera"></i> Загрузить фото
                             </button>
                             @if($user->avatar)
-                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="deleteAvatar()">
+                                <form id="delete-avatar-form" action="{{ route('profile.avatar.delete') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                                <button type="button" class="btn btn-sm btn-outline-danger mt-2"
+                                        x-data
+                                        @click="$dispatch('confirm', {
+                                            title: 'Удалить фото профиля?',
+                                            message: 'Фото будет удалено без возможности восстановления',
+                                            type: 'danger',
+                                            confirmText: 'Удалить',
+                                            form: 'delete-avatar-form'
+                                        })">
                                     <i class="bi bi-trash"></i> Удалить
                                 </button>
                             @endif
@@ -321,23 +332,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Функция удаления аватара
-function deleteAvatar() {
-    if (confirm('Вы уверены, что хотите удалить фото профиля?')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("profile.avatar.delete") }}';
-
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_token';
-        csrfInput.value = '{{ csrf_token() }}';
-
-        form.appendChild(csrfInput);
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
 </script>
 @endpush
 </x-app-layout>

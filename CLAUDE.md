@@ -2,7 +2,8 @@
 
 Laravel 12 приложение для работы с базой данных компаний и закупок.
 
-**URL:** https://businessdb.ru/
+**Production URL:** https://businessdb.ru/
+**Local URL:** https://businessdb.dvl.to/ (HTTPS, не HTTP!)
 
 ## Быстрый старт
 
@@ -32,11 +33,12 @@ docker exec devilbox-php83-1 php /shared/httpd/businessdb/artisan [command]
 2. При коммитах использовать шаблон с `🤖 Generated with Claude Code` и `Co-Authored-By: Claude`
 3. Использовать `<x-app-layout>` для views (единственный layout)
 4. Middleware определять в routes, не в конструкторах контроллеров
+5. **CSS: использовать только Bootstrap 5!** НЕ использовать Tailwind CSS классы
 
 ## Ключевые технологии
 
 - **Backend:** Laravel 12, PHP 8.3, PostgreSQL, MS SQL Server
-- **Frontend:** Blade, Tailwind CSS, Alpine.js, Vite
+- **Frontend:** Blade, Bootstrap 5, Alpine.js (CDN)
 - **Особенности:** Editor.js для контента, ЮKassa для платежей, система модулей
 
 ## Часто используемые пути

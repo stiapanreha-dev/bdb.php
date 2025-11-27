@@ -61,14 +61,21 @@
                         @endif
                     </div>
                 </form>
-                <form method="POST" action="{{ route('admin.ideas.delete', $idea) }}" class="d-inline"
-                      onsubmit="return confirm('Вы уверены что хотите удалить эту идею?');">
+                <form id="admin-delete-idea-{{ $idea->id }}" method="POST" action="{{ route('admin.ideas.delete', $idea) }}" class="d-none">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-danger">
-                        Удалить
-                    </button>
                 </form>
+                <button type="button" class="btn btn-sm btn-danger"
+                        x-data
+                        @click="$dispatch('confirm', {
+                            title: 'Удалить идею?',
+                            message: 'Идея будет удалена без возможности восстановления',
+                            type: 'danger',
+                            confirmText: 'Удалить',
+                            form: 'admin-delete-idea-{{ $idea->id }}'
+                        })">
+                    Удалить
+                </button>
             </div>
         </div>
         @empty

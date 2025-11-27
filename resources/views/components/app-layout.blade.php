@@ -24,6 +24,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <style>[x-cloak] { display: none !important; }</style>
 
     <!-- Yandex Verification -->
     <meta name="yandex-verification" content="c326a374924bae98" />
@@ -131,21 +132,17 @@
                     @endif
                     @auth
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="mobileUserDropdown" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="mobileUserDropdown" data-bs-toggle="dropdown" title="{{ auth()->user()->name }}{{ auth()->user()->isAdmin() ? ' (Admin)' : '' }}">
                                 @if(auth()->user()->avatar)
                                     <img src="{{ asset('storage/avatars/' . auth()->user()->avatar) }}"
                                          alt="Фото"
-                                         class="rounded-circle me-2"
+                                         class="rounded-circle"
                                          style="width: 32px; height: 32px; object-fit: cover;">
                                 @else
-                                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center me-2"
+                                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center"
                                          style="width: 32px; height: 32px;">
                                         <i class="bi bi-person-fill text-white" style="font-size: 1rem;"></i>
                                     </div>
-                                @endif
-                                {{ auth()->user()->name }}
-                                @if(auth()->user()->isAdmin())
-                                    <span class="badge bg-danger ms-1">Admin</span>
                                 @endif
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="mobileUserDropdown">
@@ -231,24 +228,18 @@
                             <i class="bi bi-wallet2"></i> {{ number_format(auth()->user()->balance, 2) }} ₽
                         </span>
                         <div class="dropdown d-inline">
-                            <a href="#" class="text-white text-decoration-none dropdown-toggle d-flex align-items-center" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a href="#" class="text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="{{ auth()->user()->name }}{{ auth()->user()->isAdmin() ? ' (Admin)' : '' }}">
                                 @if(auth()->user()->avatar)
                                     <img src="{{ asset('storage/avatars/' . auth()->user()->avatar) }}"
                                          alt="Фото"
-                                         class="rounded-circle me-2"
+                                         class="rounded-circle"
                                          style="width: 32px; height: 32px; object-fit: cover;">
                                 @else
-                                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center me-2"
+                                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center"
                                          style="width: 32px; height: 32px;">
                                         <i class="bi bi-person-fill text-white" style="font-size: 1rem;"></i>
                                     </div>
                                 @endif
-                                <span>
-                                    {{ auth()->user()->name }}
-                                    @if(auth()->user()->isAdmin())
-                                        <span class="badge bg-danger ms-1">Admin</span>
-                                    @endif
-                                </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person"></i> Мой профиль</a></li>
@@ -282,6 +273,9 @@
                                 @endif
                             </ul>
                         </div>
+                        @if(ModuleSetting::isModuleEnabled('shop'))
+                        <x-cart-badge class="ms-3 me-2" />
+                        @endif
                         <form method="POST" action="{{ route('logout') }}" class="d-inline ms-2">
                             @csrf
                             <button type="submit" class="btn btn-outline-light">Выход</button>
@@ -371,6 +365,9 @@
     </div>
     @endauth
 
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <!-- Bootstrap JS (local) -->
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
@@ -396,5 +393,8 @@
     </script>
 
     @stack('scripts')
+
+    {{-- Global Confirm Modal --}}
+    <x-confirm-modal />
 </body>
 </html>

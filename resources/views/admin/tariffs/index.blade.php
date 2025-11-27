@@ -70,16 +70,22 @@
                                    class="btn btn-sm btn-warning">
                                     Изменить
                                 </a>
-                                <form method="POST"
-                                      action="{{ route('admin.tariffs.destroy', $tariff) }}"
-                                      class="d-inline"
-                                      onsubmit="return confirm('Вы уверены?')">
+                                <form id="delete-tariff-{{ $tariff->id }}" method="POST"
+                                      action="{{ route('admin.tariffs.destroy', $tariff) }}" class="d-none">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        Удалить
-                                    </button>
                                 </form>
+                                <button type="button" class="btn btn-sm btn-danger"
+                                        x-data
+                                        @click="$dispatch('confirm', {
+                                            title: 'Удалить тариф?',
+                                            message: '{{ $tariff->name }}',
+                                            type: 'danger',
+                                            confirmText: 'Удалить',
+                                            form: 'delete-tariff-{{ $tariff->id }}'
+                                        })">
+                                    Удалить
+                                </button>
                             </div>
                         </td>
                     </tr>

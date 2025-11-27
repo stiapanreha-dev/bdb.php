@@ -116,6 +116,15 @@ Route::middleware(['module:shop'])->group(function () {
     Route::get('/shop/category/{slug}', [App\Http\Controllers\ShopController::class, 'category'])->name('shop.category');
     Route::get('/shop/my-purchases', [App\Http\Controllers\ShopController::class, 'myPurchases'])->middleware('auth')->name('shop.my-purchases');
     Route::get('/shop/download/{id}', [App\Http\Controllers\ShopController::class, 'downloadAttachment'])->middleware('auth')->name('shop.download');
+
+    // Cart routes (must be before /shop/{slug})
+    Route::get('/shop/cart', [App\Http\Controllers\CartController::class, 'index'])->middleware('auth')->name('shop.cart');
+    Route::post('/shop/cart/add/{product}', [App\Http\Controllers\CartController::class, 'add'])->middleware('auth')->name('shop.cart.add');
+    Route::patch('/shop/cart/update/{item}', [App\Http\Controllers\CartController::class, 'update'])->middleware('auth')->name('shop.cart.update');
+    Route::delete('/shop/cart/remove/{item}', [App\Http\Controllers\CartController::class, 'remove'])->middleware('auth')->name('shop.cart.remove');
+    Route::delete('/shop/cart/clear', [App\Http\Controllers\CartController::class, 'clear'])->middleware('auth')->name('shop.cart.clear');
+    Route::post('/shop/cart/checkout', [App\Http\Controllers\CartController::class, 'checkout'])->middleware('auth')->name('shop.cart.checkout');
+
     Route::get('/shop/{slug}', [App\Http\Controllers\ShopController::class, 'show'])->name('shop.show');
     Route::post('/shop/{id}/purchase', [App\Http\Controllers\ShopController::class, 'purchase'])->middleware('auth')->name('shop.purchase');
 });

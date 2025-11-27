@@ -141,6 +141,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the shopping cart for the user.
+     */
+    public function cart()
+    {
+        return $this->hasOne(ShopCart::class);
+    }
+
+    /**
+     * Get or create the shopping cart for the user.
+     */
+    public function getOrCreateCart(): ShopCart
+    {
+        return $this->cart ?? ShopCart::create(['user_id' => $this->id]);
+    }
+
+    /**
      * Get the announcements for the user.
      */
     public function announcements()
