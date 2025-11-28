@@ -115,7 +115,7 @@ Route::middleware(['module:shop'])->group(function () {
     Route::get('/shop', [App\Http\Controllers\ShopController::class, 'index'])->name('shop.index');
     Route::get('/shop/category/{slug}', [App\Http\Controllers\ShopController::class, 'category'])->name('shop.category');
     Route::get('/shop/my-purchases', [App\Http\Controllers\ShopController::class, 'myPurchases'])->middleware('auth')->name('shop.my-purchases');
-    Route::get('/shop/download/{id}', [App\Http\Controllers\ShopController::class, 'downloadAttachment'])->middleware('auth')->name('shop.download');
+    Route::get('/shop/{slug}/download/{file}', [App\Http\Controllers\ShopController::class, 'downloadFile'])->middleware('auth')->name('shop.download');
 
     // Cart routes (must be before /shop/{slug})
     Route::get('/shop/cart', [App\Http\Controllers\CartController::class, 'index'])->middleware('auth')->name('shop.cart');
@@ -227,6 +227,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'destroy' => 'admin.shop.products.destroy',
     ]);
     Route::post('shop/products/{id}/restore', [App\Http\Controllers\Admin\ShopProductController::class, 'restore'])->name('admin.shop.products.restore');
+    Route::delete('shop/products/{product}/files/{file}', [App\Http\Controllers\Admin\ShopProductController::class, 'deleteFile'])->name('admin.shop.products.files.destroy');
 
     // Shop statistics and purchases
     Route::get('shop/statistics', [App\Http\Controllers\Admin\ShopProductController::class, 'statistics'])->name('admin.shop.statistics');

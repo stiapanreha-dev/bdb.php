@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ShopCategory;
 use App\Models\ShopProduct;
+use App\Models\ShopProductFile;
 use App\Models\ShopProductPurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,7 @@ class ShopProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ShopProduct::with(['category', 'creator']);
+        $query = ShopProduct::with(['category', 'creator', 'files'])->withCount('files');
 
         // Filter by category
         if ($request->filled('category')) {
@@ -81,7 +82,8 @@ class ShopProductController extends Controller
             'short_description' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'attachment' => 'nullable|file|max:51200', // 50MB max
+            'files' => 'nullable|array',
+            'files.*' => 'file|max:102400', // 100MB max per file
             'price' => 'required|numeric|min:0',
             'is_active' => 'nullable',
         ]);
@@ -105,16 +107,28 @@ class ShopProductController extends Controller
             $validated['image'] = $path;
         }
 
-        // Handle attachment upload (file available after purchase)
-        if ($request->hasFile('attachment')) {
-            $attachment = $request->file('attachment');
-            $filename = Str::slug($validated['name']) . '-' . time() . '.' . $attachment->getClientOriginalExtension();
-            $path = $attachment->storeAs('shop/attachments', $filename, 'local'); // Store in private storage
-            $validated['attachment'] = $path;
-            $validated['attachment_name'] = $attachment->getClientOriginalName();
-        }
+        // Remove files from validated data before creating product
+        unset($validated['files']);
 
-        ShopProduct::create($validated);
+        $product = ShopProduct::create($validated);
+
+        // Handle multiple file uploads
+        if ($request->hasFile('files')) {
+            $sortOrder = 0;
+            foreach ($request->file('files') as $file) {
+                $filename = Str::slug($product->name) . '-' . time() . '-' . $sortOrder . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('shop/attachments', $filename, 'local');
+
+                ShopProductFile::create([
+                    'product_id' => $product->id,
+                    'file_path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'sort_order' => $sortOrder,
+                ]);
+                $sortOrder++;
+            }
+        }
 
         return redirect()->route('admin.shop.products.index')
             ->with('success', 'Товар успешно создан');
@@ -140,7 +154,7 @@ class ShopProductController extends Controller
      */
     public function edit($id)
     {
-        $product = ShopProduct::withTrashed()->findOrFail($id);
+        $product = ShopProduct::withTrashed()->with('files')->findOrFail($id);
 
         $categories = ShopCategory::with('children')
             ->whereNull('parent_id')
@@ -165,7 +179,8 @@ class ShopProductController extends Controller
             'short_description' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'attachment' => 'nullable|file|max:51200', // 50MB max
+            'files' => 'nullable|array',
+            'files.*' => 'file|max:102400', // 100MB max per file
             'price' => 'required|numeric|min:0',
             'is_active' => 'nullable',
         ]);
@@ -199,28 +214,30 @@ class ShopProductController extends Controller
             $validated['image'] = null;
         }
 
-        // Handle attachment upload
-        if ($request->hasFile('attachment')) {
-            // Delete old attachment
-            if ($product->attachment) {
-                Storage::disk('local')->delete($product->attachment);
-            }
-
-            $attachment = $request->file('attachment');
-            $filename = Str::slug($validated['name']) . '-' . time() . '.' . $attachment->getClientOriginalExtension();
-            $path = $attachment->storeAs('shop/attachments', $filename, 'local');
-            $validated['attachment'] = $path;
-            $validated['attachment_name'] = $attachment->getClientOriginalName();
-        }
-
-        // Handle attachment deletion
-        if ($request->has('delete_attachment') && $product->attachment) {
-            Storage::disk('local')->delete($product->attachment);
-            $validated['attachment'] = null;
-            $validated['attachment_name'] = null;
-        }
+        // Remove files from validated data before updating product
+        unset($validated['files']);
 
         $product->update($validated);
+
+        // Handle multiple file uploads
+        if ($request->hasFile('files')) {
+            $maxSortOrder = $product->files()->max('sort_order') ?? -1;
+            $sortOrder = $maxSortOrder + 1;
+
+            foreach ($request->file('files') as $file) {
+                $filename = Str::slug($product->name) . '-' . time() . '-' . $sortOrder . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('shop/attachments', $filename, 'local');
+
+                ShopProductFile::create([
+                    'product_id' => $product->id,
+                    'file_path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'sort_order' => $sortOrder,
+                ]);
+                $sortOrder++;
+            }
+        }
 
         return redirect()->route('admin.shop.products.index')
             ->with('success', 'Товар успешно обновлён');
@@ -346,5 +363,24 @@ class ShopProductController extends Controller
         $statuses = ['pending', 'completed', 'canceled'];
 
         return view('admin.shop.purchases', compact('purchases', 'products', 'statuses'));
+    }
+
+    /**
+     * Delete a file from product.
+     */
+    public function deleteFile(ShopProduct $product, ShopProductFile $file)
+    {
+        // Ensure the file belongs to this product
+        if ($file->product_id !== $product->id) {
+            return response()->json(['error' => 'File does not belong to this product'], 403);
+        }
+
+        // Delete physical file
+        Storage::disk('local')->delete($file->file_path);
+
+        // Delete database record
+        $file->delete();
+
+        return response()->json(['success' => true]);
     }
 }

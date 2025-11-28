@@ -182,35 +182,38 @@
 
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="bi bi-paperclip me-1"></i>Прикреплённый файл
+                    <i class="bi bi-paperclip me-1"></i>Прикреплённые файлы
                 </div>
                 <div class="card-body">
-                    @if($product->attachment)
-                    <div class="mb-2 p-2 bg-light rounded">
-                        <div class="d-flex align-items-center justify-content-between">
+                    @if($product->files->count() > 0)
+                    <div class="mb-3" id="existing-files">
+                        @foreach($product->files as $file)
+                        <div class="d-flex align-items-center justify-content-between p-2 bg-light rounded mb-2" id="file-{{ $file->id }}">
                             <div>
-                                <i class="bi bi-file-earmark me-2"></i>
-                                <strong>{{ $product->attachment_name }}</strong>
+                                <i class="{{ $file->icon_class }} me-2 text-primary"></i>
+                                <strong>{{ $file->original_name }}</strong>
+                                <small class="text-muted ms-2">({{ $file->formatted_size }})</small>
                             </div>
-                            <div class="form-check">
-                                <input type="checkbox"
-                                       class="form-check-input"
-                                       id="delete_attachment"
-                                       name="delete_attachment">
-                                <label class="form-check-label text-danger" for="delete_attachment">
-                                    Удалить
-                                </label>
-                            </div>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="deleteFile({{ $product->id }}, {{ $file->id }})">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
+                        @endforeach
                     </div>
                     @endif
 
                     <input type="file"
-                           class="form-control @error('attachment') is-invalid @enderror"
-                           id="attachment"
-                           name="attachment">
-                    <div class="form-text">Файл, доступный покупателю после оплаты. Максимум 50 МБ</div>
-                    @error('attachment')
+                           class="form-control @error('files') is-invalid @enderror @error('files.*') is-invalid @enderror"
+                           id="files"
+                           name="files[]"
+                           multiple>
+                    <div class="form-text">Файлы, доступные покупателю после оплаты. Максимум 100 МБ на файл. Можно выбрать несколько.</div>
+                    @error('files')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    @error('files.*')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -402,6 +405,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Delete file function
+function deleteFile(productId, fileId) {
+    if (!confirm('Удалить этот файл?')) {
+        return;
+    }
+
+    fetch(`/admin/shop/products/${productId}/files/${fileId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('file-' + fileId).remove();
+        } else {
+            alert('Ошибка при удалении файла');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при удалении файла');
+    });
+}
 </script>
 @endpush
 </x-app-layout>

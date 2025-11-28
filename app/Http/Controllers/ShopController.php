@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ShopCategory;
 use App\Models\ShopProduct;
+use App\Models\ShopProductFile;
 use App\Models\ShopProductView;
 use App\Models\ShopProductPurchase;
 use App\Models\Transaction;
@@ -80,7 +81,7 @@ class ShopController extends Controller
      */
     public function show(Request $request, $slug)
     {
-        $product = ShopProduct::with(['category', 'creator'])
+        $product = ShopProduct::with(['category', 'creator', 'files'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
@@ -91,7 +92,16 @@ class ShopController extends Controller
         // Increment views count
         $product->incrementViews();
 
-        return view('shop.show', compact('product'));
+        // Check if user has purchased this product
+        $hasPurchased = false;
+        if (Auth::check()) {
+            $hasPurchased = ShopProductPurchase::where('user_id', Auth::id())
+                ->where('product_id', $product->id)
+                ->where('status', 'completed')
+                ->exists();
+        }
+
+        return view('shop.show', compact('product', 'hasPurchased'));
     }
 
     /**
@@ -180,20 +190,20 @@ class ShopController extends Controller
     }
 
     /**
-     * Download attachment for purchased product.
+     * Download file for purchased product.
      */
-    public function downloadAttachment($id)
+    public function downloadFile($slug, ShopProductFile $file)
     {
         if (!Auth::check()) {
             return redirect()->route('login')
                 ->with('error', 'Для скачивания необходимо авторизоваться');
         }
 
-        $product = ShopProduct::findOrFail($id);
+        $product = ShopProduct::where('slug', $slug)->firstOrFail();
 
-        // Check if product has attachment
-        if (!$product->attachment) {
-            return back()->with('error', 'У этого товара нет прикреплённого файла');
+        // Ensure the file belongs to this product
+        if ($file->product_id !== $product->id) {
+            abort(403, 'File does not belong to this product');
         }
 
         // Check if user has purchased this product
@@ -207,18 +217,19 @@ class ShopController extends Controller
         }
 
         // Check if file exists
-        if (!Storage::disk('local')->exists($product->attachment)) {
-            \Log::error('[SHOP] Attachment file not found', [
+        if (!Storage::disk('local')->exists($file->file_path)) {
+            \Log::error('[SHOP] File not found', [
                 'product_id' => $product->id,
-                'path' => $product->attachment,
+                'file_id' => $file->id,
+                'path' => $file->file_path,
             ]);
             return back()->with('error', 'Файл не найден. Обратитесь в поддержку.');
         }
 
         // Return file download
         return Storage::disk('local')->download(
-            $product->attachment,
-            $product->attachment_name ?? basename($product->attachment)
+            $file->file_path,
+            $file->original_name
         );
     }
 

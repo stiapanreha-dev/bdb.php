@@ -78,6 +78,7 @@
                         <th>Название</th>
                         <th>Категория</th>
                         <th style="width: 100px;">Цена</th>
+                        <th style="width: 100px;">Файлы</th>
                         <th style="width: 80px;">Продаж</th>
                         <th style="width: 80px;">Просм.</th>
                         <th style="width: 90px;">Статус</th>
@@ -121,6 +122,14 @@
                         </td>
                         <td>
                             <strong class="text-success">{{ number_format($product->price, 0, '.', ' ') }} ₽</strong>
+                        </td>
+                        <td>
+                            @if($product->files_count > 0)
+                                <span class="badge bg-primary">{{ $product->files_count }}</span>
+                                <br><small class="text-muted">{{ $product->formatted_total_files_size }}</small>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
                         </td>
                         <td>
                             <span class="badge bg-info">{{ $product->purchases_count }}</span>
@@ -177,7 +186,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="text-center py-4">
+                        <td colspan="10" class="text-center py-4">
                             <div class="text-muted">
                                 <i class="bi bi-box-seam fs-1 d-block mb-2"></i>
                                 @if(request('trashed'))

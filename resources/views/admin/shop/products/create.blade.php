@@ -170,16 +170,20 @@
 
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="bi bi-paperclip me-1"></i>Прикреплённый файл
+                    <i class="bi bi-paperclip me-1"></i>Прикреплённые файлы
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
                         <input type="file"
-                               class="form-control @error('attachment') is-invalid @enderror"
-                               id="attachment"
-                               name="attachment">
-                        <div class="form-text">Файл, доступный покупателю после оплаты. Максимум 50 МБ</div>
-                        @error('attachment')
+                               class="form-control @error('files') is-invalid @enderror @error('files.*') is-invalid @enderror"
+                               id="files"
+                               name="files[]"
+                               multiple>
+                        <div class="form-text">Файлы, доступные покупателю после оплаты. Максимум 100 МБ на файл. Можно выбрать несколько.</div>
+                        @error('files')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        @error('files.*')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>

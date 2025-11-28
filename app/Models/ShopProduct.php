@@ -20,8 +20,6 @@ class ShopProduct extends Model
         'short_description',
         'description',
         'image',
-        'attachment',
-        'attachment_name',
         'price',
         'is_active',
         'created_by',
@@ -70,6 +68,14 @@ class ShopProduct extends Model
     }
 
     /**
+     * Files
+     */
+    public function files(): HasMany
+    {
+        return $this->hasMany(ShopProductFile::class, 'product_id')->orderBy('sort_order');
+    }
+
+    /**
      * Increment views count
      */
     public function incrementViews(): void
@@ -94,32 +100,35 @@ class ShopProduct extends Model
     }
 
     /**
-     * Get attachment file size
+     * Get files count (uses withCount if loaded, otherwise queries)
      */
-    public function getAttachmentSizeAttribute(): ?int
+    public function getFilesCountAttribute(): int
     {
-        if (!$this->attachment) {
-            return null;
+        if (array_key_exists('files_count', $this->attributes)) {
+            return (int) $this->attributes['files_count'];
         }
-
-        // Attachments stored in private storage (local disk -> storage/app/private/)
-        $path = storage_path('app/private/' . $this->attachment);
-
-        if (file_exists($path)) {
-            return filesize($path);
-        }
-
-        return null;
+        return $this->files()->count();
     }
 
     /**
-     * Get formatted attachment file size
+     * Get total files size (uses loaded files if available, otherwise queries)
      */
-    public function getFormattedAttachmentSizeAttribute(): ?string
+    public function getTotalFilesSizeAttribute(): int
     {
-        $size = $this->attachment_size;
+        if ($this->relationLoaded('files')) {
+            return (int) $this->files->sum('size');
+        }
+        return (int) $this->files()->sum('size');
+    }
 
-        if ($size === null) {
+    /**
+     * Get formatted total files size
+     */
+    public function getFormattedTotalFilesSizeAttribute(): ?string
+    {
+        $size = $this->total_files_size;
+
+        if ($size === 0) {
             return null;
         }
 
