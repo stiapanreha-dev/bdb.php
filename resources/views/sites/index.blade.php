@@ -26,15 +26,16 @@
                 </a>
                 @foreach($categories as $category)
                     <a href="{{ route('sites.category', $category->slug) }}"
-                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center fw-semibold">
                         {{ $category->name }}
-                        <span class="badge bg-secondary">{{ $category->approvedSitesCount() }}</span>
+                        <span class="badge bg-primary rounded-pill">{{ $category->approvedSitesCount() }}</span>
                     </a>
                     @foreach($category->children as $child)
                         <a href="{{ route('sites.category', $child->slug) }}"
-                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4">
-                            <span class="text-muted">|—</span> {{ $child->name }}
-                            <span class="badge bg-secondary">{{ $child->approvedSitesCount() }}</span>
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                           style="padding-left: 2rem;">
+                            {{ $child->name }}
+                            <span class="badge bg-secondary rounded-pill">{{ $child->approvedSitesCount() }}</span>
                         </a>
                     @endforeach
                 @endforeach

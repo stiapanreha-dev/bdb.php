@@ -40,15 +40,16 @@
                 </a>
                 @foreach($categories as $cat)
                     <a href="{{ route('sites.category', $cat->slug) }}"
-                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ $category->id == $cat->id ? 'active' : '' }}">
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center fw-semibold {{ $category->id == $cat->id ? 'active' : '' }}">
                         {{ $cat->name }}
-                        <span class="badge {{ $category->id == $cat->id ? 'bg-light text-dark' : 'bg-secondary' }}">{{ $cat->approvedSitesCount() }}</span>
+                        <span class="badge rounded-pill {{ $category->id == $cat->id ? 'bg-light text-dark' : 'bg-primary' }}">{{ $cat->approvedSitesCount() }}</span>
                     </a>
                     @foreach($cat->children as $child)
                         <a href="{{ route('sites.category', $child->slug) }}"
-                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4 {{ $category->id == $child->id ? 'active' : '' }}">
-                            <span class="text-muted">|—</span> {{ $child->name }}
-                            <span class="badge {{ $category->id == $child->id ? 'bg-light text-dark' : 'bg-secondary' }}">{{ $child->approvedSitesCount() }}</span>
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ $category->id == $child->id ? 'active' : '' }}"
+                           style="padding-left: 2rem;">
+                            {{ $child->name }}
+                            <span class="badge rounded-pill {{ $category->id == $child->id ? 'bg-light text-dark' : 'bg-secondary' }}">{{ $child->approvedSitesCount() }}</span>
                         </a>
                     @endforeach
                 @endforeach
