@@ -129,6 +129,32 @@ Route::middleware(['module:shop'])->group(function () {
     Route::post('/shop/{id}/purchase', [App\Http\Controllers\ShopController::class, 'purchase'])->middleware('auth')->name('shop.purchase');
 });
 
+// Site catalog routes (public)
+Route::middleware(['module:site_catalog'])->group(function () {
+    Route::get('/sites', [App\Http\Controllers\SiteCatalogController::class, 'index'])->name('sites.index');
+    Route::get('/sites/category/{slug}', [App\Http\Controllers\SiteCatalogController::class, 'category'])->name('sites.category');
+});
+
+// Site catalog routes (authenticated users)
+Route::middleware(['auth', 'module:site_catalog'])->group(function () {
+    Route::get('/my-sites', [App\Http\Controllers\SiteController::class, 'mySites'])->name('sites.my');
+    Route::get('/sites/create', [App\Http\Controllers\SiteController::class, 'create'])->name('sites.create');
+    Route::post('/sites', [App\Http\Controllers\SiteController::class, 'store'])->name('sites.store');
+    Route::get('/sites/{id}/edit', [App\Http\Controllers\SiteController::class, 'edit'])->name('sites.edit');
+    Route::patch('/sites/{id}', [App\Http\Controllers\SiteController::class, 'update'])->name('sites.update');
+    Route::delete('/sites/{id}', [App\Http\Controllers\SiteController::class, 'destroy'])->name('sites.destroy');
+
+    // Site image upload routes
+    Route::post('/api/upload-site-logo', [App\Http\Controllers\ImageUploadController::class, 'uploadSiteLogo'])->name('site.logo.upload');
+    Route::post('/api/upload-site-images', [App\Http\Controllers\ImageUploadController::class, 'uploadSiteImages'])->name('site.images.upload');
+    Route::post('/api/upload-site-editor-image', [App\Http\Controllers\ImageUploadController::class, 'uploadSiteEditorImage'])->name('site.editor.image.upload');
+});
+
+// Site show route (must be after specific routes)
+Route::middleware(['module:site_catalog'])->group(function () {
+    Route::get('/sites/{slug}', [App\Http\Controllers\SiteCatalogController::class, 'show'])->name('sites.show');
+});
+
 Route::get('/invite', function () {
     return '<h1>Пригласи друга</h1><p>Страница в разработке</p>';
 })->name('invite');
@@ -232,6 +258,23 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     // Shop statistics and purchases
     Route::get('shop/statistics', [App\Http\Controllers\Admin\ShopProductController::class, 'statistics'])->name('admin.shop.statistics');
     Route::get('shop/purchases', [App\Http\Controllers\Admin\ShopProductController::class, 'purchases'])->name('admin.shop.purchases');
+
+    // Site catalog category management routes
+    Route::resource('sites/categories', App\Http\Controllers\Admin\SiteCategoryController::class)->names([
+        'index' => 'admin.sites.categories.index',
+        'create' => 'admin.sites.categories.create',
+        'store' => 'admin.sites.categories.store',
+        'edit' => 'admin.sites.categories.edit',
+        'update' => 'admin.sites.categories.update',
+        'destroy' => 'admin.sites.categories.destroy',
+    ])->except(['show']);
+
+    // Site moderation routes
+    Route::get('sites/moderation', [App\Http\Controllers\Admin\SiteModerationController::class, 'index'])->name('admin.sites.moderation.index');
+    Route::get('sites/moderation/{id}', [App\Http\Controllers\Admin\SiteModerationController::class, 'show'])->name('admin.sites.moderation.show');
+    Route::post('sites/moderation/{id}/approve', [App\Http\Controllers\Admin\SiteModerationController::class, 'approve'])->name('admin.sites.moderation.approve');
+    Route::post('sites/moderation/{id}/reject', [App\Http\Controllers\Admin\SiteModerationController::class, 'reject'])->name('admin.sites.moderation.reject');
+    Route::delete('sites/moderation/{id}', [App\Http\Controllers\Admin\SiteModerationController::class, 'destroy'])->name('admin.sites.moderation.destroy');
 
     // Ticket management routes (admin)
     Route::get('/tickets', [App\Http\Controllers\AdminTicketController::class, 'index'])->name('admin.tickets.index');

@@ -218,4 +218,110 @@ class ImageUploadController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * Upload site logo
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uploadSiteLogo(Request $request)
+    {
+        try {
+            $request->validate([
+                'logo' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // max 2MB
+            ]);
+
+            $file = $request->file('logo');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('sites/logos', $filename, 'public');
+            $url = Storage::disk('public')->url($path);
+
+            return response()->json([
+                'success' => true,
+                'url' => $url,
+                'path' => $path,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Upload site images (multiple)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uploadSiteImages(Request $request)
+    {
+        try {
+            $request->validate([
+                'images' => 'required|array|max:10',
+                'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120', // max 5MB each
+            ]);
+
+            $uploaded = [];
+
+            foreach ($request->file('images') as $file) {
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('sites/images', $filename, 'public');
+                $url = Storage::disk('public')->url($path);
+
+                $uploaded[] = [
+                    'path' => $path,
+                    'url' => $url,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'images' => $uploaded
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    /**
+     * Upload image for site Editor.js
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uploadSiteEditorImage(Request $request)
+    {
+        try {
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            ]);
+
+            $file = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('sites/content', $filename, 'public');
+            $url = Storage::disk('public')->url($path);
+
+            // Return in Editor.js format
+            return response()->json([
+                'success' => 1,
+                'file' => [
+                    'url' => $url,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => 0,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
 }

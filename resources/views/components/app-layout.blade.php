@@ -98,6 +98,13 @@
                         </a>
                     </li>
                     @endif
+                    @if(ModuleSetting::isModuleEnabled('site_catalog'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('sites.index') }}">
+                            Каталог сайтов
+                        </a>
+                    </li>
+                    @endif
                     @if(ModuleSetting::isModuleEnabled('newsletters'))
                     @auth
                     <li class="nav-item">
@@ -170,6 +177,10 @@
                                     <li><a class="dropdown-item" href="{{ route('admin.shop.products.index') }}"><i class="bi bi-box me-2"></i>Товары</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.shop.statistics') }}"><i class="bi bi-graph-up me-2"></i>Статистика продаж</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.shop.purchases') }}"><i class="bi bi-cart-check me-2"></i>История покупок</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Каталог сайтов</h6></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.sites.categories.index') }}"><i class="bi bi-folder me-2"></i>Категории сайтов</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.sites.moderation.index') }}"><i class="bi bi-check-circle me-2"></i>Модерация сайтов</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.modules') }}">Модули</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
@@ -266,6 +277,10 @@
                                     <li><a class="dropdown-item" href="{{ route('admin.shop.products.index') }}"><i class="bi bi-box me-2"></i>Товары</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.shop.statistics') }}"><i class="bi bi-graph-up me-2"></i>Статистика продаж</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.shop.purchases') }}"><i class="bi bi-cart-check me-2"></i>История покупок</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Каталог сайтов</h6></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.sites.categories.index') }}"><i class="bi bi-folder me-2"></i>Категории сайтов</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.sites.moderation.index') }}"><i class="bi bi-check-circle me-2"></i>Модерация сайтов</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.modules') }}">Модули</a></li>
                                     <li><a class="dropdown-item" href="{{ route('admin.cache') }}">Управление кешем</a></li>
