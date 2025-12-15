@@ -1,29 +1,19 @@
 <x-app-layout>
 @push('styles')
 <style>
-    /* Badge fixed right, arrow before badge */
-    #categoriesAccordion .accordion-button {
-        padding-right: 4rem;
-    }
+    /* Hide default accordion arrow */
     #categoriesAccordion .accordion-button::after {
+        display: none;
+    }
+    /* Custom arrow before badge */
+    #categoriesAccordion .accordion-button .cat-arrow {
         width: 0.7rem;
         height: 0.7rem;
-        background-size: 0.7rem;
-        position: absolute;
-        right: 3rem;
+        margin-right: 0.5rem;
+        transition: transform 0.2s;
     }
-    #categoriesAccordion .accordion-button .badge {
-        position: absolute;
-        right: 1rem;
-    }
-    /* Categories without children - badge in same position */
-    #categoriesAccordion > .accordion-item > a.list-group-item {
-        position: relative;
-        padding-right: 4rem;
-    }
-    #categoriesAccordion > .accordion-item > a.list-group-item .badge {
-        position: absolute;
-        right: 1rem;
+    #categoriesAccordion .accordion-button:not(.collapsed) .cat-arrow {
+        transform: rotate(180deg);
     }
 </style>
 @endpush
@@ -79,7 +69,8 @@
                                 <button class="accordion-button {{ $isCurrentParent ? '' : 'collapsed' }} py-2 px-3" type="button"
                                         data-bs-toggle="collapse" data-bs-target="#cat-{{ $cat->id }}">
                                     <span class="me-auto">{{ $cat->name }}</span>
-                                    <span class="badge {{ $category->id == $cat->id ? 'bg-light text-dark' : 'bg-primary' }} rounded-pill me-2">{{ $cat->approvedSitesCount() }}</span>
+                                    <i class="bi bi-chevron-down cat-arrow"></i>
+                                    <span class="badge {{ $category->id == $cat->id ? 'bg-light text-dark' : 'bg-primary' }} rounded-pill">{{ $cat->approvedSitesCount() }}</span>
                                 </button>
                             </h2>
                             <div id="cat-{{ $cat->id }}" class="accordion-collapse collapse {{ $isCurrentParent ? 'show' : '' }}">
