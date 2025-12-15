@@ -3,27 +3,27 @@
 <style>
     /* Badge fixed right, arrow before badge */
     #categoriesAccordion .accordion-button {
-        padding-right: 3.5rem;
+        padding-right: 4rem;
     }
     #categoriesAccordion .accordion-button::after {
-        width: 0.75rem;
-        height: 0.75rem;
-        background-size: 0.75rem;
+        width: 0.7rem;
+        height: 0.7rem;
+        background-size: 0.7rem;
         position: absolute;
-        right: 2.5rem;
+        right: 3rem;
     }
     #categoriesAccordion .accordion-button .badge {
         position: absolute;
-        right: 0.75rem;
+        right: 1rem;
     }
     /* Categories without children - badge in same position */
-    #categoriesAccordion .list-group-item .badge {
-        position: absolute;
-        right: 0.75rem;
-    }
-    #categoriesAccordion .list-group-item {
+    #categoriesAccordion > .accordion-item > a.list-group-item {
         position: relative;
-        padding-right: 3.5rem;
+        padding-right: 4rem;
+    }
+    #categoriesAccordion > .accordion-item > a.list-group-item .badge {
+        position: absolute;
+        right: 1rem;
     }
 </style>
 @endpush
