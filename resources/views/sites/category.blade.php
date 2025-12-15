@@ -1,4 +1,20 @@
 <x-app-layout>
+@push('styles')
+<style>
+    /* Fix accordion arrow position so badge doesn't shift */
+    #categoriesAccordion .accordion-button {
+        padding-right: 2.5rem;
+    }
+    #categoriesAccordion .accordion-button::after {
+        position: absolute;
+        right: 0.75rem;
+    }
+    #categoriesAccordion .accordion-button .badge {
+        margin-right: 0;
+    }
+</style>
+@endpush
+
 <div class="row mb-4">
     <div class="col-md-12">
         <nav aria-label="breadcrumb">
