@@ -2,16 +2,11 @@
 @push('styles')
 <style>
     /* Fix accordion arrow position so badge doesn't shift */
-    #categoriesAccordion .accordion-button {
-        padding-right: 2rem;
-    }
     #categoriesAccordion .accordion-button::after {
-        position: absolute;
-        right: 0.5rem;
-        flex-shrink: 0;
-    }
-    #categoriesAccordion .accordion-button .badge {
-        margin-right: 1.5rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        background-size: 0.75rem;
+        margin-left: 0.5rem;
     }
 </style>
 @endpush
