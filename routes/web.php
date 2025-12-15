@@ -271,6 +271,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // Site moderation routes
     Route::get('sites/moderation', [App\Http\Controllers\Admin\SiteModerationController::class, 'index'])->name('admin.sites.moderation.index');
+    Route::get('sites/moderation/create', [App\Http\Controllers\Admin\SiteModerationController::class, 'create'])->name('admin.sites.moderation.create');
+    Route::post('sites/moderation', [App\Http\Controllers\Admin\SiteModerationController::class, 'store'])->name('admin.sites.moderation.store');
     Route::get('sites/moderation/{id}', [App\Http\Controllers\Admin\SiteModerationController::class, 'show'])->name('admin.sites.moderation.show');
     Route::post('sites/moderation/{id}/approve', [App\Http\Controllers\Admin\SiteModerationController::class, 'approve'])->name('admin.sites.moderation.approve');
     Route::post('sites/moderation/{id}/reject', [App\Http\Controllers\Admin\SiteModerationController::class, 'reject'])->name('admin.sites.moderation.reject');

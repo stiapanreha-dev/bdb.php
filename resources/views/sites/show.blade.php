@@ -175,4 +175,30 @@
     @endforeach
 </div>
 @endif
+
+@push('styles')
+<style>
+    /* Editor.js content styles */
+    .site-description img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.375rem;
+        margin: 0.5rem 0;
+    }
+    .site-description .image-tool {
+        max-width: 100%;
+    }
+    .site-description .image-tool__image {
+        max-width: 100%;
+        border-radius: 0.375rem;
+    }
+    .site-description .image-tool__image-picture {
+        max-width: 100%;
+        height: auto;
+    }
+    .site-description .cdx-block {
+        margin-bottom: 1rem;
+    }
+</style>
+@endpush
 </x-app-layout>

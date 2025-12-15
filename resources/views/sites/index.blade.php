@@ -24,20 +24,37 @@
                    class="list-group-item list-group-item-action {{ !request('category') ? 'active' : '' }}">
                     Все категории
                 </a>
-                @foreach($categories as $category)
-                    <a href="{{ route('sites.category', $category->slug) }}"
-                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center fw-semibold">
-                        {{ $category->name }}
-                        <span class="badge bg-primary rounded-pill">{{ $category->approvedSitesCount() }}</span>
-                    </a>
-                    @foreach($category->children as $child)
-                        <a href="{{ route('sites.category', $child->slug) }}"
-                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                           style="padding-left: 2rem;">
-                            {{ $child->name }}
-                            <span class="badge bg-secondary rounded-pill">{{ $child->approvedSitesCount() }}</span>
-                        </a>
-                    @endforeach
+            </div>
+            <div class="accordion accordion-flush" id="categoriesAccordion">
+                @foreach($categories->sortBy('name') as $category)
+                    <div class="accordion-item">
+                        @if($category->children->count() > 0)
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed py-2 px-3" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#cat-{{ $category->id }}">
+                                    <span class="me-auto">{{ $category->name }}</span>
+                                    <span class="badge bg-primary rounded-pill me-2">{{ $category->approvedSitesCount() }}</span>
+                                </button>
+                            </h2>
+                            <div id="cat-{{ $category->id }}" class="accordion-collapse collapse">
+                                <div class="list-group list-group-flush">
+                                    @foreach($category->children->sortBy('name') as $child)
+                                        <a href="{{ route('sites.category', $child->slug) }}"
+                                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4 py-2">
+                                            {{ $child->name }}
+                                            <span class="badge bg-secondary rounded-pill">{{ $child->approvedSitesCount() }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            <a href="{{ route('sites.category', $category->slug) }}"
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-3">
+                                {{ $category->name }}
+                                <span class="badge bg-primary rounded-pill">{{ $category->approvedSitesCount() }}</span>
+                            </a>
+                        @endif
+                    </div>
                 @endforeach
             </div>
         </div>

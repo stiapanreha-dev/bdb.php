@@ -3,10 +3,13 @@
     <div class="col-md-12">
         <div class="d-flex justify-content-between align-items-center">
             <h2>Модерация сайтов</h2>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center">
                 <span class="badge bg-warning fs-6">Ожидают: {{ $counts['pending'] }}</span>
                 <span class="badge bg-success fs-6">Одобрено: {{ $counts['approved'] }}</span>
                 <span class="badge bg-danger fs-6">Отклонено: {{ $counts['rejected'] }}</span>
+                <a href="{{ route('admin.sites.moderation.create') }}" class="btn btn-primary ms-3">
+                    <i class="bi bi-plus-lg me-1"></i>Добавить сайт
+                </a>
             </div>
         </div>
     </div>

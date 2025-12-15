@@ -38,20 +38,40 @@
                    class="list-group-item list-group-item-action">
                     Все категории
                 </a>
-                @foreach($categories as $cat)
-                    <a href="{{ route('sites.category', $cat->slug) }}"
-                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center fw-semibold {{ $category->id == $cat->id ? 'active' : '' }}">
-                        {{ $cat->name }}
-                        <span class="badge rounded-pill {{ $category->id == $cat->id ? 'bg-light text-dark' : 'bg-primary' }}">{{ $cat->approvedSitesCount() }}</span>
-                    </a>
-                    @foreach($cat->children as $child)
-                        <a href="{{ route('sites.category', $child->slug) }}"
-                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ $category->id == $child->id ? 'active' : '' }}"
-                           style="padding-left: 2rem;">
-                            {{ $child->name }}
-                            <span class="badge rounded-pill {{ $category->id == $child->id ? 'bg-light text-dark' : 'bg-secondary' }}">{{ $child->approvedSitesCount() }}</span>
-                        </a>
-                    @endforeach
+            </div>
+            <div class="accordion accordion-flush" id="categoriesAccordion">
+                @foreach($categories->sortBy('name') as $cat)
+                    @php
+                        $isCurrentParent = $category->id == $cat->id || ($category->parent_id && $category->parent_id == $cat->id);
+                    @endphp
+                    <div class="accordion-item">
+                        @if($cat->children->count() > 0)
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {{ $isCurrentParent ? '' : 'collapsed' }} py-2 px-3" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#cat-{{ $cat->id }}">
+                                    <span class="me-auto">{{ $cat->name }}</span>
+                                    <span class="badge {{ $category->id == $cat->id ? 'bg-light text-dark' : 'bg-primary' }} rounded-pill me-2">{{ $cat->approvedSitesCount() }}</span>
+                                </button>
+                            </h2>
+                            <div id="cat-{{ $cat->id }}" class="accordion-collapse collapse {{ $isCurrentParent ? 'show' : '' }}">
+                                <div class="list-group list-group-flush">
+                                    @foreach($cat->children->sortBy('name') as $child)
+                                        <a href="{{ route('sites.category', $child->slug) }}"
+                                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ps-4 py-2 {{ $category->id == $child->id ? 'active' : '' }}">
+                                            {{ $child->name }}
+                                            <span class="badge rounded-pill {{ $category->id == $child->id ? 'bg-light text-dark' : 'bg-secondary' }}">{{ $child->approvedSitesCount() }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            <a href="{{ route('sites.category', $cat->slug) }}"
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-3 {{ $category->id == $cat->id ? 'active' : '' }}">
+                                {{ $cat->name }}
+                                <span class="badge rounded-pill {{ $category->id == $cat->id ? 'bg-light text-dark' : 'bg-primary' }}">{{ $cat->approvedSitesCount() }}</span>
+                            </a>
+                        @endif
+                    </div>
                 @endforeach
             </div>
         </div>
