@@ -1,21 +1,29 @@
 <x-app-layout>
 @push('styles')
 <style>
-    /* Align all badges to the right */
+    /* Badge fixed right, arrow before badge */
     #categoriesAccordion .accordion-button {
-        position: relative;
-        padding-right: 3rem;
+        padding-right: 3.5rem;
     }
     #categoriesAccordion .accordion-button::after {
         width: 0.75rem;
         height: 0.75rem;
         background-size: 0.75rem;
         position: absolute;
-        right: 2.25rem;
+        right: 2.5rem;
     }
     #categoriesAccordion .accordion-button .badge {
         position: absolute;
         right: 0.75rem;
+    }
+    /* Categories without children - badge in same position */
+    #categoriesAccordion .list-group-item .badge {
+        position: absolute;
+        right: 0.75rem;
+    }
+    #categoriesAccordion .list-group-item {
+        position: relative;
+        padding-right: 3.5rem;
     }
 </style>
 @endpush
