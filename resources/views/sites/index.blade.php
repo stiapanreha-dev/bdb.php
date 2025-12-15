@@ -1,12 +1,20 @@
 <x-app-layout>
 @push('styles')
 <style>
-    /* Fix accordion arrow position so badge doesn't shift */
+    /* Swap badge and arrow positions */
+    #categoriesAccordion .accordion-button {
+        flex-wrap: nowrap;
+    }
     #categoriesAccordion .accordion-button::after {
         width: 0.75rem;
         height: 0.75rem;
         background-size: 0.75rem;
-        margin-left: 0.5rem;
+        margin-left: 0;
+        margin-right: 0.5rem;
+        order: 1;
+    }
+    #categoriesAccordion .accordion-button .badge {
+        order: 2;
     }
 </style>
 @endpush
