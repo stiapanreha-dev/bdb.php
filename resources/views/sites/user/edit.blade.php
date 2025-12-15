@@ -46,20 +46,20 @@
                                     <select class="form-select @error('category_id') is-invalid @enderror"
                                             id="category_id" name="category_id" required>
                                         <option value="">-- Выберите категорию --</option>
-                                        @foreach($categories as $category)
-                                            <optgroup label="{{ $category->name }}">
-                                                @if($category->children->count() > 0)
-                                                    @foreach($category->children as $child)
+                                        @foreach($categories->sortBy('name') as $category)
+                                            @if($category->children->count() > 0)
+                                                <optgroup label="{{ $category->name }}">
+                                                    @foreach($category->children->sortBy('name') as $child)
                                                         <option value="{{ $child->id }}" {{ old('category_id', $site->category_id) == $child->id ? 'selected' : '' }}>
                                                             {{ $child->name }}
                                                         </option>
                                                     @endforeach
-                                                @else
-                                                    <option value="{{ $category->id }}" {{ old('category_id', $site->category_id) == $category->id ? 'selected' : '' }}>
-                                                        {{ $category->name }}
-                                                    </option>
-                                                @endif
-                                            </optgroup>
+                                                </optgroup>
+                                            @else
+                                                <option value="{{ $category->id }}" {{ old('category_id', $site->category_id) == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endif
                                         @endforeach
                                     </select>
                                     @error('category_id')
