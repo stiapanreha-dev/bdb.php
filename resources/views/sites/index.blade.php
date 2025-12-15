@@ -1,20 +1,21 @@
 <x-app-layout>
 @push('styles')
 <style>
-    /* Swap badge and arrow positions */
+    /* Align all badges to the right */
     #categoriesAccordion .accordion-button {
-        flex-wrap: nowrap;
+        position: relative;
+        padding-right: 3rem;
     }
     #categoriesAccordion .accordion-button::after {
         width: 0.75rem;
         height: 0.75rem;
         background-size: 0.75rem;
-        margin-left: 0;
-        margin-right: 0.5rem;
-        order: 1;
+        position: absolute;
+        right: 2.25rem;
     }
     #categoriesAccordion .accordion-button .badge {
-        order: 2;
+        position: absolute;
+        right: 0.75rem;
     }
 </style>
 @endpush
