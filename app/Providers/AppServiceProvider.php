@@ -61,10 +61,20 @@ class AppServiceProvider extends ServiceProvider
                                             echo '</' . \$tag . '>';
                                             break;
                                         case 'image':
-                                            \$url = \$block->data->file->url ?? '';
+                                            \$url = \$block->data->file->url ?? (\$block->data->url ?? '');
                                             \$caption = \$block->data->caption ?? '';
+                                            \$stretched = !empty(\$block->data->stretched);
+                                            \$withBorder = !empty(\$block->data->withBorder);
+                                            \$withBackground = !empty(\$block->data->withBackground);
                                             if (\$url) {
-                                                echo '<figure><img src=\"' . e(\$url) . '\" alt=\"' . e(\$caption) . '\"><figcaption>' . e(\$caption) . '</figcaption></figure>';
+                                                \$figureClass = 'editorjs-image';
+                                                if (\$stretched) \$figureClass .= ' editorjs-image--stretched';
+                                                if (\$withBorder) \$figureClass .= ' editorjs-image--bordered';
+                                                if (\$withBackground) \$figureClass .= ' editorjs-image--backgrounded';
+                                                echo '<figure class=\"' . \$figureClass . '\">';
+                                                echo '<img src=\"' . e(\$url) . '\" alt=\"' . e(\$caption) . '\">';
+                                                if (\$caption) echo '<figcaption>' . e(\$caption) . '</figcaption>';
+                                                echo '</figure>';
                                             }
                                             break;
                                         case 'quote':
