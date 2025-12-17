@@ -96,7 +96,13 @@
                     @endif
                         @if($product->description)
                             <div class="product-description">
-                                @editorJsRender(is_array($product->description) ? json_encode($product->description) : $product->description)
+                                @php
+                                    $descJson = $product->description;
+                                    if (is_array($descJson) || is_object($descJson)) {
+                                        $descJson = json_encode($descJson);
+                                    }
+                                @endphp
+                                @editorJsRender($descJson)
                             </div>
                         @else
                             <p class="text-muted">Описание товара отсутствует.</p>
