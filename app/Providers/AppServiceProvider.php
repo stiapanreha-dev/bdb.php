@@ -55,7 +55,8 @@ class AppServiceProvider extends ServiceProvider
                                             \$tag = (\$block->data->style ?? 'unordered') === 'ordered' ? 'ol' : 'ul';
                                             echo '<' . \$tag . '>';
                                             foreach (\$block->data->items ?? [] as \$item) {
-                                                echo '<li>' . e(\$item) . '</li>';
+                                                \$text = is_object(\$item) ? (\$item->content ?? '') : (is_string(\$item) ? \$item : '');
+                                                echo '<li>' . e(\$text) . '</li>';
                                             }
                                             echo '</' . \$tag . '>';
                                             break;
