@@ -143,7 +143,50 @@ body {
     flex: 1;
 }
 
-/* Editor.js Image Styles */
+/* Editor.js Image Styles (package classes) */
+figure.image {
+    margin: 1rem 0;
+    text-align: center;
+}
+
+figure.image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+figure.image .image-caption,
+figure.image figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+figure.image.image--stretched {
+    width: 100%;
+}
+
+figure.image.image--stretched img {
+    width: 100%;
+    object-fit: cover;
+}
+
+figure.image.image--bordered img {
+    border: 2px solid #dee2e6;
+}
+
+figure.image.image--backgrounded {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+figure.image.image--backgrounded img {
+    border-radius: 4px;
+}
+
+/* Editor.js Image Styles (fallback classes) */
 .editorjs-image {
     margin: 1rem 0;
     text-align: center;
@@ -172,7 +215,7 @@ body {
 }
 
 .editorjs-image--bordered img {
-    border: 1px solid #dee2e6;
+    border: 2px solid #dee2e6;
 }
 
 .editorjs-image--backgrounded {
