@@ -107,7 +107,7 @@
                 <hr>
 
                 <h5>Описание</h5>
-                <div class="border rounded p-3 bg-light">
+                <div class="border rounded p-3 bg-light editor-content">
                     @if($site->description)
                         @editorJsRender($site->description)
                     @else
@@ -198,4 +198,53 @@
         </div>
     </div>
 </div>
+
+@push('styles')
+<style>
+    .editor-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.375rem;
+        margin: 0.5rem 0;
+    }
+    .editor-content .image-tool {
+        margin: 1rem 0;
+    }
+    .editor-content .image-tool__image {
+        border-radius: 0.375rem;
+        overflow: hidden;
+    }
+    .editor-content .image-tool__image img {
+        display: block;
+        width: 100%;
+    }
+    .editor-content .image-tool--withBorder .image-tool__image {
+        border: 1px solid #dee2e6;
+    }
+    .editor-content .image-tool--stretched .image-tool__image {
+        width: 100%;
+    }
+    .editor-content .image-tool--withBackground .image-tool__image {
+        background: #f8f9fa;
+        padding: 1rem;
+    }
+    .editor-content .image-tool__caption {
+        font-size: 0.875rem;
+        color: #6c757d;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+    .editor-content p {
+        margin-bottom: 0.75rem;
+    }
+    .editor-content h2, .editor-content h3, .editor-content h4 {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .editor-content ul, .editor-content ol {
+        padding-left: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+</style>
+@endpush
 </x-app-layout>

@@ -23,9 +23,14 @@
         <div class="d-flex justify-content-between align-items-center">
             <h2>Каталог сайтов</h2>
             @auth
-            <a href="{{ route('sites.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1"></i>Добавить сайт
-            </a>
+            <div class="d-flex gap-2">
+                <a href="{{ route('sites.my') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-collection me-1"></i>Мои сайты
+                </a>
+                <a href="{{ route('sites.create') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i>Добавить сайт
+                </a>
+            </div>
             @endauth
         </div>
     </div>

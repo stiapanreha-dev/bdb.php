@@ -194,6 +194,7 @@ class ImageUploadController extends Controller
                 $uploaded[] = [
                     'path' => $path,
                     'url' => $url,
+                    'original_name' => $file->getClientOriginalName(),
                 ];
             }
 

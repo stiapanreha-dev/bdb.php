@@ -48,7 +48,7 @@
 
                     <div class="mb-3">
                         <div class="article-content">
-                            @editorJsRender($article->content)
+                            @editorJsRender($article->description)
                         </div>
                     </div>
 

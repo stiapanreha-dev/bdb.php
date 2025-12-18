@@ -98,16 +98,19 @@
                                 required>
                             <option value="">Выберите категорию</option>
                             @foreach($categories as $category)
-                                <optgroup label="{{ $category->name }}">
+                                @if($category->children->count() > 0)
+                                    <optgroup label="{{ $category->name }}">
+                                        @foreach($category->children as $child)
+                                            <option value="{{ $child->id }}" {{ old('category_id', $product->category_id) == $child->id ? 'selected' : '' }}>
+                                                {{ $child->name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @else
                                     <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
                                     </option>
-                                    @foreach($category->children as $child)
-                                        <option value="{{ $child->id }}" {{ old('category_id', $product->category_id) == $child->id ? 'selected' : '' }}>
-                                            -- {{ $child->name }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
+                                @endif
                             @endforeach
                         </select>
                         @error('category_id')

@@ -20,10 +20,10 @@
 
                         <!-- Содержание -->
                         <div class="mb-3">
-                            <label for="content" class="form-label">Содержание <span class="text-danger">*</span></label>
+                            <label for="description" class="form-label">Содержание <span class="text-danger">*</span></label>
                             <div id="editorjs"></div>
-                            <textarea class="d-none @error('content') is-invalid @enderror" id="content" name="content">{{ old('content') }}</textarea>
-                            @error('content')
+                            <textarea class="d-none @error('description') is-invalid @enderror" id="description" name="description">{{ old('description') }}</textarea>
+                            @error('description')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof EditorJS === 'undefined') {
         console.error('Editor.js не загрузился с CDN. Используется fallback.');
         document.getElementById('editorjs').style.display = 'none';
-        const textarea = document.getElementById('content');
+        const textarea = document.getElementById('description');
         textarea.classList.remove('d-none');
         textarea.rows = 10;
         return;
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             },
             data: (() => {
-                const oldContent = document.getElementById('content').value;
+                const oldContent = document.getElementById('description').value;
                 if (oldContent) {
                     try {
                         return JSON.parse(oldContent);
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
         console.error('Ошибка инициализации Editor.js:', error);
         document.getElementById('editorjs').style.display = 'none';
-        const textarea = document.getElementById('content');
+        const textarea = document.getElementById('description');
         textarea.classList.remove('d-none');
         textarea.rows = 10;
         alert('Редактор не загрузился. Используйте обычное текстовое поле.');
@@ -279,10 +279,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const col = document.createElement('div');
             col.className = 'col-6 col-md-4';
 
+            // Извлекаем имя файла из URL
+            const fileName = image.original_name || image.url.split('/').pop();
+
             col.innerHTML = `
                 <div class="image-preview-item">
-                    <img src="${image.url}" alt="Preview ${index + 1}">
+                    <img src="${image.url}" alt="${fileName}">
                     <button type="button" class="remove-btn" data-index="${index}" title="Удалить">&times;</button>
+                    <div class="image-filename text-truncate mt-1" style="font-size: 0.75rem;">${fileName}</div>
                 </div>
             `;
 
@@ -322,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Если editor не определен (fallback режим), проверяем textarea напрямую
         if (!editor) {
-            const textareaValue = document.getElementById('content').value.trim();
+            const textareaValue = document.getElementById('description').value.trim();
             if (!textareaValue) {
                 alert('Пожалуйста, введите содержание статьи');
                 return false;
@@ -335,14 +339,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const outputData = await editor.save();
             const jsonData = JSON.stringify(outputData);
 
-            document.getElementById('content').value = jsonData;
+            document.getElementById('description').value = jsonData;
 
             if (!outputData.blocks || outputData.blocks.length === 0) {
                 alert('Пожалуйста, введите содержание статьи');
                 return false;
             }
 
-            const savedValue = document.getElementById('content').value;
+            const savedValue = document.getElementById('description').value;
             if (!savedValue || savedValue === '{}' || savedValue === '{"blocks":[]}') {
                 alert('Содержание пустое. Пожалуйста, добавьте текст.');
                 return false;
