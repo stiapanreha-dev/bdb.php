@@ -19,9 +19,9 @@
     @foreach($news as $item)
         <div class="card mb-3">
             @if($item->images && count($item->images) > 0)
-                <div class="row g-0">
+                <div class="row g-0 p-2">
                     <div class="col-md-3">
-                        <img src="{{ $item->images[0] }}" class="img-fluid rounded-start" style="width: 100%; height: 200px; object-fit: cover;" alt="{{ $item->title }}">
+                        <img src="{{ $item->images[0] }}" class="img-fluid rounded" style="width: 100%; height: 200px; object-fit: cover;" alt="{{ $item->title }}">
                     </div>
                     <div class="col-md-9">
                         <div class="card-body">
