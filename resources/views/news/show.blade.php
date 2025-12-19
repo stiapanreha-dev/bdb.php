@@ -49,7 +49,7 @@
                         <div class="mb-4">
                             <div class="row g-2 justify-content-center">
                                 @foreach($news->images as $imageUrl)
-                                    <div class="col-6 col-md-4">
+                                    <div class="col-12 col-md-4">
                                         <a href="{{ $imageUrl }}" target="_blank">
                                             <img src="{{ $imageUrl }}" alt="Изображение" class="img-thumbnail" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;">
                                         </a>
