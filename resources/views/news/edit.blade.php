@@ -33,6 +33,23 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="slug" class="form-label">URL (slug)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">/news/</span>
+                            <input type="text"
+                                   class="form-control @error('slug') is-invalid @enderror"
+                                   id="slug"
+                                   name="slug"
+                                   value="{{ old('slug', $news->slug) }}"
+                                   required>
+                        </div>
+                        @error('slug')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">Только латинские буквы, цифры и дефисы</small>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="published_at" class="form-label">Дата публикации</label>
                         <input type="datetime-local"
                                class="form-control @error('published_at') is-invalid @enderror"

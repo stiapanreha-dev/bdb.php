@@ -111,6 +111,7 @@ class NewsController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => ['required', 'string', 'max:255', 'regex:/^[a-z0-9\-]+$/', 'unique:news,slug,' . $news->id],
             'content' => ['required', 'string', function ($attribute, $value, $fail) {
                 // Проверяем что Editor.js JSON содержит блоки
                 $data = json_decode($value, true);
@@ -131,19 +132,13 @@ class NewsController extends Controller
             }
         }
 
-        $updateData = [
+        $news->update([
             'title' => $validated['title'],
+            'slug' => $validated['slug'],
             'content' => $validated['content'],
             'images' => $images,
             'published_at' => $validated['published_at'] ?? $news->published_at ?? now(),
-        ];
-
-        // Update slug if title changed
-        if ($news->title !== $validated['title']) {
-            $updateData['slug'] = News::generateSlug($validated['title'], $news->id);
-        }
-
-        $news->update($updateData);
+        ]);
 
         return redirect()->route('news.show', $news)
             ->with('success', 'Новость успешно обновлена!');
