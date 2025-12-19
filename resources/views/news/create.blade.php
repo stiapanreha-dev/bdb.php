@@ -274,10 +274,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const col = document.createElement('div');
             col.className = 'col-6 col-md-4';
 
+            // Извлекаем имя файла из URL
+            const fileName = image.original_name || image.url.split('/').pop();
+
             col.innerHTML = `
                 <div class="image-preview-item">
-                    <img src="${image.url}" alt="Preview ${index + 1}">
+                    <img src="${image.url}" alt="${fileName}">
                     <button type="button" class="remove-btn" data-index="${index}" title="Удалить">&times;</button>
+                    <div class="image-filename text-truncate mt-1" style="font-size: 0.75rem;">${fileName}</div>
                 </div>
             `;
 
