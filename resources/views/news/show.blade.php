@@ -48,13 +48,36 @@
                     @if($news->images && count($news->images) > 0)
                         <div class="mb-4">
                             <div class="row g-2 justify-content-center">
-                                @foreach($news->images as $imageUrl)
+                                @foreach($news->images as $index => $imageUrl)
                                     <div class="col-12 col-md-4">
-                                        <a href="{{ $imageUrl }}" target="_blank">
-                                            <img src="{{ $imageUrl }}" alt="Изображение" class="img-thumbnail" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;">
-                                        </a>
+                                        <img src="{{ $imageUrl }}"
+                                             alt="Изображение"
+                                             class="img-thumbnail gallery-image"
+                                             data-index="{{ $index }}"
+                                             style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;">
                                     </div>
                                 @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Lightbox Modal -->
+                        <div class="modal fade" id="imageLightbox" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered modal-xl">
+                                <div class="modal-content bg-transparent border-0">
+                                    <div class="modal-body p-0 text-center position-relative">
+                                        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" style="z-index: 1;"></button>
+                                        @if(count($news->images) > 1)
+                                        <button type="button" class="btn btn-dark position-absolute start-0 top-50 translate-middle-y ms-2" id="prevImage">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-dark position-absolute end-0 top-50 translate-middle-y me-2" id="nextImage">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </button>
+                                        @endif
+                                        <img src="" id="lightboxImage" class="img-fluid" style="max-height: 85vh;">
+                                        <div class="text-white mt-2" id="imageCounter"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -73,6 +96,58 @@
         </div>
     </div>
 </div>
+
+@if($news->images && count($news->images) > 0)
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const images = @json($news->images);
+    let currentIndex = 0;
+    const lightbox = new bootstrap.Modal(document.getElementById('imageLightbox'));
+    const lightboxImage = document.getElementById('lightboxImage');
+    const imageCounter = document.getElementById('imageCounter');
+
+    function showImage(index) {
+        currentIndex = index;
+        lightboxImage.src = images[index];
+        if (images.length > 1) {
+            imageCounter.textContent = (index + 1) + ' / ' + images.length;
+        }
+    }
+
+    document.querySelectorAll('.gallery-image').forEach(img => {
+        img.addEventListener('click', function() {
+            showImage(parseInt(this.dataset.index));
+            lightbox.show();
+        });
+    });
+
+    const prevBtn = document.getElementById('prevImage');
+    const nextBtn = document.getElementById('nextImage');
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+            showImage((currentIndex - 1 + images.length) % images.length);
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            showImage((currentIndex + 1) % images.length);
+        });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (!document.getElementById('imageLightbox').classList.contains('show')) return;
+        if (e.key === 'ArrowLeft' && prevBtn) prevBtn.click();
+        if (e.key === 'ArrowRight' && nextBtn) nextBtn.click();
+        if (e.key === 'Escape') lightbox.hide();
+    });
+});
+</script>
+@endpush
+@endif
 
 @push('styles')
 <style>
