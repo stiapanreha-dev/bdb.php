@@ -45,14 +45,9 @@
 
                     <hr>
 
-                    <div class="news-content mt-4">
-                        @editorJsRender($news->content)
-                    </div>
-
                     @if($news->images && count($news->images) > 0)
-                        <div class="mt-4">
-                            <strong>Дополнительные изображения:</strong>
-                            <div class="row g-2 mt-2">
+                        <div class="mb-4">
+                            <div class="row g-2 justify-content-center">
                                 @foreach($news->images as $imageUrl)
                                     <div class="col-6 col-md-4">
                                         <a href="{{ $imageUrl }}" target="_blank">
@@ -63,6 +58,10 @@
                             </div>
                         </div>
                     @endif
+
+                    <div class="news-content mt-4">
+                        @editorJsRender($news->content)
+                    </div>
                 </div>
             </div>
 
