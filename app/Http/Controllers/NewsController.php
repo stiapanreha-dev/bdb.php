@@ -67,6 +67,7 @@ class NewsController extends Controller
 
         News::create([
             'title' => $validated['title'],
+            'slug' => News::generateSlug($validated['title']),
             'content' => $validated['content'],
             'images' => $images,
             'published_at' => $validated['published_at'] ?? now(),
@@ -130,12 +131,19 @@ class NewsController extends Controller
             }
         }
 
-        $news->update([
+        $updateData = [
             'title' => $validated['title'],
             'content' => $validated['content'],
             'images' => $images,
             'published_at' => $validated['published_at'] ?? $news->published_at ?? now(),
-        ]);
+        ];
+
+        // Update slug if title changed
+        if ($news->title !== $validated['title']) {
+            $updateData['slug'] = News::generateSlug($validated['title'], $news->id);
+        }
+
+        $news->update($updateData);
 
         return redirect()->route('news.show', $news)
             ->with('success', 'Новость успешно обновлена!');
